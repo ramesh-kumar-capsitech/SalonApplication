@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+    font-family: "Outfit", sans-serif;
+}
+
+.ant-table-cell {
+    font-family: "Outfit", sans-serif;
+}
+
+.ant-tag {
+    font-family: "Outfit", sans-serif;
+}
+
+h1,
+h2,
+p,
+input,
+span {
+    font-family: "Outfit", sans-serif;
+}
+
+
+
+.ant-input {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-form {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-steps {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-input {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-label {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-card {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-InputNumber {
+    font-family: "Outfit",
+        sans-serif;
+}
