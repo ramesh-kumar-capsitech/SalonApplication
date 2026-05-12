@@ -1,34 +1,59 @@
 import React, { useEffect, useState } from "react";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo1.png'
-import { UnorderedListOutlined } from '@ant-design/icons';
+import { ScheduleFilled, ScheduleTwoTone, UnorderedListOutlined } from '@ant-design/icons';
 
 import { SettingOutlined } from '@ant-design/icons';
 import { LogoutOutlined } from '@ant-design/icons';
 import { message } from "antd";
-
+import { useAppDispatch } from "../redux/hooks";
+import { logout } from "../redux/authSlice";
+import { useAppSelector } from "../redux/hooks";
 const Sidebar: React.FC = () => {
+    const dispatch = useAppDispatch();
     const [loggeduser, setloggeduser] = useState('')
     const [firstname, setfirstname] = useState('')
     const [email, setemail] = useState('')
     const navigate = useNavigate()
+    const user = useAppSelector(
+        (state) => state.auth.user
+    );
     useEffect(() => {
-        setloggeduser(localStorage.getItem('empname') ?? '');
-        setfirstname(localStorage.getItem('empname')?.split(' ').map(word => word[0])?.join('').toUpperCase() ?? '');
 
-        setemail(localStorage.getItem('empemail') ?? '')
-    }, []);
+        if (user) {
+
+            setloggeduser(user.name || "");
+            setemail(user.email || "");
+
+            const initials = user.name
+                ? user.name
+                    .split(" ")
+                    .map((w: string) => w[0])
+                    .join("")
+                    .toUpperCase()
+                : "";
+
+            setfirstname(initials);
+        }
+
+    }, [user]);
+
 
     const handleLogout = () => {
-        confirm("Are you sure you want to logout?")
 
-        localStorage.removeItem('emptoken');
-        localStorage.removeItem('empname');
-        localStorage.removeItem('empemail');
-        localStorage.removeItem('salonId')
-        navigate('/');
-        message.success("Logged out successfully")
+        const confirmLogout = window.confirm(
+            "Are you sure you want to logout?"
+        );
+
+        if (!confirmLogout) return;
+
+        dispatch(logout());
+
+        message.success("Logged out successfully");
+
+        navigate("/");
     };
+
     return (
         <aside className="fixed h-screen font-inter w-[20%] bg-gradient-to-b from-blue-700 to-blue-600 text-white flex flex-col justify-between px-5 py-6">
 
@@ -58,9 +83,16 @@ const Sidebar: React.FC = () => {
                         <NavLink to='/employee/myshedule'> <li className="   flex gap-[7px] justify-start hover:bg-white/20  rounded-lg px-3 py-2 " >
 
                             <UnorderedListOutlined className="text-white " />
+
                             <p className="font-semibold m-0 "> My Schedule</p>
                         </li>
                         </NavLink>
+                        <NavLink to='/employee/totalbooking'> <li className="   flex gap-[7px] justify-start hover:bg-white/20  rounded-lg px-3 py-2 " >
+                            <ScheduleFilled className="text-white " />
+                            <p className="font-semibold m-0 "> Total Booking</p>
+                        </li>
+                        </NavLink>
+
                         <NavLink to='/employee/settingemp'>
                             <li className="flex gap-[7px] justify-start   hover:bg-white/20 rounded-lg px-3 py-2 ">
                                 <SettingOutlined />

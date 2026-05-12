@@ -60,6 +60,12 @@ const MyBookings = () => {
                 }
             });
     }, []);
+    const pastBookings = bookings.filter(
+        (b) => b.status === "Completed"
+    );
+    const upcomingBookings = bookings.filter(
+        (b) => b.status === "Pending" || b.status === "Confirmed" || b.status === "Rejected" || b.status === "In Progress"
+    );
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[13px]   ">
@@ -94,7 +100,7 @@ const MyBookings = () => {
             </div>
             {tab === "upcoming" && (
                 <div className="m-6 mt-0 grid gap-6 ">
-                    {bookings.map((b: any) => (
+                    {upcomingBookings.map((b: any) => (
                         <Card
                             key={b._id}
                             className="rounded-2xl border font-[Outfit]"
@@ -187,7 +193,7 @@ const MyBookings = () => {
                             </div>
 
                             {/* ACTIONS */}
-                            <div className="flex items-center justify-between mt-6" >
+                            {/* <div className="flex items-center justify-between mt-6" >
                                 <div className="flex gap-3">
                                     <Button className="rounded-full">
                                         Reschedule
@@ -207,7 +213,7 @@ const MyBookings = () => {
                                 >
                                     View Details
                                 </Button>
-                            </div>
+                            </div> */}
                         </Card>
                     ))
                     }
@@ -216,38 +222,33 @@ const MyBookings = () => {
                 </div >
             )
             }
-            {
-                tab === "past" && (
-                    <div className="m-6 mt-0 grid gap-6">
+            {tab === "past" && (
+                <div className="m-6 mt-0 grid gap-6">
+                    {pastBookings.map((b: any) => (
                         <Card
+                            key={b._id}
                             className="rounded-2xl border font-[Outfit]"
                             bodyStyle={{ padding: 28 }}
                         >
-                            {/* HEADER */}
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-4">
                                     <Avatar
                                         size={44}
                                         className="bg-green-100"
-                                        icon={
-                                            <CheckCircleFilled className="text-green-500" />
-                                        }
+                                        icon={<CheckCircleFilled className="text-green-500" />}
                                     />
 
                                     <div>
                                         <h2 className="font-semibold m-0">
-                                            Beauty Lounge
+                                            {b.salonName}
                                         </h2>
 
                                         <div className="flex items-center gap-1 text-gray-500 text-sm">
                                             <EnvironmentOutlined />
-                                            <span>Queens, NY</span>
+                                            <span>{b.location}</span>
                                         </div>
 
-                                        <Tag
-                                            color="green"
-                                            className="rounded-full mt-2"
-                                        >
+                                        <Tag color="green" className="rounded-full mt-2">
                                             Completed
                                         </Tag>
                                     </div>
@@ -256,48 +257,51 @@ const MyBookings = () => {
                                 <div className="text-sm text-gray-500">
                                     Booking ID:{" "}
                                     <span className="font-medium text-gray-900">
-                                        BK-2401
+                                        {b._id?.slice(-6).toUpperCase()}
                                     </span>
                                 </div>
                             </div>
 
-                            {/* DETAILS */}
                             <div className="bg-gray-50 rounded-xl p-5 mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
-                                <Detail label="Date" value="Jan 10, 2026" />
-                                <Detail label="Time" value="3:00 PM" />
-                                <Detail label="Duration" value="60 minutes" />
+                                <Detail
+                                    label="Date"
+                                    value={dayjs(b.date).format("DD MMM YYYY")}
+                                />
+                                <Detail label="Time" value={b.time} />
+                                <Detail
+                                    label="Duration"
+                                    value={
+                                        b.services?.reduce((t, s) => t + (s.duration || 0), 0) + " min"
+                                    }
+                                />
                                 <Detail
                                     label="Total Paid"
-                                    value="$85"
+                                    value={`₹${b.totalPrice}`}
                                     valueClass="text-green-600"
                                 />
                             </div>
 
-
                             <div className="mt-6">
                                 <p className="text-gray-500 mb-2">Services:</p>
-                                <Tag className="rounded-full">
-                                    Facial Treatment
-                                </Tag>
+                                <div className="flex gap-2 flex-wrap">
+                                    {b.services?.map((s, i) => (
+                                        <Tag key={i}>{s.name}</Tag>
+                                    ))}
+                                </div>
                             </div>
 
-
-                            <div className="flex gap-3 mt-6">
-                                <Button
-                                    type="primary"
-                                    className="rounded-full"
-                                >
+                            {/* <div className="flex gap-3 mt-6">
+                                <Button type="primary" className="rounded-full">
                                     Book Again
                                 </Button>
-
                                 <Button className="rounded-full">
                                     Leave Review
                                 </Button>
-                            </div>
+                            </div> */}
                         </Card>
-                    </div>
-                )
-            }
+                    ))}
+                </div>
+            )}
         </div >
     )
 }

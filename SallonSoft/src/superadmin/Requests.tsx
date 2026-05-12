@@ -34,30 +34,57 @@ const Requests = () => {
     const [salons, setsalons] = useState([]);
     const [rejectedsalons, setrejectedsalons] = useState([]);
     const [approvedsalons, setapprovedsalons] = useState([]);
-    useEffect(() => {
-        axios.get("http://localhost:3001/auth/all-salons-requested").then(res => {
-            setsalons(res.data.data)
-        }).catch(err => {
-            console.log(err)
-        })
-    }, []);
-    useEffect(() => {
-        axios.get("http://localhost:3001/auth/rejectedsalons").then(res => {
-            setrejectedsalons(res.data.data);
-            console.log(res.data.data)
-        }).catch(err => {
-            console.log(err)
-        })
-    }, [])
-    useEffect(() => {
-        axios.get("http://localhost:3001/auth/approved-salons").then(res => {
-            setapprovedsalons(res.data.data);
-            console.log(res.data.data)
-        }).catch(err => {
-            console.log(err)
+    // useEffect(() => {
+    //     axios.get("http://localhost:3001/auth/all-salons-requested").then(res => {
+    //         setsalons(res.data.data)
+    //     }).catch(err => {
+    //         console.log(err)
+    //     })
+    // }, []);
+    // useEffect(() => {
+    //     axios.get("http://localhost:3001/auth/rejectedsalons").then(res => {
+    //         setrejectedsalons(res.data.data);
+    //         console.log(res.data.data)
+    //     }).catch(err => {
+    //         console.log(err)
+    //     })
+    // }, [])
+    // useEffect(() => {
+    //     axios.get("http://localhost:3001/auth/approved-salons").then(res => {
+    //         setapprovedsalons(res.data.data);
+    //         console.log(res.data.data)
+    //     }).catch(err => {
+    //         console.log(err)
 
-        })
-    }, [])
+    //     })
+    // }, [])
+    const fetchAllSalons = async () => {
+        try {
+
+            const pending = await axios.get(
+                "http://localhost:3001/auth/all-salons-requested"
+            );
+
+            const approved = await axios.get(
+                "http://localhost:3001/auth/approved-salons"
+            );
+
+            const rejected = await axios.get(
+                "http://localhost:3001/auth/rejectedsalons"
+            );
+
+            setsalons(pending.data.data);
+            setapprovedsalons(approved.data.data);
+            setrejectedsalons(rejected.data.data);
+
+        } catch (error) {
+            console.log(error);
+        }
+    };
+    useEffect(() => {
+        fetchAllSalons();
+    }, []);
+
     // const handleApprove = async (id: string) => {
     //     try {
     //         await axios.put(`http://localhost:3001/auth/approve/${id}`);
@@ -76,9 +103,11 @@ const Requests = () => {
             await axios.put(`http://localhost:3001/auth/approve/${id}`);
 
             message.success("Salon approved successfully!");
-            setsalons(prev =>
-                prev.filter((salon: any) => salon._id !== id)
-            );
+            // setsalons(prev =>
+            //     prev.filter((salon: any) => salon._id !== id)
+            // );
+            fetchAllSalons();
+
 
         } catch (error) {
             console.log(error);
@@ -89,9 +118,11 @@ const Requests = () => {
             reason: "Incomplete documents"
         });
         message.success("Salon rejected successfully!");
-        setsalons(prev =>
-            prev.filter((salon: any) => salon._id !== id)
-        );
+        // setsalons(prev =>
+        //     prev.filter((salon: any) => salon._id !== id)
+        // );
+        fetchAllSalons();
+
     };
     return (
         <div>

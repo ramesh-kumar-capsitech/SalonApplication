@@ -5,7 +5,13 @@ import { data, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import axios from 'axios'
 import message from 'antd/es/message'
+import { useAppDispatch } from "../redux/hooks";
+import { loginSuccess } from "../redux/authSlice";
+import { useAppSelector } from "../redux/hooks";
 const Login = () => {
+    const auth = useAppSelector((state: { auth: any }) => state.auth);
+
+    console.log(auth);
     const [msg, setmsg] = useState("")
     const [isError, setisError] = useState(false)
     const navigate = useNavigate()
@@ -13,6 +19,7 @@ const Login = () => {
         email: "",
         password: ""
     })
+    const dispatch = useAppDispatch();
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setlogininfo({ ...logininfo, [e.target.name]: e.target.value })
     }
@@ -82,10 +89,34 @@ const Login = () => {
         }
 
 
-        if (email === "superadmin@gmail.com" && password === "superadmin123") {
-            localStorage.setItem("role", "superadmin");
-            message.success("Login successful as Super Admin");
-            navigate("/superadmin");
+        if (
+            email === "superadmin@gmail.com" &&
+            password === "superadmin123"
+        ) {
+
+            dispatch(
+                loginSuccess({
+                    token: "superadmin-token",
+
+                    user: {
+                        name: "Super Admin",
+                        email: "superadmin@gmail.com",
+                        role: "superadmin",
+                    },
+                })
+            );
+
+            console.log("SUPERADMIN LOGIN");
+            console.log("REDUX UPDATED");
+
+            message.success(
+                "Login successful as Super Admin"
+            );
+
+            setTimeout(() => {
+                navigate("/superadmin");
+            }, 200);
+
             return;
         }
 
@@ -99,12 +130,18 @@ const Login = () => {
 
             if (res.data.success) {
 
-                localStorage.setItem("token", res.data.jwttoken);
-                localStorage.setItem("user", JSON.stringify({
-                    _id: res.data._id,
-                    name: res.data.name,
-                    email: res.data.email
-                }));
+                dispatch(
+                    loginSuccess({
+                        token: res.data.jwttoken,
+
+                        user: {
+                            _id: res.data._id,
+                            name: res.data.name,
+                            email: res.data.email,
+                            role: "customer",
+                        },
+                    })
+                );
                 message.success("Customer Login Success");
 
                 navigate("/customer");
@@ -124,15 +161,28 @@ const Login = () => {
             );
 
             if (res.data.success) {
+                console.log(res.data);
+                dispatch(
+                    loginSuccess({
+                        token: res.data.jwttoken,
 
-                localStorage.setItem("salontoken", res.data.jwttoken);
-                localStorage.setItem("salonname", res.data.name);
-                localStorage.setItem("salonemail", res.data.email);
-                localStorage.setItem("salonId", res.data.salonId)
-                message.success("Salon Admin Login Success");
+                        user: {
 
+                            salonId: res.data.salonId,
+
+                            salonownername:
+                                res.data.name,
+
+                            email:
+                                res.data.email,
+
+                            role: "salonadmin",
+                        },
+                    })
+                );
                 navigate("/salonadmin");
                 return;
+
             }
 
         } catch (err: any) {
@@ -153,13 +203,19 @@ const Login = () => {
 
             if (res.data.success) {
 
-                localStorage.setItem("emptoken", res.data.jwttoken);
-                localStorage.setItem("empname", res.data.name);
-                localStorage.setItem("empemail", res.data.email);
-                localStorage.setItem("staffId", res.data.staffId);
-                localStorage.setItem("salonId", res.data.salonId);
-                message.success("Employee Login Success");
+                dispatch(
+                    loginSuccess({
+                        token: res.data.jwttoken,
 
+                        user: {
+                            name: res.data.name,
+                            email: res.data.email,
+                            role: "employee",
+                            staffId: res.data.staffId,
+                            salonId: res.data.salonId,
+                        },
+                    })
+                );
                 navigate("/employee");
                 return;
             }

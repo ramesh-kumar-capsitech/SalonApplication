@@ -167,6 +167,7 @@ const BookAppointment = () => {
             if (res.data.success) {
                 message.success("Booking Confirmed ");
                 setStep(4);
+
             }
 
         } catch (err: any) {
@@ -281,7 +282,8 @@ const BookAppointment = () => {
                                                 }
                                             }}
                                         >
-                                            <strong> {typeof service === "string" ? service : service.price}</strong>
+                                            <strong>{service.name}</strong> — ${service.price} (
+                                            {service.duration} min)
 
 
 

@@ -7,37 +7,53 @@ import { FileTextOutlined } from '@ant-design/icons';
 import { SettingOutlined } from '@ant-design/icons';
 import { LogoutOutlined } from '@ant-design/icons';
 import { message } from "antd";
-
+import { useAppDispatch } from "../redux/hooks";
+import { logout } from "../redux/authSlice";
+import { useAppSelector } from "../redux/hooks";
 const SideBarcustomer = () => {
+    const dispatch = useAppDispatch();
     const navigate = useNavigate()
     const [loggeduser, setloggeduser] = useState('')
     const [firstname, setfirstname] = useState('')
     const [name, setname] = useState('')
     const [email, setemail] = useState('')
+    const user = useAppSelector(
+        (state) => state.auth.user
+    );
     useEffect(() => {
-        const user = JSON.parse(localStorage.getItem("user") || "{}");
 
-        setloggeduser(user.name || "");
-        setemail(user.email || "");
+        if (user) {
 
-        const initials = user.name
-            ? user.name.split(" ").map((w: string) => w[0]).join("").toUpperCase()
-            : "";
+            setloggeduser(user.name || "");
+            setemail(user.email || "");
 
-        setfirstname(initials);
-    }, []);
+            const initials = user.name
+                ? user.name
+                    .split(" ")
+                    .map((w: string) => w[0])
+                    .join("")
+                    .toUpperCase()
+                : "";
+
+            setfirstname(initials);
+        }
+
+    }, [user]);
 
     const handleLogout = () => {
-        confirm("Are you sure you want to logout?")
 
-        localStorage.removeItem('token');
-        localStorage.removeItem('name');
-        localStorage.removeItem('email');
+        const confirmLogout = window.confirm(
+            "Are you sure you want to logout?"
+        );
 
-        navigate('/');
-        message.success("Logged out successfully")
+        if (!confirmLogout) return;
+
+        dispatch(logout());
+
+        message.success("Logged out successfully");
+
+        navigate("/");
     };
-
 
     return (
         <div>

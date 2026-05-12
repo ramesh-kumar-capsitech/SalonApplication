@@ -1,6 +1,8 @@
 import UserModal, { SalonModal, ApprovedSalon, RejectedSalon, DeactivateSalon, JobApplication, ApproveJobApplication, Rejectedjobapplication, Booking } from '../Models/User.js'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
+import mongoose from 'mongoose';
+
 export const signup = async (req, res) => {
     try {
         const { name, email, mobile, password } = req.body;
@@ -533,7 +535,7 @@ export const approvejobapplication = async (req, res) => {
         const loginEmail = `${username}${uniqueId}@trimtechemp.com`;
         const loginPassword = "Trim" + Math.floor(1000 + Math.random() * 9000);
 
-        // ✅ 1. Save in ApproveJobApplication
+
         const newapprovedjobapplication = await ApproveJobApplication.create({
             salonId: application.salonId,
             name: application.name,
@@ -564,7 +566,7 @@ export const approvejobapplication = async (req, res) => {
             }
         );
 
-        // ✅ 3. Delete from pending
+
         await JobApplication.findByIdAndDelete(id);
 
         res.status(200).json({
@@ -657,14 +659,14 @@ export const deactivateSalon = async (req, res) => {
             return res.status(404).json({ message: "Salon not found" });
         }
 
-        // Add into deactivate collection
+        
         const newDeactivate = new DeactivateSalon({
             salonname: salon.salonname,
             ownername: salon.ownername,
             email: salon.email,
             phone: salon.phone,
             city: salon.city,
-            staff: salon.staff,
+            staff:[],
             services: salon.services,
             salonaddress: salon.salonaddress,
             salondescription: salon.salondescription
@@ -672,7 +674,7 @@ export const deactivateSalon = async (req, res) => {
 
         await newDeactivate.save();
 
-        // Remove from approved
+   
         await ApprovedSalon.findByIdAndDelete(id);
 
         res.status(200).json({
@@ -680,9 +682,10 @@ export const deactivateSalon = async (req, res) => {
             status: "inactive"
         });
 
-    } catch (error) {
-        res.status(500).json({ message: "Error in deactivation" });
-    }
+    }catch (error) {
+    console.log("DEACTIVATE ERROR:", error); // 👈 ye add kar
+    res.status(500).json({ message: "Error in deactivation", error: error.message });
+}
 };
 export const activateSalon = async (req, res) => {
     try {
@@ -700,7 +703,7 @@ export const activateSalon = async (req, res) => {
             email: salon.email,
             phone: salon.phone,
             city: salon.city,
-            staff: salon.staff,
+            staff: [],
             services: salon.services,
             salonaddress: salon.salonaddress,
             salondescription: salon.salondescription
@@ -751,6 +754,24 @@ export const allusers = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Failed to fetch salon requests",
+            error: error.message
+        });
+    }
+}
+export const totalbookings = async (req, res) => {
+    try {
+        const salons = await Booking.find().sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            total: salons.length,
+            data: salons
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Failed to fetch bookings",
             error: error.message
         });
     }
@@ -873,32 +894,50 @@ export const services = async (req, res) => {
         res.status(500).json({ success: false });
     }
 };
+// export const staff = async (req, res) => {
+//     try {
+//         const { salonId } = req.params;
+
+//         const salon = await ApprovedSalon.findById(salonId);
+
+//         if (!salon) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "Salon not found"
+//             });
+//         }
+
+//         res.json({
+//             success: true,
+//             data: salon.staff || []
+//         });
+
+//     } catch (err) {
+//         console.log(err);
+//         res.status(500).json({ success: false });
+//     }
+// };
 export const staff = async (req, res) => {
     try {
         const { salonId } = req.params;
 
-        const salon = await ApprovedSalon.findById(salonId);
-
-        if (!salon) {
-            return res.status(404).json({
-                success: false,
-                message: "Salon not found"
-            });
-        }
+        const staff = await ApproveJobApplication.find({ salonId });
 
         res.json({
             success: true,
-            data: salon.staff || []
+            data: staff
         });
 
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ success: false });
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
     }
 };
 export const createBooking = async (req, res) => {
     try {
-        const {
+        let {
             salonId,
             userId,
             services,
@@ -911,7 +950,9 @@ export const createBooking = async (req, res) => {
             totalPrice,
             customerName
         } = req.body;
-
+        if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+            userId = new mongoose.Types.ObjectId();
+        }
 
         const existing = await Booking.findOne({
             staffId,
@@ -994,7 +1035,6 @@ export const salonbookings = async (req, res) => {
     }
 }
 
-import mongoose from "mongoose";
 
 export const getStaffBookings = async (req, res) => {
     try {
@@ -1062,3 +1102,398 @@ export const updateBookingStatus = async (req, res) => {
         });
     }
 };
+export const addServiceToSalon = async (req, res) => {
+    try {
+        const { salonId } = req.params;
+        const { serviceName, duration, price } = req.body;
+
+        if (!serviceName || !duration || !price) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+
+        const updatedSalon = await ApprovedSalon.findByIdAndUpdate(
+            salonId,
+            {
+                $push: {
+                    services: {
+                        name: serviceName,
+                        duration: Number(duration),
+                        price: Number(price)
+                    }
+                }
+            },
+            { new: true }
+        );
+
+        if (!updatedSalon) {
+            return res.status(404).json({
+                success: false,
+                message: "Salon not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Service added successfully",
+            data: updatedSalon.services
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+
+export const deleteServiceFromSalon = async (req, res) => {
+    try {
+        const { salonId, serviceId } = req.params;
+        const updatedSalon = await ApprovedSalon.findByIdAndUpdate(
+            salonId,
+            {
+                $pull: {
+                    services: {
+                        _id: serviceId
+                    }
+                }
+            },
+
+            { new: true }
+        );
+        if (!updatedSalon) {
+            return res.status(404).json({
+
+                success: false,
+                message: "Salon not found"
+            });
+
+        }
+        res.status(200).json({
+            success: true,
+
+            message: "Service deleted successfully",
+            data: updatedSalon.services
+        });
+
+
+    } catch (error) {
+
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+        });
+    }
+};
+export const editServiceFromSalon = async (req, res) => {
+    try {
+        const { salonId, serviceId } = req.params;
+        const { serviceName, duration, price } = req.body;
+        const salon = await ApprovedSalon.findById(salonId);
+        if (!salon) {
+            return res.status(404).json({
+                success: false,
+                message: "Salon not found"
+            });
+        }
+        const serviceIndex = salon.services.findIndex(s => s._id.toString() === serviceId);
+        if (serviceIndex === -1) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Service not found"
+            });
+        }
+        salon.services[serviceIndex].name = serviceName || salon.services[serviceIndex].name;
+        salon.services[serviceIndex].duration = duration ? Number(duration) : salon.services[serviceIndex].duration;
+        salon.services[serviceIndex].price = price ? Number(price) : salon.services[serviceIndex].price;
+        await salon.save();
+        res.status(200).json({
+            success: true,
+            message: "Service updated successfully",
+            data: salon.services
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: error.message
+
+        });
+    }
+};
+
+
+export const changeSalonPassword = async (req, res) => {
+    try {
+        const { salonId } = req.params;
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+
+       
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Passwords do not match"
+            });
+        }
+
+       
+        const regex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+        if (!regex.test(newPassword)) {
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Password must be strong"
+            });
+        }
+
+        
+        const salon = await ApprovedSalon.findById(salonId);
+
+        if (!salon) {
+            return res.status(404).json({
+                success: false,
+                message: "Salon not found"
+            });
+        }
+
+      
+        if (currentPassword !== salon.loginPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Current password is incorrect"
+            });
+        }
+
+        
+        salon.loginPassword = newPassword;
+
+        await salon.save();
+
+        res.json({
+            success: true,
+            message: "Password updated successfully"
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+export const changeSalonPasswordemp = async (req, res) => {
+    try {
+        const { employeeId } = req.params;
+        const { currentPassword, newPassword, confirmPassword } = req.body;
+
+       
+        if (!currentPassword || !newPassword || !confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "All fields are required"
+            });
+        }
+
+        if (newPassword !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Passwords do not match"
+            });
+        }
+
+       
+        const regex =
+            /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+        if (!regex.test(newPassword)) {
+            return res.status(400).json({
+                success: false,
+                message:
+                    "Password must be strong"
+            });
+        }
+
+        
+        const salon = await ApproveJobApplication.findById(employeeId);
+
+        if (!salon) {
+            return res.status(404).json({
+                success: false,
+                message: "Salon not found"
+            });
+        }
+
+      
+        if (currentPassword !== salon.loginPassword) {
+            return res.status(400).json({
+                success: false,
+                message: "Current password is incorrect"
+            });
+        }
+
+        
+        salon.loginPassword = newPassword;
+
+        await salon.save();
+
+        res.json({
+            success: true,
+            message: "Password updated successfully"
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+export const salonprofile = async (req, res) => {
+    try {
+        const { salonId } = req.params;
+        const salon = await ApprovedSalon.findById(salonId);
+
+        if (!salon) {   
+            return res.status(404).json({
+                success: false,
+                message: "Salon not found"
+            });
+        }
+        res.json({
+            success: true,
+            data: salon
+        });
+    }
+    catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false, 
+            message: "Server error"
+        });
+    }
+};
+export const salonprofileupdate = async (req, res) => {
+    try {
+        const { salonId } = req.params;
+        const { ownername,phone, email } = req.body;
+
+        const salon = await ApprovedSalon.findById(salonId);
+
+        if (!salon) {
+            return res.status(404).json({
+                success: false,
+                message: "Salon not found"
+            });
+        }
+
+       
+        salon.ownername = ownername;
+              salon.phone = phone;
+        salon.email = email;
+
+        await salon.save();
+
+        res.json({
+            success: true,
+            message: "Salon profile updated successfully"
+        });
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            success: false,
+            message: "Server error"
+        });
+    }
+};
+
+// export const changeSalonPassword = async (req, res) => {
+    
+//     try {
+//         const { salonId } = req.params;
+//         const { currentPassword, newPassword, confirmPassword } = req.body;
+
+
+//         if (!currentPassword || !newPassword || !confirmPassword) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "All fields are required"
+//             });
+//         }
+
+
+//         if (newPassword !== confirmPassword) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Passwords do not match"
+//             });
+//         }
+
+
+//         const regex =
+//             /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/;
+
+//         if (!regex.test(newPassword)) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message:
+//                     "Password must be strong (8+ chars, uppercase, lowercase, number, special char)"
+//             });
+//         }
+
+
+//         const salon = await ApprovedSalon.findById(salonId);
+
+//         if (!salon) {
+//             return res.status(404).json({
+//                 success: false,
+//                 message: "Salon not found"
+//             });
+//         }
+
+
+//         const isMatch = currentPassword === salon.loginPassword;
+//         if (!isMatch) {
+//             return res.status(400).json({
+//                 success: false,
+//                 message: "Current password is incorrect"
+//             });
+//         }
+
+
+//         const salt = await bcrypt.genSalt(10);
+//         const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+//         salon.loginPassword = hashedPassword;
+
+//         await salon.save();
+
+//         res.json({
+//             success: true,
+//             message: "Password updated successfully"
+//         });
+
+//     } catch (error) {
+//         console.log(error);
+//         res.status(500).json({
+//             success: false,
+//             message: "Server error"
+//         });
+//     }
+// };

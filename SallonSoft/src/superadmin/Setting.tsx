@@ -22,6 +22,9 @@ import {
 
 const Setting = () => {
     const [tab, settab] = useState<"profile" | "password">("profile")
+
+
+
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3   ">
@@ -60,7 +63,7 @@ const Setting = () => {
                 <div className='font-[outfit] m-6 mt-0'>
                     <Card className="rounded-2xl border font-[outfit]" bodyStyle={{ padding: 32 }}>
 
-                        {/* PROFILE PICTURE */}
+
                         <div className=" md:flex items-start grid gap-2 md:gap-6 mb-8  ">
                             <Avatar
                                 size={72}
@@ -89,7 +92,7 @@ const Setting = () => {
                             </div>
                         </div>
 
-                        {/* FORM */}
+
                         <Form
                             layout="vertical"
                             initialValues={{
@@ -132,7 +135,7 @@ const Setting = () => {
                                 />
                             </Form.Item>
 
-                            {/* ACTION BUTTONS */}
+
                             <div className=" grid md:flex gap-4 mt-6">
                                 <Button
                                     type="primary"
@@ -158,7 +161,7 @@ const Setting = () => {
                     className="rounded-2xl border font-[Outfit]"
                     bodyStyle={{ padding: 28 }}
                 >
-                    {/* HEADER */}
+
                     <div className="mb-6">
                         <h2 className="text-lg font-semibold">Change Password</h2>
                         <p className="text-gray-500 text-sm">
@@ -166,9 +169,9 @@ const Setting = () => {
                         </p>
                     </div>
 
-                    {/* FORM */}
+
                     <Form layout="vertical">
-                        {/* Current Password */}
+
                         <Form.Item
                             label="Current Password"
                             name="currentPassword"
@@ -181,7 +184,7 @@ const Setting = () => {
                             />
                         </Form.Item>
 
-                        {/* New Password */}
+
                         <Form.Item
                             label="New Password"
                             name="newPassword"
@@ -199,7 +202,7 @@ const Setting = () => {
                             />
                         </Form.Item>
 
-                        {/* Confirm Password */}
+
                         <Form.Item
                             label="Confirm New Password"
                             name="confirmPassword"
@@ -212,7 +215,7 @@ const Setting = () => {
                             />
                         </Form.Item>
 
-                        {/* PASSWORD RULES */}
+
                         <div className="bg-blue-50 rounded-xl p-4 mb-6">
                             <p className="font-medium text-sm mb-2">
                                 Password Requirements:
@@ -225,7 +228,7 @@ const Setting = () => {
                             </ul>
                         </div>
 
-                        {/* ACTION BUTTONS */}
+
                         <div className="grid md:flex gap-4">
                             <Button
                                 type="primary"

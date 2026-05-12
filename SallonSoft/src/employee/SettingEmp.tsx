@@ -1,4 +1,4 @@
-import { Segmented } from 'antd'
+import { message, Segmented } from 'antd'
 import React, { useState } from "react";
 
 
@@ -18,10 +18,41 @@ import {
     PhoneOutlined,
     UploadOutlined,
 } from "@ant-design/icons";
+import axios from 'axios';
 
 
 const SettingEmp = () => {
     const [tab, settab] = useState<"profile" | "password">("profile")
+    const [form] = Form.useForm();
+    const [loading, setLoading] = useState(false);
+
+    const handlePasswordChange = async (values: any) => {
+        setLoading(true);
+        try {
+            const employeeId = localStorage.getItem("staffId");
+
+            const { data } = await axios.put(
+                `http://localhost:3001/auth/employee/change-password/${employeeId}`,
+                values
+            );
+
+            if (data.success) {
+                message.success(" Password updated successfully");
+                form.resetFields();
+            } else {
+                message.error(data.message || "Something went wrong");
+            }
+
+        } catch (error: any) {
+            console.log(error);
+
+            message.error(
+                error?.response?.data?.message || "Something went wrong"
+            );
+        } finally {
+            setLoading(false);
+        }
+    };
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3   ">
@@ -166,11 +197,14 @@ const SettingEmp = () => {
                     </div>
 
                     {/* FORM */}
-                    <Form layout="vertical">
-                        {/* Current Password */}
+                    <Form form={form} layout="vertical" onFinish={handlePasswordChange}>
+
                         <Form.Item
                             label="Current Password"
                             name="currentPassword"
+                            rules={[
+                                { required: true, message: "Please enter current password" },
+                            ]}
                         >
                             <Input.Password
                                 prefix={<LockOutlined />}
@@ -184,6 +218,15 @@ const SettingEmp = () => {
                         <Form.Item
                             label="New Password"
                             name="newPassword"
+                            rules={[
+                                { required: true, message: "Please enter new password" },
+                                {
+                                    pattern:
+                                        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).{8,}$/,
+                                    message:
+                                        "Password must be strong (8 chars, A-Z, a-z, number, special char)",
+                                },
+                            ]}
                             extra={
                                 <span className="text-xs text-gray-400">
                                     Password must be at least 8 characters long
@@ -202,6 +245,19 @@ const SettingEmp = () => {
                         <Form.Item
                             label="Confirm New Password"
                             name="confirmPassword"
+                            dependencies={["newPassword"]}
+                            className='font-[Outfit]'
+                            rules={[
+                                { required: true, message: "Please confirm password" },
+                                ({ getFieldValue }) => ({
+                                    validator(_, value) {
+                                        if (!value || getFieldValue("newPassword") === value) {
+                                            return Promise.resolve();
+                                        }
+                                        return Promise.reject("Passwords do not match");
+                                    },
+                                }),
+                            ]}
                         >
                             <Input.Password
                                 prefix={<LockOutlined />}
@@ -229,6 +285,8 @@ const SettingEmp = () => {
                             <Button
                                 type="primary"
                                 className="rounded-full px-6"
+                                htmlType="submit"
+                                loading={loading}
                             >
                                 Update Password
                             </Button>

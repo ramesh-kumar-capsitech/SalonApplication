@@ -7,8 +7,8 @@ import {
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-const myshedule = () => {
-    const [bookings, setBookings] = useState<any[]>([])
+const TotalBooking = () => {
+    const [bookings, setBookings] = useState([])
     useEffect(() => {
         const salonId = localStorage.getItem("salonId");
         const staffId = localStorage.getItem("staffId");
@@ -30,19 +30,13 @@ const myshedule = () => {
             .catch(err => console.log(err));
 
     }, []);
-    // const today = new Date().toISOString().split("T")[0];
-    const todayBookings = bookings.filter((b) => {
-        const bookingDate = new Date(b.date).toDateString();
-        const todayDate = new Date().toDateString();
-
-        return bookingDate === todayDate;
-    });
-    const appointments = todayBookings.map((item, index) => ({
+    const appointments = bookings.map((item, index) => ({
         key: item._id || index,
         id: item._id?.slice(-6).toUpperCase(),
         customer: item.customerName,
-        service: item.services?.map((s: { name: string }) => s.name).join(", "),
+        service: item.services?.map(s => s.name).join(", "),
         time: item.time,
+        date: item.date,
         status: item.status,
     }));
     const completedCount = appointments.filter(
@@ -56,12 +50,8 @@ const myshedule = () => {
     const upcomingCount = appointments.filter(
         (a) => a.status === "Pending"
     ).length;
-    const todayDate = new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric",
-    });
-    const updateStatus = async (id: string, status: string) => {
+
+    const updateStatus = async (id, status) => {
         try {
             const res = await axios.put(
                 `http://localhost:3001/auth/update-booking/${id}`,
@@ -79,24 +69,31 @@ const myshedule = () => {
             console.log(err);
         }
     };
+    const formatDate = (d) => {
+        return new Date(d).toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        });
+    };
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3   ">
                 <div className='pt-3'>
                     <h1 className="text-lg leading-[0.9] m-0 font-semibold text-gray-900">
-                        Today My Schedule
+                        Total Bookings
                     </h1>
                     <p className="text-gray-500 text-sm mt-0">
-                        {todayDate}
+                        easy to manage your appointments and provide excellent service to your customers.
                     </p>
                 </div>
-                <button className="flex justify-between border gap-2  py-2 px-3 rounded-full font-sm  ">
+                {/* <button className="flex justify-between border gap-2  py-2 px-3 rounded-full font-sm  ">
                     <p className='p-0 m-0'>Available</p>
                     <Switch
                     // checked={service.active}
                     // onChange={() => toggleService(service.id)}
                     />
-                </button>
+                </button> */}
 
 
             </div>
@@ -109,7 +106,7 @@ const myshedule = () => {
 
 
                     <div className="">
-                        <p className="text-gray-500 m-0">Completed Today</p>
+                        <p className="text-gray-500 m-0">Completed booking</p>
                         <h2 className="text-2xl font-semibold text-blue-700 m-0  ">
                             {completedCount}
                         </h2>
@@ -151,7 +148,7 @@ const myshedule = () => {
 
                     <div className="mb-6">
                         <h2 className="text-lg font-semibold">
-                            Today's Appointments
+                            Total Appointments
                         </h2>
                         {/* <p className="text-gray-500 text-sm">
                             6 appointments scheduled
@@ -171,8 +168,17 @@ const myshedule = () => {
                                 <div className="flex items-start justify-between">
 
                                     <div className="flex gap-4">
-                                        <div className="text-sm text-gray-500 w-20">
-                                            {appt.time}
+                                        <div className="text-sm text-gray-500 w-20  ">
+                                            {appt.time && (
+                                                <p className="text-xs text-gray-500 m-0">
+                                                    {appt.time}
+                                                </p>
+                                            )}
+                                            {appt.date && (
+                                                <p className="text-sm text-gray-500">
+                                                    {formatDate(appt.date)}
+                                                </p>
+                                            )}
                                         </div>
 
                                         <Avatar className="bg-blue-100 text-blue-600">
@@ -287,4 +293,4 @@ const myshedule = () => {
     )
 }
 
-export default myshedule
+export default TotalBooking

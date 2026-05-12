@@ -5,29 +5,58 @@ import { HomeOutlined, TeamOutlined, UnorderedListOutlined } from '@ant-design/i
 import { message } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import { LogoutOutlined } from '@ant-design/icons';
-
+import { useAppDispatch } from "../redux/hooks";
+import { logout } from "../redux/authSlice";
+import { useAppSelector } from "../redux/hooks";
 const Sidebar: React.FC = () => {
+    const dispatch = useAppDispatch();
     const [loggeduser, setloggeduser] = useState('')
     const [firstname, setfirstname] = useState('')
     const [email, setemail] = useState('')
     const navigate = useNavigate()
+    const user = useAppSelector(
+        (state) => state.auth.user
+    );
     useEffect(() => {
-        setloggeduser(localStorage.getItem('salonname') ?? '');
-        setfirstname(localStorage.getItem('salonname')?.split(' ').map(word => word[0])?.join('').toUpperCase() ?? '');
 
-        setemail(localStorage.getItem('salonemail') ?? '')
-    }, []);
+        if (user) {
+
+            setloggeduser(
+                user.salonownername || ""
+            );
+
+            setemail(user.email || "");
+
+            const initials =
+                user.salonownername
+                    ? user.salonownername
+                        .split(" ")
+                        .map((w: string) => w[0])
+                        .join("")
+                        .toUpperCase()
+                    : "";
+
+            setfirstname(initials);
+        }
+
+    }, [user]);
 
     const handleLogout = () => {
-        confirm("Are you sure you want to logout?")
 
-        localStorage.removeItem('salontoken');
-        localStorage.removeItem('salonname');
-        localStorage.removeItem('salonemail');
+        const confirmLogout = window.confirm(
+            "Are you sure you want to logout?"
+        );
 
-        navigate('/');
-        message.success("Logged out successfully")
+        if (!confirmLogout) return;
+
+        dispatch(logout());
+
+        message.success("Logged out successfully");
+
+        navigate("/");
     };
+    console.log(user);
+    console.log(user?.salonownername);
     return (
         <aside className="fixed h-screen font-inter w-[20%] bg-gradient-to-b from-blue-700 to-blue-600 text-white flex flex-col justify-between px-5 py-6">
 

@@ -1,4 +1,4 @@
-import { Segmented } from 'antd'
+import { Input, Modal, Segmented, Select } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { Card, Avatar, Tag, Button, Dropdown, message } from "antd";
 import {
@@ -94,10 +94,150 @@ const StaffSalon = () => {
             prev.filter((req: any) => req._id !== id)
         );
     };
+    const [isStaffModalOpen, setIsStaffModalOpen] = useState(false);
+
+    const [staffForm, setStaffForm] = useState({
+        name: "",
+        role: "",
+        email: "",
+        phone: "",
+        skills: [],
+        experience: "",
+        availability: ""
+    });
+    const handleAddStaff = async () => {
+        try {
+            const salonId = localStorage.getItem("salonId");
+
+            const res = await axios.post(
+                "http://localhost:3001/auth/apply-job",
+                {
+                    ...staffForm,
+                    salonId
+                }
+            );
+
+            if (res.data.success) {
+                message.success("Request sent successfully");
+
+                setIsStaffModalOpen(false);
+
+                setStaffForm({
+                    name: "",
+                    role: null,
+                    email: "",
+                    phone: "",
+                    skills: [],
+                    experience: "",
+                    availability: null
+                });
+            }
+
+        } catch (err) {
+            console.log(err);
+            message.error("Failed to send request");
+        }
+    };
     return (
 
         <div>
+            <Modal
+                title="Add Staff Member"
+                open={isStaffModalOpen}
+                onCancel={() => {
+                    setIsStaffModalOpen(false);
+                    setStaffForm({
+                        name: "",
+                        role: "",
+                        email: "",
+                        phone: "",
+                        skills: [],
+                        experience: "",
+                        availability: ""
+                    });
+                }}
+                onOk={handleAddStaff}
+            >
+                <Input
+                    placeholder="Full Name"
+                    className="mb-3"
+                    value={staffForm.name}
+                    onChange={(e) =>
+                        setStaffForm({ ...staffForm, name: e.target.value })
+                    }
+                />
 
+                <Select
+                    placeholder="Select Role"
+                    className="w-full mb-3"
+                    value={staffForm.role}
+                    onChange={(value) =>
+                        setStaffForm({ ...staffForm, role: value })
+                    }
+                    options={[
+                        { value: "Senior Stylist", label: "Senior Stylist" },
+                        { value: "Hair Stylist", label: "Hair Stylist" },
+                        { value: "Barber", label: "Barber" }
+                    ]}
+                />
+
+                <Input
+                    placeholder="Email"
+                    className="mb-3"
+                    value={staffForm.email}
+                    onChange={(e) =>
+                        setStaffForm({ ...staffForm, email: e.target.value })
+                    }
+                />
+
+                <Input
+                    placeholder="Phone"
+                    className="mb-3"
+                    value={staffForm.phone}
+                    onChange={(e) =>
+                        setStaffForm({ ...staffForm, phone: e.target.value })
+                    }
+                />
+
+                <Select
+                    mode="multiple"
+                    placeholder="Skills"
+                    className="w-full mb-3"
+                    value={staffForm.skills}
+                    onChange={(value) =>
+                        setStaffForm({ ...staffForm, skills: value })
+                    }
+                    options={[
+                        { value: "Haircut", label: "Haircut" },
+                        { value: "Styling", label: "Styling" },
+                        { value: "Coloring", label: "Coloring" }
+                    ]}
+                />
+
+                <Input
+                    // type="number"
+                    placeholder="Experience (years)"
+                    className="mb-3"
+                    value={staffForm.experience}
+                    onChange={(e) =>
+                        setStaffForm({ ...staffForm, experience: e.target.value })
+                    }
+                />
+
+                <Select
+                    placeholder="Availability"
+                    className="w-full"
+                    value={staffForm.availability}
+                    onChange={(value) =>
+                        setStaffForm({ ...staffForm, availability: value })
+                    }
+                    options={[
+                        { value: "Available", label: "Available" },
+                        { value: "Part Time", label: "Part Time" },
+                        { value: "Full Time", label: "Full Time" }
+                    ]}
+                />
+            </Modal>
             <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3   ">
                 <div className='pt-3'>
                     <h1 className="text-lg leading-[0.8] m-0 font-semibold text-gray-900">
@@ -107,7 +247,8 @@ const StaffSalon = () => {
                         Manage staff and new request
                     </p>
                 </div>
-                <button className="bg-blue-600 text-white px-5 py-2.5 rounded-full font-sm hover:bg-blue-700 transition">
+                <button className="bg-blue-600 text-white px-5 py-2.5 rounded-full font-sm hover:bg-blue-700 transition" onClick={() => setIsStaffModalOpen(true)}
+                >
                     Add Staff Member
                 </button>
 
@@ -124,7 +265,7 @@ const StaffSalon = () => {
                     <div className="">
                         <p className="text-gray-500 m-0">Total Staff</p>
                         <h2 className="text-2xl font-semibold text-blue-700 m-0  ">
-                            100
+                            {approvereq.length}
                         </h2>
                     </div>
 
@@ -138,7 +279,7 @@ const StaffSalon = () => {
                     <div className="">
                         <p className="text-gray-500 m-0">Active Today</p>
                         <h2 className="text-2xl font-semibold text-green-500 m-0  ">
-                            10
+                            {approvereq.length}
                         </h2>
                     </div>
 
@@ -150,7 +291,7 @@ const StaffSalon = () => {
                     <div className="">
                         <p className="text-gray-500 m-0">Pending Request</p>
                         <h2 className="text-2xl font-semibold text-orange-500 m-0  ">
-                            1
+                            {Requests.length}
                         </h2>
                     </div>
 

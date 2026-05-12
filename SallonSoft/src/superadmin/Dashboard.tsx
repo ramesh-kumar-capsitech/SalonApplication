@@ -127,14 +127,6 @@ const Dashboard = () => {
     const [allApproved, setAllApproved] = useState([]);
     const [deactive, setDeactive] = useState([]);
 
-    const tableData = approvedsalons.map((salon: any, index: number) => ({
-        key: index,
-        name: salon.salonname,
-        city: salon.city,
-        bookings: 0,
-        revenue: "$0",
-        status: "Active"
-    }));
 
     useEffect(() => {
         axios.get("http://localhost:3001/auth/approved-salons").then(res => {
@@ -225,6 +217,45 @@ const Dashboard = () => {
 
         })
     }, [])
+    const [bookings, setBookings] = useState([]);
+    useEffect(() => {
+        axios.get("http://localhost:3001/auth/totalbookings").then(res => {
+            setBookings(res.data.data);
+            console.log(res.data.data)
+        }).catch(err => {
+            console.log(err)
+        })
+    }, [])
+
+
+
+    const totalrevenue = bookings
+        .filter((booking) => booking.status === "Completed")
+        .reduce((total, booking) => total + booking.totalPrice, 0);
+    const tableData = approvedsalons.map((salon, index) => {
+
+
+        const salonBookings = bookings.filter(
+            (b) => b.salonId === salon._id
+        );
+
+
+        const totalBookings = salonBookings.length;
+
+
+        const revenue = salonBookings
+            .filter((b) => b.status === "Completed")
+            .reduce((sum, b) => sum + Number(b.totalPrice || 0), 0);
+
+        return {
+            key: index,
+            name: salon.salonname,
+            city: salon.city,
+            bookings: totalBookings,
+            revenue: `$${revenue}`,
+            status: "Active"
+        };
+    });
     return (
 
 
@@ -318,7 +349,7 @@ const Dashboard = () => {
                     <div className="mt-6">
                         <p className="text-gray-500">Total Bookings</p>
                         <h2 className="text-3xl font-semibold text-gray-900 mt-2">
-                            0
+                            {bookings.length}
                         </h2>
                     </div>
 
@@ -342,7 +373,7 @@ const Dashboard = () => {
                     <div className="mt-6">
                         <p className="text-gray-500">Revenue</p>
                         <h2 className="text-3xl font-semibold text-gray-900 mt-2">
-                            $0
+                            ${totalrevenue.toFixed(2)}
                         </h2>
                     </div>
 

@@ -59,3 +59,19 @@ span {
     font-family: "Outfit",
         sans-serif;
 }
+
+.ant-select {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.ant-select-selector {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.ant-form-item-explain-error {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.ant-form-item-extra {
+    font-family: 'Outfit', sans-serif !important;
+}

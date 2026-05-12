@@ -6,10 +6,10 @@ import { Outlet } from 'react-router-dom'
 const layout = () => {
     return (
         <div className='w-full flex  '>
-            <div className='md:w-[20%] '>
+            <div className='w-[20%] '>
                 <Sidebar />
             </div>
-            <div className=' w-full md:w-[80%]  '>
+            <div className='w-[80%]  '>
                 <Outlet />
             </div>
 

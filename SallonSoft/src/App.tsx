@@ -29,6 +29,8 @@ import SalonStatus from './pages/salonstatus'
 import Saloncheck from './pages/Saloncheck'
 import ApplicationCheck from './pages/ApplicationCheck'
 import ApplicationStatus from './pages/ApplicationStatus'
+import TotalBooking from './employee/TotalBooking'
+import ProtectedRoutes from './ProtectedRoutes'
 function App() {
   return (
     <Routes>
@@ -40,7 +42,9 @@ function App() {
       <Route path="/applicationcheckform" element={<ApplicationCheck />} />
       <Route path="/salonstatuscheck" element={<Saloncheck />} />
       <Route path="/applicationcheck" element={<ApplicationStatus />} />
-      <Route path="/superadmin" element={<Layout />}>
+      <Route path="/superadmin" element={<ProtectedRoutes>
+        <Layout />
+      </ProtectedRoutes>}>
 
         <Route index element={<Dashboard />} />
         <Route path="dashboard" element={<Dashboard />} />
@@ -49,7 +53,11 @@ function App() {
         <Route path="request" element={<Requests />} />
         <Route path="setting" element={<Setting />} />
       </Route>
-      <Route path='/salonadmin' element={<LayoutSalon />} >
+      <Route path='/salonadmin' element={
+        <ProtectedRoutes>
+          <LayoutSalon />
+        </ProtectedRoutes>
+      }>
         <Route index element={<DashboardSalon />} />
         <Route index path="dashboardsalon" element={<DashboardSalon />} />
         <Route path='allbooking' element={<AllBooking />} />
@@ -57,14 +65,23 @@ function App() {
         <Route path='settingsalon' element={<SettingSalon />} />
         <Route path='staffsalon' element={<StaffSalon />} />
       </Route>
-      <Route path='/employee' element={<LayoutEmp />}>
+      <Route path='/employee' element={
+        <ProtectedRoutes>
+          <LayoutEmp />
+        </ProtectedRoutes>
+      }>
         <Route index element={<MySchedule />} />
 
         <Route path='myshedule' element={<MySchedule />} />
+        <Route path='totalbooking' element={<TotalBooking />} />
         <Route path='settingemp' element={<SettingEmp />} />
 
       </Route>
-      <Route path='/customer' element={<LayoutCustomer />}>
+      <Route path='/customer' element={
+        <ProtectedRoutes>
+          <LayoutCustomer />
+        </ProtectedRoutes>
+      }>
         <Route index element={<BookAppointment />} />
 
         <Route path='bookappointment' element={<BookAppointment />} />

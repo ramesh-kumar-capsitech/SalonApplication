@@ -203,7 +203,7 @@ const deactivateSalon = new Schema({
     email: String,
     phone: String,
     city: String,
-    staff: String,
+    staff: [],
     services: [
         {
             name: String,
@@ -381,6 +381,40 @@ const bookingSchema = new mongoose.Schema({
 
 }, { timestamps: true });
 
+// const contactSchema = new mongoose.Schema(
+//     {
+//         fullName: {
+//             type: String,
+//             required: [true, "Full name is required"],
+//             trim: true,
+//         },
+
+//         email: {
+//             type: String,
+//             required: [true, "Email is required"],
+//             trim: true,
+//             lowercase: true,
+//             match: [/^\S+@\S+\.\S+$/, "Please enter a valid email"],
+//         },
+
+//         subject: {
+//             type: String,
+//             required: [true, "Subject is required"],
+//             trim: true,
+//         },
+
+//         message: {
+//             type: String,
+//             required: [true, "Message is required"],
+//             trim: true,
+//         },
+//     },
+//     {
+//         timestamps: true,
+//     }
+// );
+
+// const Contact = mongoose.model("Contact", contactSchema);
 
 export default UserModal;
 const Booking = mongoose.model("bookings", bookingSchema);
