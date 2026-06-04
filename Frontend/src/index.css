@@ -1,0 +1,87 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+    font-family: "Outfit", sans-serif;
+}
+
+.ant-table-cell {
+    font-family: "Outfit", sans-serif;
+}
+
+.ant-tag {
+    font-family: "Outfit", sans-serif;
+}
+
+h1,
+h2,
+p,
+input,
+span {
+    font-family: "Outfit", sans-serif;
+}
+
+
+
+.ant-input {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-form {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-steps {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-input {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-label {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-card {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-InputNumber {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-select {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.ant-select-selector {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.ant-form-item-explain-error {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.ant-form-item-extra {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.ant-input,
+.ant-input::placeholder,
+.ant-select-selector,
+.ant-select-selection-placeholder,
+.ant-select-item,
+.ant-btn,
+.ant-drawer-title {
+    font-family: "Outfit", sans-serif !important;
+}
