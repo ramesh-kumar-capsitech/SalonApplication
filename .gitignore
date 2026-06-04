@@ -1,0 +1,13 @@
+# .NET
+bin/
+obj/
+.vs/
+
+# React/Vite
+node_modules/
+dist/
+build/
+
+# Environment files
+.env
+.env.local
