@@ -1,28 +1,36 @@
-﻿using MongoDB.Bson;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 
-public class RegisterUsers
+public class Admin
 {
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
-    public string? Name { get; set; }
+
+    [BsonElement("email")]
     public string? Email { get; set; }
-    public string? MobileNumber { get; set; }
+
+    [BsonElement("password")]
     public string? Password { get; set; }
+    [BsonElement("name")]
+    public string? Name { get; set; }
+    [BsonElement("mobileNumber")]
+    public string? MobileNumber { get; set; }
+    [BsonElement("profileImage")]
     public string? ProfileImage { get; set; }
 
-
-
+    [BsonElement("role")]
+    public string? Role { get; set; }
 }
-public class CustomerProfileUpdate
+public class AdminProfileUpdate
 {
     public string? Name { get; set; }
+
     public string? Email { get; set; }
     public string? MobileNumber { get; set; }
     public string? ProfileImage { get; set; }
 }
-public class ChangecustomerPasswordModel
+public class ChangeAdminPasswordModel
 {
     public string CurrentPassword { get; set; }
 

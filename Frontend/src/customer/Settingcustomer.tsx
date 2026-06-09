@@ -20,7 +20,7 @@ import {
 
 import axios from "axios";
 
-const SettingSalon = () => {
+const Settingcustomer = () => {
 
     const [form] = Form.useForm();
     const [profileForm] = Form.useForm();
@@ -58,10 +58,10 @@ const SettingSalon = () => {
 
                 const user = JSON.parse(authData.user);
 
-                const salonId = user.salonId;
+                const salonId = user._id;
 
                 const res = await axios.get(
-                    `https://localhost:7074/api/auth/getsalonprofile/${salonId}`
+                    `https://localhost:7074/api/auth/getcustomerprofile/${salonId}`
                 );
                 console.log(res.data);
 
@@ -70,15 +70,15 @@ const SettingSalon = () => {
                 console.log(data);
 
                 profileForm.setFieldsValue({
-                    fullName: data.ownerName,
+                    fullName: data.name,
                     email: data.email,
-                    phone: data.phone,
+                    phone: data.mobileNumber,
                 });
 
                 setProfileImage(data.profileImage || "");
 
                 setInitials(
-                    data.ownerName
+                    data.name
                         ?.split(" ")
                         ?.map((word) => word[0])
                         ?.join("")
@@ -157,25 +157,25 @@ const SettingSalon = () => {
                         authData.user
                     );
 
-                const salonId =
-                    user.salonId;
+                const userId =
+                    user._id;
 
                 const res =
                     await axios.put(
 
-                        `https://localhost:7074/api/auth/updatesalonprofile/${salonId}`,
+                        `https://localhost:7074/api/auth/updatecustomerprofile/${userId}`,
 
                         {
-                            OwnerName:
+                            Name:
                                 values.fullName,
 
-                            email:
+                            Email:
                                 values.email,
 
-                            phone:
+                            MobileNumber:
                                 values.phone,
 
-                            profileImage:
+                            ProfileImage:
                                 profileImage
                         }
                     );
@@ -223,13 +223,13 @@ const SettingSalon = () => {
                         authData.user
                     );
 
-                const salonId =
-                    user.salonId;
+                const userId =
+                    user._id;
 
                 const res =
                     await axios.put(
 
-                        `https://localhost:7074/api/auth/changesalonpassword/${salonId}`,
+                        `https://localhost:7074/api/auth/changecustomerpassword/${userId}`,
 
                         values
                     );
@@ -424,7 +424,7 @@ const SettingSalon = () => {
 
                                     name="fullName"
 
-                                    label="Full Name"
+                                    label={<span className="font-[Outfit] ">Full Name</span>}
 
                                     rules={[
 
@@ -453,7 +453,7 @@ const SettingSalon = () => {
 
                                     name="email"
 
-                                    label="Email Address"
+                                    label={<span className="font-[Outfit] ">Email </span>}
 
                                     rules={[
 
@@ -482,7 +482,7 @@ const SettingSalon = () => {
 
                                     name="phone"
 
-                                    label="Phone Number"
+                                    label={<span className="font-[Outfit] ">Phone Number</span>}
 
                                     rules={[
 
@@ -573,8 +573,7 @@ const SettingSalon = () => {
 
                                 <Form.Item
 
-                                    label="Current Password"
-
+                                    label={<span className="font-[Outfit] ">Current Password</span>}
                                     name="currentPassword"
 
                                     rules={[
@@ -595,7 +594,7 @@ const SettingSalon = () => {
 
                                 <Form.Item
 
-                                    label="New Password"
+                                    label={<span className="font-[Outfit] ">New Password</span>}
 
                                     name="newPassword"
 
@@ -617,7 +616,7 @@ const SettingSalon = () => {
 
                                 <Form.Item
 
-                                    label="Confirm Password"
+                                    label={<span className="font-[Outfit] ">Confirm Password</span>}
 
                                     name="confirmPassword"
 
@@ -688,4 +687,4 @@ const SettingSalon = () => {
     );
 };
 
-export default SettingSalon;
+export default Settingcustomer;

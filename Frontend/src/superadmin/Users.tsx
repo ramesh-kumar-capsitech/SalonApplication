@@ -35,7 +35,7 @@ const Users = () => {
     const [deactive, setDeactive] = React.useState([]);
     const [users, setusers] = React.useState([]);
     const [allUsers, setAllUsers] = useState([]);
-    const [username, setusername] = React.useState([]);
+
     useEffect(() => {
 
         axios
@@ -93,7 +93,7 @@ const Users = () => {
     useEffect(() => {
 
         axios
-            .get("https://localhost:7074/api/auth/getallusers")
+            .get("https://localhost:7074/api/auth/customerbookingstats")
             .then((res) => {
 
                 console.log(res.data);
@@ -120,30 +120,7 @@ const Users = () => {
             });
 
     }, []);
-    // const handleSearch = (value: string) => {
 
-    //     const search = value.toLowerCase();
-
-    //     if (!search) {
-
-    //         setapprovedsalons(allApproved);
-    //         setDeactive(allDeactivated);
-    //         return;
-    //     }
-
-    //     const filterLogic = (salon: any) =>
-    //         salon.salonname?.toLowerCase().includes(search) ||
-    //         salon.ownername?.toLowerCase().includes(search) ||
-    //         salon.salonaddress?.toLowerCase().includes(search) ||
-    //         salon.email?.toLowerCase().includes(search) ||
-    //         salon.phone?.includes(search);
-
-    //     const filteredApproved = allApproved.filter(filterLogic);
-    //     const filteredDeactivated = allDeactivated.filter(filterLogic);
-
-    //     setapprovedsalons(filteredApproved);
-    //     setDeactive(filteredDeactivated);
-    // };
     const handleSearch = (value: string) => {
 
         const search = value.toLowerCase();
@@ -339,8 +316,14 @@ const Users = () => {
                                     />
                                     <InfoRow
                                         icon={<CalendarOutlined />}
-                                        text={`Joined: ${new Date(salon.approvedAt).toLocaleDateString()
-                                            }`}
+                                        text={`Joined: ${new Date(salon.createdAt).toLocaleDateString(
+                                            "en-GB",
+                                            {
+                                                day: "2-digit",
+                                                month: "long",
+                                                year: "numeric",
+                                            }
+                                        )}`}
                                     />
                                 </div>
 
@@ -391,8 +374,14 @@ const Users = () => {
                                     />
                                     <InfoRow
                                         icon={<CalendarOutlined />}
-                                        text={`Joined: ${new Date(salon.approvedAt).toLocaleDateString()
-                                            }`}
+                                        text={`Joined: ${new Date(salon.createdAt).toLocaleDateString(
+                                            "en-GB",
+                                            {
+                                                day: "2-digit",
+                                                month: "long",
+                                                year: "numeric",
+                                            }
+                                        )}`}
                                     />
                                 </div>
 
@@ -423,6 +412,7 @@ const Users = () => {
                                 <div className="flex items-start gap-4">
                                     <Avatar
                                         size={56}
+                                        src={user.profileImage || undefined}
                                         className="bg-green-100 text-green-600 font-semibold"
                                     >
                                         {user.initials}
@@ -454,14 +444,14 @@ const Users = () => {
 
                                 <Divider className="my-5" />
 
-                                {/* STATS */}
+
                                 <div className="flex justify-between">
                                     <div>
                                         <p className="text-gray-500 text-sm m-0">
                                             Total Bookings
                                         </p>
                                         <h3 className="text-xl font-[outfit] font-semibold text-blue-600 m-0">
-                                            0
+                                            {user.totalBookings}
                                         </h3>
                                     </div>
 
@@ -470,7 +460,18 @@ const Users = () => {
                                             Last Booking
                                         </p>
                                         <h3 className="font-medium font-[outfit] m-0">
-                                            ~
+                                            {
+                                                user.lastBooking
+                                                    ? new Date(user.lastBooking).toLocaleDateString(
+                                                        "en-GB",
+                                                        {
+                                                            day: "2-digit",
+                                                            month: "long",
+                                                            year: "numeric",
+                                                        }
+                                                    )
+                                                    : "~"
+                                            }
                                         </h3>
                                     </div>
                                 </div>

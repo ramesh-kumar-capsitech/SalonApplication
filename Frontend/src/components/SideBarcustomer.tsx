@@ -17,6 +17,7 @@ const SideBarcustomer = () => {
     const [firstname, setfirstname] = useState('')
     const [name, setname] = useState('')
     const [email, setemail] = useState('')
+    const [profileImage, setProfileImage] = useState("");
     const user = useAppSelector(
         (state) => state.auth.user
     );
@@ -26,7 +27,7 @@ const SideBarcustomer = () => {
 
             setloggeduser(user.name || "");
             setemail(user.email || "");
-
+            setProfileImage(user.profileImage || "");
             const initials = user.name
                 ? user.name
                     .split(" ")
@@ -117,7 +118,13 @@ const SideBarcustomer = () => {
                                     <p className="font-semibold m-0 ">Privacy</p>
                                 </li>
                             </NavLink>
+                            <NavLink to='/customer/settingcustomer'>
+                                <li className="flex gap-[7px] justify-start   hover:bg-white/20 rounded-lg px-3 py-2 ">
+                                    <SettingOutlined />
 
+                                    <p className="font-semibold m-0 ">Setting</p>
+                                </li>
+                            </NavLink>
                         </ul>
                     </nav>
                 </div>
@@ -127,7 +134,22 @@ const SideBarcustomer = () => {
 
                     <div className="flex items-center gap-3 bg-white/10 rounded-xl p-3">
                         <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-semibold">
-                            {firstname}
+                            {
+                                profileImage ? (
+
+                                    <img
+                                        src={profileImage}
+                                        alt="profile"
+                                        className="w-10 h-10 rounded-full object-cover"
+                                    />
+
+                                ) : (
+
+                                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-semibold">
+                                        {firstname}
+                                    </div>
+                                )
+                            }
                         </div>
                         <div>
                             <p className="font-medium m-0">{loggeduser}</p>

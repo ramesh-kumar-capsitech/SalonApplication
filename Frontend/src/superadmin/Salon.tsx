@@ -22,7 +22,7 @@ const StatBox = ({ icon, value, label, bg, color }: any) => (
 
 const Salon = () => {
     const [approvedsalons, setapprovedsalons] = React.useState([]);
-    const [Approved, setApproved] = React.useState([]);
+
     const [deactive, setDeactive] = React.useState([]);
 
 

@@ -170,4 +170,42 @@ GetEmployeeBookings(
 
         return "Booking Created";
     }
+    public List<object> GetCustomerBookingStats()
+    {
+        var users =
+            new MongoClient("mongodb://localhost:27017")
+            .GetDatabase("authdb")
+            .GetCollection<RegisterUsers>("users")
+            .Find(_ => true)
+            .ToList();
+
+        var result =
+            users.Select(user =>
+            {
+                var bookings =
+                    _bookings.Find(x =>
+                        x.UserId == user.Id
+                    ).ToList();
+
+                return new
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    MobileNumber = user.MobileNumber,
+                    ProfileImage = user.ProfileImage,
+
+                    TotalBookings = bookings.Count,
+
+                    LastBooking =
+                        bookings
+                        .OrderByDescending(x => x.CreatedAt)
+                        .FirstOrDefault()
+                        ?.CreatedAt
+                };
+            })
+            .ToList<object>();
+
+        return result;
+    }
 }

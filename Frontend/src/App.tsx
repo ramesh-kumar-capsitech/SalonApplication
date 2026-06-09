@@ -11,7 +11,7 @@ import Layout from './superadmin/Layout'
 import LayoutSalon from './salonadmin/LayoutSalon'
 import DashboardSalon from './salonadmin/DashboardSalon'
 import AllBooking from './salonadmin/AllBooking'
-import SettingSalon from './salonadmin/SettingSalon'
+import SettingSalon from './customer/Settingcustomer'
 import StaffSalon from './salonadmin/StaffSalon'
 import LayoutEmp from './employee/LayoutEmp'
 import MySchedule from './employee/MySchedule'
@@ -33,6 +33,8 @@ import TotalBooking from './employee/TotalBooking'
 import ProtectedRoutes from './ProtectedRoutes'
 import Gallery from './salonadmin/Gallery'
 import SalonDetails from './superadmin/SalonDetails'
+import Settingcustomer from './customer/Settingcustomer'
+import SalonDetailscustomer from './customer/SalonDetailscustomer'
 function App() {
   return (
     <Routes>
@@ -95,8 +97,8 @@ function App() {
         <Route path='contact' element={<Contact />} />
         <Route path='terms' element={<Terms />} />
         <Route path='privacy' element={<Privacy />} />
-
-
+        <Route path="salon-details/:id" element={<SalonDetailscustomer />} />
+        <Route path='settingcustomer' element={<Settingcustomer />} />
 
       </Route>
     </Routes >

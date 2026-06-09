@@ -15,7 +15,7 @@ import { useEffect, useState } from "react";
 
 const { Title, Text } = Typography;
 
-function SalonDetails() {
+function SalonDetailscustomer() {
     const { id } = useParams();
 
     const [data, setData] =
@@ -149,18 +149,9 @@ function SalonDetails() {
                             title: "Name",
                             dataIndex: "fullName",
                         },
-
                         {
                             title: "Role",
                             dataIndex: "role",
-                        },
-                        {
-                            title: "Email",
-                            dataIndex: "email",
-                        },
-                        {
-                            title: "Status",
-                            dataIndex: "status",
                         },
 
                     ]}
@@ -182,48 +173,21 @@ function SalonDetails() {
                             dataIndex: "serviceName",
                         },
                         {
-                            title: "Time(mins)",
+                            title: "Time",
                             dataIndex: "duration",
                             key: "duration",
-                            render: (duration) => duration ? `${duration} min` : "-",
+                            render: (duration: number) => `${duration} mins`,
                         },
                         {
                             title: "Price",
                             dataIndex: "price",
                             key: "price",
-                            render: (price) => price ? `₹${price}` : "-",
+                            render: (price: number) => `₹${price.toFixed(2)}`,
                         },
                     ]}
                 />
 
                 <Divider />
-                <Title level={4} className="font-[Outfit]">
-                    Bookings Of This Salon
-                </Title>
-
-                <Table
-                    pagination={false}
-                    dataSource={data?.bookings || []}
-                    columns={[
-                        {
-                            title: "Customer Name",
-                            dataIndex: "customerName",
-                        },
-                        {
-                            title: "Date",
-                            dataIndex: "date",
-                        },
-                        {
-                            title: "Time",
-                            dataIndex: "time",
-                        },
-                        {
-                            title: "Status",
-                            dataIndex: "status",
-                        },
-                    ]}
-                />
-
 
 
             </Card>
@@ -231,4 +195,4 @@ function SalonDetails() {
     );
 }
 
-export default SalonDetails;
+export default SalonDetailscustomer;

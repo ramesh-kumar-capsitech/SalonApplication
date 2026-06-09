@@ -152,5 +152,13 @@ GetEmployeeBookings(
             message = result
         });
     }
+    [HttpGet("customerbookingstats")]
+    public IActionResult GetCustomerBookingStats()
+    {
+        var result =
+            _bookingService
+            .GetCustomerBookingStats();
 
+        return Ok(result);
+    }
 }

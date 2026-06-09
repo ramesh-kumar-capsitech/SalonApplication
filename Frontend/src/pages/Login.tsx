@@ -84,39 +84,45 @@ const Login = () => {
 
         if (!email || !password) {
             setisError(true);
-            setmsg("All fields are required");
+            // setmsg("All fields are required");
+            message.error("All fields are required");
             return;
         }
 
 
-        if (
-            email === "superadmin@gmail.com" &&
-            password === "superadmin123"
-        ) {
-
-            dispatch(
-                loginSuccess({
-                    token: "superadmin-token",
-
-                    user: {
-                        name: "Super Admin",
-                        email: "superadmin@gmail.com",
-                        role: "superadmin",
-                    },
-                })
+        let login = false;
+        try {
+            const res = await axios.post(
+                "https://localhost:7074/api/auth/superadminlogin",
+                logininfo
             );
 
+            if (res.data.success) {
 
+                dispatch(
+                    loginSuccess({
+                        token: "superadmin-token",
+                        user: {
 
-            message.success(
-                "Login successful as Super Admin"
-            );
+                            id: res.data.admin.id,
+                            name: res.data.admin.name,
+                            email: res.data.admin.email,
+                            profileImage: res.data.admin.profileImage,
+                            role: "superadmin",
+                        },
+                    })
+                );
+                login = true;
+                message.success(
+                    "Login successful as Super Admin"
+                );
 
-            setTimeout(() => {
                 navigate("/superadmin");
-            }, 200);
-
-            return;
+                return;
+            }
+        }
+        catch (err) {
+            console.log("Not a super admin");
         }
         try {
 
@@ -138,10 +144,11 @@ const Login = () => {
                             name: res.data.user.name,
                             email: res.data.user.email,
                             role: "customer",
+                            profileImage: res.data.user.profileImage,
                         },
                     })
                 );
-
+                login = true;
                 message.success("Customer Login Success");
 
                 navigate("/customer");
@@ -245,18 +252,21 @@ const Login = () => {
                         },
                     })
                 );
+                login = true;
+                message.success("Salon Admin Login Success");
                 navigate("/salonadmin");
                 return;
 
             }
 
         } catch (err: any) {
+            console.log("SALON LOGIN ERROR:", err);
+            // const errorMessage =
+            //     err.response?.data?.message || "Invalid Credentials";
 
-            const errorMessage =
-                err.response?.data?.message || "Invalid Credentials";
-
-            setmsg(errorMessage);
-            setisError(true);
+            // // setmsg(errorMessage);
+            // message.error(errorMessage);
+            // // setisError(true);
         }
         try {
 
@@ -270,7 +280,7 @@ const Login = () => {
             );
 
             if (res.data.success) {
-                message.success("Employee Login Success");
+
                 const employee = res.data.employee;
                 dispatch(
                     loginSuccess({
@@ -286,6 +296,8 @@ const Login = () => {
                         },
                     })
                 );
+                login = true;
+                message.success("Employee Login Success");
                 navigate("/employee");
                 return;
             }
@@ -293,12 +305,16 @@ const Login = () => {
         } catch (err: any) {
             console.log("LOGIN ERROR:", err);
 
-            const errorMessage =
-                err.response?.data?.message || "Invalid Credentials";
+            // const errorMessage =
+            //     err.response?.data?.message || "Invalid Credentials";
 
-            setmsg(errorMessage);
-            setisError(true);
+            // setmsg(errorMessage);
+            // setisError(true);
         }
+        if (!login) {
+            message.error("Invalid Credentials");
+        }
+
     };
 
 
@@ -372,7 +388,7 @@ const Login = () => {
                                 <div className="w-[300px] text-center  mb-3">
 
                                     Don't have an account?
-                                    <span className='text-blue-700 hover:underline'> <Link to="/signup"> as customer</Link></span>and <span className='text-blue-700 hover:underline'> <Link to="/applysalon"> Apply for Salon </Link></span>and <span className='text-blue-700 hover:underline'> <Link to="/applyjob"> As a Employee</Link></span>
+                                    <span className='text-blue-700 hover:underline'> <Link to="/signup"> as customer</Link></span>and <span className='text-blue-700 hover:underline'> <Link to="/applysalon"> Apply for Salon </Link></span>and <span className='text-blue-700 hover:underline'></span>
 
 
                                 </div>

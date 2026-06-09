@@ -4,6 +4,7 @@ import signupIllustration from '../assets/images/signup.svg'
 import { Link, useNavigate } from 'react-router-dom'
 // import message from 'antd/es/message'
 import message from 'antd/es/message'
+import { Form, Input, Button } from "antd";
 import axios from 'axios'
 
 const Signup = () => {
@@ -89,90 +90,35 @@ const Signup = () => {
         console.log(signupinfo)
 
     }
-    const handlesignup = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        const { name, email, mobilenumber, password } = signupinfo
-        if (!name || !email || !mobilenumber || !password) {
-            // return handleerror('All field are require ')
-            setisError(true);
-            setmsg('All field are require ')
-            message.error('All field are require ')
-        }
-
-        // await axios.post(url, signupinfo).then((res) => {
-        //     console.log(res)
-        //     const { success, message: responseMessage } = res.data
-        //     if (success) {
-        //         setmsg(responseMessage)
-        //         setisError(false);
-        //         setTimeout(() => {
-        //             navigate('/login')
-        //         }, 2000);
-
-        //     }
-        //     else if (!success) {
-        //         setisError(true);
-        //         setmsg(responseMessage)
-        //     }
-        //     else if (res.data.error) {
-        //         const details = res.data.error?.details[0].message || "Signup failed";
-        //         setisError(true);
-        //         setmsg(details)
-
-        //     }
-
-
-
-        // }
-        // ).catch((error) => {
-        //     console.log("Error during signup:", error);
-        //     setisError(true);
-        //     setmsg(error instanceof Error ? error.message : "An error occurred during signup. Please try again later.");
-        // })
-
+    const [form] = Form.useForm();
+    const handleSignup = async (values: any) => {
         try {
-            const url = "https://localhost:7074/api/auth/signup"
-            const responce = await fetch(url, {
-                method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(signupinfo)
-            })
-            const result = await responce.json();
-            console.log(result)
+            const response = await fetch(
+                "https://localhost:7074/api/auth/signup",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(values),
+                }
+            );
 
-            const { success, message, error } = result
-            if (success) {
-                // handlesuccess(message)
-                setmsg(message);
-                setisError(false);
+            const result = await response.json();
+
+            if (result.success) {
+                message.success(result.message);
 
                 setTimeout(() => {
-                    navigate('/')
-                }, 2000);
-            }
-            else if (error) {
-                const details = error?.details[0].message;
-                // handleerror(details)
-                setisError(true);
-                setmsg(details);
-            }
-            else if (!success) {
-                setisError(true);
-                setmsg(message);
-
-                // handleerror(message)
+                    navigate("/");
+                }, 1500);
+            } else {
+                message.error(result.message);
             }
         } catch (error) {
-            setisError(true);
-            console.log("Error during signup:", error);
-            setmsg(error instanceof Error ? error.message : "An error occurred during signup. Please try again later.");
-
-            // handleerror(error);
+            message.error("Something went wrong");
         }
-
-    }
+    };
 
 
 
@@ -211,84 +157,98 @@ const Signup = () => {
                             </div>
                         </div>
                         <div>
-                            <form action="" onSubmit={handlesignup}>
+                            <Form
+                                form={form}
+                                layout="vertical"
+                                onFinish={handleSignup}
+                            >
+                                <Form.Item
+                                    label={<span className='font-[Outfit]'>Username</span>}
+                                    name="name"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please enter username",
+                                        },
+                                    ]}
+                                >
+                                    <Input size="middle" />
+                                </Form.Item>
 
-                                <div className="mb-5">
-                                    <label className="block text-sm  text-gray-600 mb-1">
-                                        Username
-                                    </label>
-                                    <input
-                                        type="text"
-                                        name="name"
-                                        value={signupinfo.name}
-                                        onChange={handleChange}
-                                        placeholder="Username"
+                                <Form.Item
+                                    label={<span className='font-[Outfit]'>Email</span>}
+                                    name="email"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please enter email",
+                                        },
+                                        {
+                                            type: "email",
+                                            message: "Invalid email",
+                                        },
+                                    ]}
+                                >
+                                    <Input size="middle" />
+                                </Form.Item>
 
-                                        className="w-[300px]  px-4 py-3 border rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-100"
-                                    />
-                                </div>
-                                <div className="mb-5">
-                                    <label className="block text-sm    text-gray-600 mb-1">
-                                        Email
-                                    </label>
-                                    <input
-                                        name='email'
-                                        type="text"
-                                        value={signupinfo.email}
-                                        onChange={handleChange}
-                                        placeholder="Email"
-                                        className="w-[300px] px-4 py-3 border rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-100"
-                                    />
-                                </div>
-                                <div className="mb-5">
-                                    <label className="block text-sm   text-gray-600 mb-1">
-                                        Mobile
-                                    </label>
-                                    <input
-                                        type="tel"
-                                        name='mobilenumber'
-                                        value={signupinfo.mobilenumber}
-                                        onChange={handleChange}
-                                        placeholder="Mobile"
-                                        className="w-[300px]  px-4 py-3 border rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-100"
-                                    />
-                                </div>
-                                <div className="mb-5">
-                                    <label className="block text-sm text-gray-600 mb-1">
-                                        Password
-                                    </label>
-                                    <input
-                                        name='password'
-                                        type="password"
-                                        value={signupinfo.password}
-                                        onChange={handleChange}
-                                        placeholder="Password"
-                                        className="w-[300px]  px-4 py-3 border rounded-sm focus:outline-none focus:ring-1 focus:ring-blue-100"
-                                    />
-                                </div>
+                                <Form.Item
+                                    label={<span className='font-[Outfit]'>Mobile</span>}
+                                    name="mobilenumber"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please enter mobile number",
+                                        },
+                                        {
+                                            pattern: /^[0-9]{10}$/,
+                                            message: "Mobile number must be 10 digits",
+                                        },
+                                    ]}
+                                >
+                                    <Input size="middle" />
+                                </Form.Item>
 
-
-
-                                {isError && <p className="text-red-600 text-sm mt-4">{msg}</p>}
-                                {!isError && <p className="text-green-600 text-sm mt-4">{msg}</p>}
+                                <Form.Item
+                                    label={<span className='font-[Outfit]'>Password</span>}
+                                    name="password"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please enter password",
+                                        },
+                                        {
+                                            min: 6,
+                                            message: "Password must be at least 6 characters",
+                                        },
+                                    ]}
+                                >
+                                    <Input.Password size="middle" />
+                                </Form.Item>
                                 <div className="text-center mb-3">
                                     <a href="#" className="text-sm  ">
                                         You have an account?
                                         <span className='text-blue-700 hover:underline'> <Link to="/"> Please SignIn</Link></span>
                                     </a>
                                 </div>
-
-                                <button type="submit" className="w-[300px] bg-[#0052CC] text-white py-3 rounded-sm font-[Outfit] font-semibold hover:bg-blue-600 transition">
-                                    Sign in
-                                </button>
-                            </form>
+                                <Form.Item>
+                                    <Button
+                                        type="primary"
+                                        htmlType="submit"
+                                        block
+                                        size="large"
+                                    >
+                                        Sign Up
+                                    </Button>
+                                </Form.Item>
+                            </Form>
                         </div>
 
                     </div>
                 </div>
 
             </div>
-        </div>
+        </div >
     )
 }
 

@@ -290,8 +290,11 @@ const Dashboard = () => {
                 open={open}
                 onClose={() => setOpen(false)}
                 onSubmit={handleCreateSalon}
-                title="Apply New Salon"
+                title="Add New Salon"
             />
+
+
+
             <div className="flex-1  ">
 
                 <div className="md:flex items-center justify-between px-3 py-[13px]   ">
@@ -381,7 +384,13 @@ const Dashboard = () => {
                     <div className="mt-6">
                         <p className="text-gray-500">Total Bookings</p>
                         <h2 className="text-3xl font-semibold text-gray-900 mt-2">
-                            {bookings.length}
+                            {
+                                approvedsalons.reduce(
+                                    (total, salon: any) =>
+                                        total + (salon.bookingCount || 0),
+                                    0
+                                )
+                            }
                         </h2>
                     </div>
 
@@ -405,7 +414,13 @@ const Dashboard = () => {
                     <div className="mt-6">
                         <p className="text-gray-500">Revenue</p>
                         <h2 className="text-3xl font-semibold text-gray-900 mt-2">
-                            ₹{totalrevenue.toFixed(2)}
+                            ₹{
+                                approvedsalons.reduce(
+                                    (total, salon: any) =>
+                                        total + (salon.revenue || 0),
+                                    0
+                                )
+                            }
                         </h2>
                     </div>
 

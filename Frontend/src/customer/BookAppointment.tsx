@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DatePicker } from "antd";
+import { DatePicker, Dropdown } from "antd";
 import dayjs from "dayjs";
 import {
     Card,
@@ -15,9 +15,11 @@ import {
     EnvironmentOutlined,
     CalendarOutlined,
     DollarOutlined,
+    MoreOutlined,
+    EyeOutlined,
 } from "@ant-design/icons";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 
 const { Title, Text } = Typography;
 
@@ -303,7 +305,7 @@ const BookAppointment = () => {
         }
     };
 
-
+    const navigate = useNavigate();
 
     return (
         <div>
@@ -351,10 +353,28 @@ const BookAppointment = () => {
                                                 ? "border-blue-500 ring-2 ring-blue-200"
                                                 : ""
                                             }`}
-                                    >
-                                        <h3 className="text-lg font-semibold">{salon.salonName}</h3>
-                                        <p className="text-gray-500">{salon.city}</p>
-                                        <p className="mt-2">⭐ {salon.rating || 4.5}</p>
+                                    ><div className="">
+
+                                            <div>
+                                                <h3 className="text-lg font-semibold">{salon.salonName}</h3>
+                                                <p className="text-gray-500">{salon.city}</p>
+                                                {/* <p className="mt-2">⭐ {salon.rating || 4.5}</p> */}
+
+
+                                            </div>
+                                            <Button
+                                                type="primary"
+                                                icon={<EyeOutlined />}
+                                                className="w-full mt-6 rounded-full h-8 text-sm"
+                                                onClick={() =>
+                                                    navigate(
+                                                        `/customer/salon-details/${salon.id}`
+                                                    )
+                                                }
+                                            >
+                                                View Details
+                                            </Button>
+                                        </div>
                                     </Card>
                                 ))}
                             </div>

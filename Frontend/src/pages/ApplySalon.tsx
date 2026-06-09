@@ -320,8 +320,8 @@ const ApplySalon = () => {
                             <div >
                                 <div className="text-sm  ">
                                     Don't have an account?
-                                    <span className='text-blue-700 hover:underline'> <Link to="/signup"> as customer</Link></span>  and <span className='text-blue-700 hover:underline'></span>  and <span className='text-blue-700 hover:underline'> <Link to="/applyjob"> As a Employee</Link></span> You have an account?
-                                    <span className='text-blue-700 hover:underline'> <Link to="/salonstatuscheck"> Please check salon status</Link></span>
+                                    <span className='text-blue-700 hover:underline'> <Link to="/signup"> as customer</Link></span>  and <span className='text-blue-700 hover:underline'></span>  <span className='text-blue-700 hover:underline'></span> You have an account?
+                                    <span className='text-blue-700 hover:underline'> <Link to="/"> Please login</Link></span>
                                 </div>
                             </div>
 
