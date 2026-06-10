@@ -21,80 +21,67 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import salon from "./Saloncheck";
+import { useMutation } from "@tanstack/react-query";
+
 
 
 const ApplySalon = () => {
     const [form] = Form.useForm();
-    const onFinish = async (values: any) => {
-        console.log(values)
-        try {
-            // const parsedServices = values.services.map((s) => JSON.parse(s));
+    const onFinish = (values: any) => {
 
-            // const finalData = {
-            //     ...values,
-            //     services: parsedServices
-            // };
-            const finalData = {
-                salonName: values.salonname,
-                ownerName: values.ownername,
-                city: values.city,
-                phone: values.phone,
-                email: values.email,
-                joinedYear: values.joinedyear,
-                totalStaff: values.staff,
-                salonAddress: values.salonaddress,
-                salonDescription: values.salondescription
-            };
+        const finalData = {
+            salonName: values.salonname,
+            ownerName: values.ownername,
+            city: values.city,
+            phone: values.phone,
+            email: values.email,
+            joinedYear: values.joinedyear,
+            totalStaff: values.staff,
+            salonAddress: values.salonaddress,
+            salonDescription: values.salondescription
+        };
 
-            console.log(finalData);
-
+        applySalonMutation.mutate(finalData);
+    };
+    const navigate = useNavigate()
+    const applySalonMutation = useMutation({
+        mutationFn: async (finalData: any) => {
             const res = await axios.post(
                 "https://localhost:7074/api/auth/applysalon",
                 finalData
             );
-            const { success, message: responseMessage } = res.data;
-            if (res.data.success) {
 
-                setmsg(res.data.message);
+            return res.data;
+        },
+
+        onSuccess: (data) => {
+
+            if (data.success) {
+                setmsg(data.message);
                 setisError(false);
 
-                message.success(res.data.message);
+                message.success(data.message);
 
                 form.resetFields();
-
-                // setTimeout(() => {
-                //     navigate('/');
-                // }, 2000);
-            }
-            // if (!success) {
-            //     setmsg(responseMessage);
-            //     setisError(true);
-
-            // }
-
-            else {
-                setmsg(responseMessage);
+            } else {
+                setmsg(data.message);
                 setisError(true);
-                message.error(responseMessage);
+
+                message.error(data.message);
             }
+        },
 
-        } catch (error: any) {
-            console.log(error);
-            console.log(error.response);
-            console.log(error.response?.data);
-
+        onError: (error: any) => {
             const errorMessage =
-                error.response?.data?.message || "Something went wrong";
+                error.response?.data?.message ||
+                "Something went wrong";
 
             setmsg(errorMessage);
             setisError(true);
+
             message.error(errorMessage);
         }
-
-        console.log("Salon ", values);
-    };
-    const navigate = useNavigate()
+    });
     const [applysalon, setapplysalon] = useState({
         salonname: "",
         city: "",
@@ -287,30 +274,7 @@ const ApplySalon = () => {
                             />
                         </Form.Item>
 
-                        {/* 
-                        <div className="mb-6">
-                            <Tag color="green">Active</Tag>
-                            <Tag color="gold">Pending Review</Tag>
-                        </div> */}
 
-                        {/* 
-                        <Form.Item
-
-                            label={<span className="font-[Outfit] ">Upload Salon Images (3 required)</span>}
-
-
-                            name="images"
-                            rules={[{ required: true }]}
-                        >
-                            <Upload
-                                listType="picture-card"
-                                maxCount={3}
-                                beforeUpload={() => false}
-                            >
-                                <UploadOutlined />
-                                <div>Upload</div>
-                            </Upload>
-                        </Form.Item> */}
 
                         {isError && <div className="text-red-500 mb-4">{msg}</div>}
                         {!isError && msg && <div className="text-green-500 mb-4">{msg}</div>}
@@ -327,7 +291,7 @@ const ApplySalon = () => {
 
                             <div className="flex justify-end gap-4 mt-8">
                                 <Button htmlType="reset">Cancel</Button>
-                                <Button type="primary" htmlType="submit" >
+                                <Button type="primary" htmlType="submit" loading={applySalonMutation.isPending} >
                                     Submit for Approval
                                 </Button>
                             </div>

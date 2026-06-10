@@ -5,120 +5,44 @@ import { Link, useNavigate } from 'react-router-dom'
 // import message from 'antd/es/message'
 import message from 'antd/es/message'
 import { Form, Input, Button } from "antd";
+import { useMutation } from "@tanstack/react-query";
 import axios from 'axios'
-
 const Signup = () => {
-    // const navigate = useNavigate();
-    // const [msg, setmsg] = useState("");
 
-    // const [isError, setisError] = useState(false)
-    // const [signupinfo, setsigninfo] = useState({
-    //     name: "",
-    //     email: "",
-    //     mobile: "",
-    //     password: ""
-    // })
-    // const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setsigninfo({ ...signupinfo, [e.target.name]: e.target.value })
-    //     console.log(signupinfo);
-    //     console.log(e.target.name, e.target.value);
-    // }
-    // const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    //     e.preventDefault();
-    //     if (signupinfo.name === "" || signupinfo.email === "" || signupinfo.mobile === "" || signupinfo.password === "") {
-    //         setisError(true);
-    //         setmsg("Please fill all the fields");
-    //         message.error("Please fill all the fields");
-    //     }
-
-    //     try {
-    //         const url = "http://localhost:3001/auth/signup"
-    //         const response = await fetch(url, {
-    //             method: 'POST',
-
-    //             headers: {
-    //                 'Content-Type': 'application/json'
-    //             },
-    //             body: JSON.stringify(signupinfo)
-
-    //         })
-    //         const result = await response.json();
-    //         const { success, message, error } = result;
-    //         if (success) {
-    //             setmsg(message);
-    //             setisError(false);
-    //             setTimeout(() => {
-    //                 navigate('/')
-    //             }, 2000);
-    //         }
-    //         else if (error) {
-    //             const details = error?.details[0].message || "Signup failed";
-    //             setisError(true);
-    //             setmsg(details);
-    //         }
-    //         else if (!success) {
-    //             setisError(true);
-    //             setmsg(message || "Signup failed");
-
-    //         }
-
-
-    //     }
-    //     catch (error) {
-    //         console.log("FULL ERROR:", error);
-    //         setisError(true);
-    //         setmsg("An error occurred during signup. Please try again later.");
-
-    //     }
-    // }
     const navigate = useNavigate()
-    const [msg, setmsg] = useState("")
-    const [isError, setisError] = useState(false)
-    const [signupinfo, setsigninfo] = useState({
-        name: "",
-        email: "",
-        mobilenumber: "",
-        password: ""
-    })
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target
-        setsigninfo({
-            ...signupinfo,
-            [name]: value,
-        });
-        console.log(name, value)
-        console.log(signupinfo)
 
-    }
+
+
     const [form] = Form.useForm();
-    const handleSignup = async (values: any) => {
-        try {
-            const response = await fetch(
+    const signupMutation = useMutation({
+        mutationFn: async (values: any) => {
+            const res = await axios.post(
                 "https://localhost:7074/api/auth/signup",
-                {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(values),
-                }
+                values
             );
 
-            const result = await response.json();
+            return res.data;
+        },
 
+        onSuccess: (result) => {
             if (result.success) {
                 message.success(result.message);
-
-                setTimeout(() => {
-                    navigate("/");
-                }, 1500);
-            } else {
+                navigate("/");
+            }
+            else {
                 message.error(result.message);
             }
-        } catch (error) {
-            message.error("Something went wrong");
+        },
+
+        onError: () => {
+            message.error(
+                "Something went wrong"
+            );
         }
-    };
+    });
+    const handleSignup = (values: any) => {
+        signupMutation.mutate(values);
+    }
 
 
 
@@ -237,6 +161,7 @@ const Signup = () => {
                                         htmlType="submit"
                                         block
                                         size="large"
+                                        loading={signupMutation.isPending}
                                     >
                                         Sign Up
                                     </Button>

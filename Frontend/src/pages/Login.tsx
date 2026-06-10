@@ -8,6 +8,7 @@ import message from 'antd/es/message'
 import { useAppDispatch } from "../redux/hooks";
 import { loginSuccess } from "../redux/authSlice";
 import { useAppSelector } from "../redux/hooks";
+import { useMutation } from "@tanstack/react-query";
 const Login = () => {
     const auth = useAppSelector((state: { auth: any }) => state.auth);
 
@@ -23,301 +24,210 @@ const Login = () => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setlogininfo({ ...logininfo, [e.target.name]: e.target.value })
     }
-    // const handleSubmit = async (e: React.FormEvent) => {
-    //     e.preventDefault();
+    const loginMutation = useMutation({
+        mutationFn: async (loginData: {
+            email: string;
+            password: string;
+        }) => {
 
-    //     const { email, password } = logininfo;
+            try {
+                const superAdminRes = await axios.post(
+                    "https://localhost:7074/api/auth/superadminlogin",
+                    loginData
+                );
 
-    //     if (!email || !password) {
-    //         setisError(true);
-    //         setmsg('All fields are required');
-    //         return;
-    //     }
-    //     if (email === "superadmin@gmail.com" && password === "superadmin123") {
-    //         localStorage.setItem("role", "superadmin");
-    //         message.success("Login successful as Super Admin");
-    //         setTimeout(() => {
-    //             navigate('/superadmin');
-    //         }, 1000);
-    //         return;
-    //     }
+                return {
+                    role: "superadmin",
+                    data: superAdminRes.data,
+                };
+            } catch { }
 
-    //     try {
-    //         const res = await axios.post(
-    //             "http://localhost:3001/auth/login",
-    //             logininfo
-    //         );
+            try {
+                const customerRes = await axios.post(
+                    "https://localhost:7074/api/auth/login",
+                    loginData
+                );
 
-    //         const { success, message, name, jwttoken, email: userEmail } = res.data;
+                return {
+                    role: "customer",
+                    data: customerRes.data,
+                };
+            } catch { }
 
+            try {
+                const salonRes = await axios.post(
+                    "https://localhost:7074/api/auth/salonlogin",
+                    {
+                        loginEmail: loginData.email,
+                        loginPassword: loginData.password,
+                    }
+                );
 
+                return {
+                    role: "salonadmin",
+                    data: salonRes.data,
+                };
+            } catch { }
 
-    //         if (success) {
-    //             setmsg(message);
-    //             setisError(false);
-    //             console.log(res.data);
-    //             localStorage.setItem("token", jwttoken);
-    //             localStorage.setItem("name", name);
-    //             localStorage.setItem("email", userEmail);
+            try {
+                const employeeRes = await axios.post(
+                    "https://localhost:7074/api/auth/employeelogin",
+                    {
+                        loginEmail: loginData.email,
+                        loginPassword: loginData.password,
+                    }
+                );
 
-    //             setTimeout(() => {
-    //                 navigate('/customer');
-    //             }, 2000);
+                return {
+                    role: "employee",
+                    data: employeeRes.data,
+                };
+            } catch { }
 
-    //         } else {
-    //             setmsg(message);
-    //             setisError(true);
-    //         }
+            throw new Error("Invalid Credentials");
+        },
 
-    //     } catch (err: any) {
-    //         const errorMessage =
-    //             err.response?.data?.message || "Something went wrong";
-
-    //         setmsg(errorMessage);
-    //         setisError(true);
-    //     }
-    // };
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        const { email, password } = logininfo;
-
-        if (!email || !password) {
-            setisError(true);
-            // setmsg("All fields are required");
-            message.error("All fields are required");
-            return;
-        }
+        onSuccess: (result) => {
 
 
-        let login = false;
-        try {
-            const res = await axios.post(
-                "https://localhost:7074/api/auth/superadminlogin",
-                logininfo
-            );
-
-            if (res.data.success) {
-
+            if (result.role === "superadmin") {
                 dispatch(
                     loginSuccess({
                         token: "superadmin-token",
                         user: {
-
-                            id: res.data.admin.id,
-                            name: res.data.admin.name,
-                            email: res.data.admin.email,
-                            profileImage: res.data.admin.profileImage,
+                            id: result.data.admin.id,
+                            name: result.data.admin.name,
+                            email: result.data.admin.email,
+                            profileImage: result.data.admin.profileImage,
                             role: "superadmin",
                         },
                     })
                 );
-                login = true;
+
                 message.success(
-                    "Login successful as Super Admin"
+                    "Super Admin Login Success"
                 );
 
                 navigate("/superadmin");
-                return;
             }
-        }
-        catch (err) {
-            console.log("Not a super admin");
-        }
-        try {
-
-            let res = await axios.post(
-                "https://localhost:7074/api/auth/login",
-                logininfo
-            );
-
-            console.log(res.data);
-
-            if (res.data.success) {
-
+            if (result.role === "customer") {
                 dispatch(
                     loginSuccess({
-                        token: res.data.token,
-
+                        token: result.data.token,
                         user: {
-                            _id: res.data.user.id,
-                            name: res.data.user.name,
-                            email: res.data.user.email,
+                            _id: result.data.user.id,
+                            name: result.data.user.name,
+                            email: result.data.user.email,
+                            profileImage: result.data.user.profileImage,
                             role: "customer",
-                            profileImage: res.data.user.profileImage,
                         },
                     })
                 );
-                login = true;
-                message.success("Customer Login Success");
+
+                message.success(
+                    "Customer Login Success"
+                );
 
                 navigate("/customer");
-
-                return;
             }
-
-        } catch (err: any) {
-
-            console.log(err);
-
-        }
-        // try {
-
-
-        //     let res = await axios.post(
-        //         "https://localhost:7074/api/auth/login",
-        //         logininfo
-        //     );
-
-        //     if (res.data.success) {
-        //         dispatch(
-        //             loginSuccess({
-        //                 token: res.data.jwttoken,
-        //                 user: {
-        //                     _id: res.data._id,
-        //                     name: res.data.name,
-        //                     email: res.data.email,
-        //                     role: "customer",
-        //                 },
-        //             })
-        //         );
-
-        //         console.log("DISPATCH DONE");
-        //         console.log(res.data);
-
-        //         setTimeout(() => {
-        //             navigate("/customer");
-        //         }, 100);
-        //         // dispatch(
-        //         //     loginSuccess({
-        //         //         // token: res.data.jwttoken,
-        //         //         token: "dummy-token",
-
-        //         //         user: {
-        //         //             _id: res.data._id,
-        //         //             name: res.data.name,
-        //         //             email: res.data.email,
-        //         //             role: "customer",
-        //         //         },
-        //         //     })
-        //         // );
-        //         message.success("Customer Login Success");
-
-        //         setTimeout(() => {
-        //             navigate("/customer");
-        //         }, 100);
-        //         return;
-        //     }
-
-        // } catch (err: any) {
-        //     console.log(err);
-        //     const errorMessage =
-        //         err.response?.data?.message || "Invalid Credentials";
-        //     setmsg(errorMessage);
-        //     setisError(true);
-        // }
-
-        try {
-
-
-            let res = await axios.post(
-                "https://localhost:7074/api/auth/salonlogin",
-                {
-                    loginEmail: logininfo.email,
-                    loginPassword: logininfo.password,
-                }
-            );
-
-            if (res.data.success) {
-                console.log(res.data);
+            if (result.role === "salonadmin") {
                 dispatch(
                     loginSuccess({
-                        token: res.data.token,
-
+                        token: result.data.token,
                         user: {
-
                             salonId:
-                                res.data.salon.id,
+                                result.data.salon.id,
 
                             salonownername:
-                                res.data.salon.ownerName,
+                                result.data.salon.ownerName,
 
                             email:
-                                res.data.salon.loginEmail,
+                                result.data.salon.loginEmail,
 
                             profileImage:
-                                res.data.salon.profileImage,
+                                result.data.salon.profileImage,
 
                             role: "salonadmin",
                         },
                     })
                 );
-                login = true;
-                message.success("Salon Admin Login Success");
+
+                message.success(
+                    "Salon Admin Login Success"
+                );
+
                 navigate("/salonadmin");
-                return;
-
             }
+            if (result.role === "employee") {
+                const employee =
+                    result.data.employee;
 
-        } catch (err: any) {
-            console.log("SALON LOGIN ERROR:", err);
-            // const errorMessage =
-            //     err.response?.data?.message || "Invalid Credentials";
-
-            // // setmsg(errorMessage);
-            // message.error(errorMessage);
-            // // setisError(true);
-        }
-        try {
-
-
-            const res = await axios.post(
-                "https://localhost:7074/api/auth/employeelogin",
-                {
-                    loginEmail: logininfo.email,
-                    loginPassword: logininfo.password,
-                }
-            );
-
-            if (res.data.success) {
-
-                const employee = res.data.employee;
                 dispatch(
                     loginSuccess({
-                        token: res.data.token,
-
+                        token: result.data.token,
                         user: {
                             id: employee.id,
-                            salonId: employee.salonId,
-                            fullName: employee.fullName,
-                            salonId: employee.salonId,
-                            profileImage: employee.profileImage,
+                            salonId:
+                                employee.salonId,
+
+                            fullName:
+                                employee.fullName,
+
+                            profileImage:
+                                employee.profileImage,
+
                             role: "employee",
                         },
                     })
                 );
-                login = true;
-                message.success("Employee Login Success");
+
+                message.success(
+                    "Employee Login Success"
+                );
+
                 navigate("/employee");
-                return;
             }
 
-        } catch (err: any) {
-            console.log("LOGIN ERROR:", err);
+        },
 
-            // const errorMessage =
-            //     err.response?.data?.message || "Invalid Credentials";
-
-            // setmsg(errorMessage);
-            // setisError(true);
+        onError: () => {
+            message.error(
+                "Invalid Credentials"
+            );
         }
-        if (!login) {
-            message.error("Invalid Credentials");
+    });
+
+
+
+    const handleSubmit = async (
+        e: React.FormEvent
+    ) => {
+        e.preventDefault();
+
+        if (
+            !logininfo.email ||
+            !logininfo.password
+        ) {
+            message.error(
+                "All fields are required"
+            );
+            return;
         }
 
+        try {
+            const result =
+                await loginMutation.mutateAsync(
+                    logininfo
+                );
+
+            console.log(result);
+        }
+        catch (error: any) {
+            message.error(
+                error.message
+            );
+        }
     };
-
-
 
     return (
         <div className="min-h-screen flex items-center  justify-center bg-gray-100" >

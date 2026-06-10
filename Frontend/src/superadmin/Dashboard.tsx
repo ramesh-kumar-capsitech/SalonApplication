@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 // import type { Breakpoint } from 'antd';
 import SalonFormDrawer from '../components/SalonFormDrawer';
+import { useQuery } from '@tanstack/react-query';
 const Dashboard = () => {
     const navigate = useNavigate();
     const lineData = [
@@ -126,80 +127,61 @@ const Dashboard = () => {
     ];
 
 
-    const [approvedsalons, setapprovedsalons] = useState([]);
-    const [users, setusers] = useState([]);
-
-
-
-    useEffect(() => {
-
-        axios
-            .get("https://localhost:7074/api/auth/getallsalons")
-            .then((res) => {
-
-                console.log(res.data);
-
-                const approved = res.data.filter(
-                    (salon: any) =>
-                        salon.status === "approved"
-                );
-
-                setapprovedsalons(approved);
-
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-
-    }, []);
-    useEffect(() => {
-
-        axios
-            .get("https://localhost:7074/api/auth/getallusers")
-            .then((res) => {
-
-                setusers(res.data);
-
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-
-    }, []);
 
 
 
 
-    // const handleMenuClick = (key: string, id: string) => {
-    //     if (key === "deactivate") {
-    //         deactivateSalonHandler(id);
-    //     }
+    const { data: approvedSalons = [], } = useQuery({
+        queryKey: ["approvedSalons"],
+        queryFn: async () => {
+            const res = await axios.get(
+                "https://localhost:7074/api/auth/getallsalons"
+            );
+            return res.data.filter(
+                (salon: any) => salon.status === "approved"
+            );
+        }
+    })
+    const { data: users = [], } = useQuery({
+        queryKey: ["users"],
+        queryFn: async () => {
+            const res = await axios.get(
+                "https://localhost:7074/api/auth/getallusers"
+            );
+            return res.data
+        }
+    })
 
-    //     if (key === "edit") {
-    //         console.log("Edit clicked", id);
-    //     }
-    //     if (key === "active") {
-    //         activateSalonHandler(id);
-    //     }
+    const { data: bookings = [], } = useQuery({
+        queryKey: ["bookings"],
+        queryFn: async () => {
+            const res = await axios.get(
+                "https://localhost:7074/api/auth/getallbookings"
+            );
+            return res.data
+        }
+    })
 
-    // };
 
-    const [bookings, setBookings] = useState([]);
-    useEffect(() => {
-        axios.get("http://localhost:3001/auth/totalbookings").then(res => {
-            setBookings(res.data.data);
-            console.log(res.data.data)
-        }).catch(err => {
-            console.log(err)
-        })
-    }, [])
+
+
+
+    // const [bookings, setBookings] = useState([]);
+    // useEffect(() => {
+    //     axios.get("http://localhost:3001/auth/totalbookings").then(res => {
+    //         setBookings(res.data.data);
+    //         console.log(res.data.data)
+    //     }).catch(err => {
+    //         console.log(err)
+    //     })
+    // }, [])
 
 
 
     const totalrevenue = bookings
         .filter((booking) => booking.status === "Completed")
         .reduce((total, booking) => total + booking.totalPrice, 0);
-    const tableData = approvedsalons.map((salon, index) => {
+    const tableData = approvedSalons.map((salon, index) => {
 
 
         const salonBookings = bookings.filter(
@@ -337,7 +319,7 @@ const Dashboard = () => {
                     <div className="mt-6">
                         <p className="text-gray-500">Total Salons</p>
                         <h2 className="text-3xl font-semibold text-gray-900 mt-2">
-                            {approvedsalons.length}
+                            {approvedSalons.length}
                         </h2>
                     </div>
 
@@ -385,7 +367,7 @@ const Dashboard = () => {
                         <p className="text-gray-500">Total Bookings</p>
                         <h2 className="text-3xl font-semibold text-gray-900 mt-2">
                             {
-                                approvedsalons.reduce(
+                                approvedSalons.reduce(
                                     (total, salon: any) =>
                                         total + (salon.bookingCount || 0),
                                     0
@@ -415,7 +397,7 @@ const Dashboard = () => {
                         <p className="text-gray-500">Revenue</p>
                         <h2 className="text-3xl font-semibold text-gray-900 mt-2">
                             ₹{
-                                approvedsalons.reduce(
+                                approvedSalons.reduce(
                                     (total, salon: any) =>
                                         total + (salon.revenue || 0),
                                     0

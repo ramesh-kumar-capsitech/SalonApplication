@@ -392,9 +392,7 @@ const Setting = () => {
 
                                                     danger
 
-                                                    onClick={() =>
-                                                        setProfileImage("")
-                                                    }
+                                                    onClick={() => setProfileImage("")}
                                                 >
                                                     Remove
                                                 </Button>
@@ -415,9 +413,7 @@ const Setting = () => {
 
                                 form={profileForm}
 
-                                onFinish={
-                                    handleProfileUpdate
-                                }
+                                onFinish={handleProfileUpdate}
                             >
 
                                 <Form.Item
@@ -465,8 +461,7 @@ const Setting = () => {
 
                                         {
                                             type: "email",
-                                            message:
-                                                "Enter valid email"
+                                            message: "Enter valid email"
                                         }
                                     ]}
                                 >
@@ -481,17 +476,13 @@ const Setting = () => {
                                 <Form.Item
 
                                     name="phone"
-
                                     label={<span className="font-[Outfit] ">Phone Number</span>}
-
                                     rules={[
-
                                         {
                                             required: true,
                                             message:
                                                 "Phone is required"
                                         },
-
                                         {
                                             pattern:
                                                 /^[0-9]{10}$/,
