@@ -6,7 +6,7 @@ public class ApplySalon
     [BsonId]
     [BsonRepresentation(BsonType.ObjectId)]
     public string? Id { get; set; }
-    
+
     public string? SalonName { get; set; }
 
     public string? OwnerName { get; set; }
@@ -24,7 +24,7 @@ public class ApplySalon
     public string? SalonAddress { get; set; }
 
     public string? SalonDescription { get; set; }
-    public List<string> GalleryImages { get; set; }    = new();
+    public List<string> GalleryImages { get; set; } = new();
     public string Status { get; set; } = "pending";
     public string? LoginEmail { get; set; }
 
@@ -68,4 +68,9 @@ public class SalonDetailsResponse
 
     public List<string> GalleryImages { get; set; }
         = new();
+}
+public class DeleteGalleryImageModel
+{
+    public string SalonId { get; set; }
+    public string ImageUrl { get; set; }
 }

@@ -63,17 +63,56 @@ public class EmployeeService
     }
 
 
-    public List<Employee>
-        GetEmployees(string salonId)
+    public List<object> GetEmployees(string salonId)
     {
-        return _employees
-            .Find(x =>
-                x.SalonId == salonId
-            )
+        var employees =
+            _employees
+            .Find(x => x.SalonId == salonId)
             .ToList();
+
+        var bookingCollection =
+            new MongoClient("mongodb://localhost:27017")
+            .GetDatabase("authdb")
+            .GetCollection<BookAppointment>("bookings");
+
+        var result =
+            employees.Select(emp =>
+            {
+                var bookings =
+                    bookingCollection
+                    .Find(x => x.StaffId == emp.Id)
+                    .ToList();
+
+                return new
+                {
+                    emp.Id,
+                    emp.FullName,
+                    emp.Role,
+                    emp.Email,
+                    emp.Phone,
+                    emp.Skills,
+                    emp.Experience,
+                    emp.Availability,
+                    emp.Status,
+                    emp.CreatedAt,
+                    emp.ProfileImage,
+
+                    TodaysBookings =
+                        bookings.Count(x =>
+                            x.CreatedAt.Date ==
+                            DateTime.UtcNow.Date
+                        ),
+
+                    TotalBookings =
+                        bookings.Count()
+                };
+            })
+            .ToList<object>();
+
+        return result;
     }
 
-    
+
     public string DeleteEmployee(
         string id
     )
@@ -85,7 +124,7 @@ public class EmployeeService
         return "Employee deleted successfully";
     }
 
-    
+
     public string EditEmployee(
         string id,
         Employee updatedEmployee

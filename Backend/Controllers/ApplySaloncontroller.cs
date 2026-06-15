@@ -54,7 +54,7 @@ public class ApplySaloncontroller : ControllerBase
         {
             success = true,
             message = "Salon approved successfully",
-            
+
         });
     }
     public class RejectRequest
@@ -216,7 +216,7 @@ public class ApplySaloncontroller : ControllerBase
         });
     }
     [HttpDelete("deleteservice/{salonId}/{serviceId}")]
-    public  IActionResult DeleteService(
+    public IActionResult DeleteService(
         string salonId,
         string serviceId
         )
@@ -431,5 +431,31 @@ UpdateSalonProfile(
                 message = "Salon updated successfully"
             }
         );
+    }
+    [HttpDelete("deletegalleryimage")]
+    public IActionResult DeleteGalleryImage(
+        [FromBody] DeleteGalleryImageModel model
+    )
+    {
+        var result =
+            _salonService.DeleteGalleryImage(
+                model.SalonId,
+                model.ImageUrl
+            );
+
+        if (!result)
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "Image not found"
+            });
+        }
+
+        return Ok(new
+        {
+            success = true,
+            message = "Image deleted successfully"
+        });
     }
 }

@@ -7,8 +7,7 @@ using System.Security.Claims;
 using System.Text;
 [ApiController]
 [Route("api/auth")]
-public class EmployeeController
-    : ControllerBase
+public class EmployeeController : ControllerBase
 {
     private readonly
         EmployeeService _employeeService;
@@ -19,7 +18,7 @@ public class EmployeeController
             new EmployeeService();
     }
 
-    
+
     [HttpPost("addemployee")]
     public IActionResult AddEmployee(
         [FromBody] Employee employee
@@ -36,7 +35,7 @@ public class EmployeeController
         });
     }
 
-    
+
     [HttpGet(
     "getemployees/{salonId}"
     )]
@@ -51,7 +50,7 @@ public class EmployeeController
         return Ok(employees);
     }
 
-    
+
     [HttpDelete(
     "deleteemployee/{id}"
     )]
@@ -70,7 +69,7 @@ public class EmployeeController
         });
     }
 
-   
+
     [HttpPut(
     "editemployee/{id}"
     )]

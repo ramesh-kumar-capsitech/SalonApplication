@@ -316,7 +316,7 @@ GetDashboard()
     }
     public string DeleteService(
         string salonId,
-        string serviceId 
+        string serviceId
         )
     {
         var salon = _salonrequests.Find(x => x.Id == salonId).FirstOrDefault();
@@ -377,7 +377,7 @@ GetDashboard()
         if (salon == null)
             return "Salon not found";
 
-       
+
 
 
         if (
@@ -388,7 +388,7 @@ GetDashboard()
             return "Current password incorrect";
         }
 
-       
+
 
         if (
             model.NewPassword !=
@@ -398,7 +398,7 @@ GetDashboard()
             return "New and confirm password do not match";
         }
 
-        
+
 
         var update =
             Builders<ApplySalon>.Update
@@ -562,6 +562,25 @@ GetSalonDetails(string salonId)
             x => x.Id == id,
             update
         );
+
+        return result.ModifiedCount > 0;
+    }
+    public bool DeleteGalleryImage(
+     string salonId,
+     string imageUrl
+ )
+    {
+        var update =
+            Builders<ApplySalon>.Update.Pull(
+                x => x.GalleryImages,
+                imageUrl
+            );
+
+        var result =
+            _salonrequests.UpdateOne(
+                x => x.Id == salonId,
+                update
+            );
 
         return result.ModifiedCount > 0;
     }
