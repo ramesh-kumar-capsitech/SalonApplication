@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Switch, Tag } from 'antd'
+import { Avatar, Button, Card, message, Switch, Tag } from 'antd'
 import {
     CheckCircleOutlined,
     PlayCircleOutlined,
@@ -6,31 +6,22 @@ import {
 } from "@ant-design/icons";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const TotalBooking = () => {
-    const [bookings, setBookings] = useState([])
-    useEffect(() => {
+    const authData = JSON.parse(localStorage.getItem("persist:auth")!);
+    const user = JSON.parse(authData.user);
+    const empid = user.id
 
-        const authData = JSON.parse(
-            localStorage.getItem("persist:auth")!
-        );
+    const { data: bookings = [], isLoading, error } = useQuery({
+        queryKey: ["bookings", empid],
+        queryFn: async () => {
+            const res = await axios.get(`https://localhost:7074/api/auth/getemployeebookings/${empid}`)
+            return res.data;
+        },
+        enabled: !!empid
+    })
 
-        const user = JSON.parse(
-            authData.user
-        );
-
-        axios
-            .get(
-                `https://localhost:7074/api/auth/getemployeebookings/${user.id}`
-            )
-            .then((res) => {
-
-                console.log("BOOKINGS:", res.data);
-
-                setBookings(res.data);
-            });
-
-    }, []);
     const appointments = bookings.map((item, index) => ({
         key: item.id || index,
         id: item.id?.slice(-6).toUpperCase(),
@@ -52,24 +43,47 @@ const TotalBooking = () => {
         (a) => a.status === "pending"
     ).length;
 
-    const updateStatus = async (id, status) => {
-        try {
-            const res = await axios.put(
-                `https://localhost:7074/api/auth/updatebookingstatus/${id}`,
-                { status }
-            );
-
-            if (res.data.success) {
-                setBookings(prev =>
-                    prev.map(b =>
-                        b.id === id ? { ...b, status } : b
-                    )
-                );
+    const queryClient = useQueryClient();
+    const useStatusMutation = useMutation({
+        mutationFn: async ({
+            id,
+            status
+        }:
+            {
+                id: string;
+                status: string;
             }
-        } catch (err) {
-            console.log(err);
+        ) => {
+            const res =
+                await axios.put(
+                    `https://localhost:7074/api/auth/updatebookingstatus/${id}`,
+                    { status }
+                );
+
+            return res.data;
+
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["bookings"]
+            });
+            message.success("Booking status updated ")
+        },
+        onError: () => {
+
+            message.error("Failed to update booking status")
         }
-    };
+
+    })
+    const updateStatus = (
+        id: string,
+        status: string
+    ) => {
+        useStatusMutation.mutate({
+            id,
+            status
+        });
+    }
     const formatDate = (d) => {
         return new Date(d).toLocaleDateString("en-US", {
             year: "numeric",
@@ -257,6 +271,7 @@ const TotalBooking = () => {
                                         <Button
                                             icon={<ReloadOutlined />}
                                             className="flex-1 rounded-full"
+                                            onClick={() => updateStatus(appt.key, "pending")}
                                         >
                                             Reschedule
                                         </Button>

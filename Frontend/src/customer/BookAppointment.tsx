@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DatePicker, Dropdown } from "antd";
+import { DatePicker, Dropdown, Empty, Spin } from "antd";
 import dayjs from "dayjs";
 import {
     Card,
@@ -20,20 +20,10 @@ import {
 } from "@ant-design/icons";
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const { Title, Text } = Typography;
 
-// const salons = [
-//     { id: 1, name: "Elite Styles", city: "Manhattan, NY", rating: 4.9 },
-//     { id: 2, name: "Glamour Hub", city: "Brooklyn, NY", rating: 4.8 },
-//     { id: 3, name: "Beauty Lounge", city: "Queens, NY", rating: 4.7 },
-// ];
-
-// const services = [
-//     { id: 1, name: "Haircut & Styling", price: 65, duration: 45 },
-//     { id: 2, name: "Hair Coloring", price: 145, duration: 120 },
-//     { id: 3, name: "Manicure", price: 35, duration: 30 },
-// ];
 
 
 
@@ -49,49 +39,46 @@ const BookAppointment = () => {
         (sum, s) => sum + s.price,
         0
     );
-    const [salons, setsalons] = useState<any[]>([]);
-    const [services, setServices] = useState<any[]>([]);
-    useEffect(() => {
-        const fetchsalon = async () => {
-            try {
-                const res = await axios.get("https://localhost:7074/api/auth/getallsalons");
-                setsalons(
-                    res.data.filter(
-                        salon =>
-                            salon.status === "approved" &&
-                            salon.isActive === "active"
-                    )
-                );
-            }
-            catch (err) {
-                message.error("failed to load salons ");
-            }
+    // const [salons, setsalons] = useState<any[]>([]);
+    // const [services, setServices] = useState<any[]>([]);
+
+    const {
+        data: salons = [],
+        isLoading,
+        error
+    } = useQuery({
+        queryKey: ["salons"],
+
+        queryFn: async () => {
+
+            const res = await axios.get(
+                "https://localhost:7074/api/auth/getallsalons"
+            );
+
+            return res.data.filter(
+                (salon: any) =>
+                    salon.status === "approved" &&
+                    salon.isActive === "active"
+            );
         }
-        fetchsalon()
-    }, [])
-    useEffect(() => {
-        if (!selectedSalon) return;
+    });
+    const { data: services = [], isLoading: servicesLoading, error: servicesError } = useQuery({
+        queryKey: [
+            "services",
+            selectedSalon?.id
+        ],
 
-        const fetchServices = async () => {
-            try {
+        queryFn: async () => {
 
-                const res = await axios.get(
-                    `https://localhost:7074/api/auth/getsalonservices/${selectedSalon.id}`
-                );
+            const res = await axios.get(
+                `https://localhost:7074/api/auth/getsalonservices/${selectedSalon.id}`
+            );
 
-                console.log("SERVICES:", res.data);
+            return res.data;
+        },
 
-                setServices(res.data);
-
-            } catch (err) {
-                console.log(err);
-                message.error("Failed to load services");
-            }
-        };
-
-        fetchServices();
-
-    }, [selectedSalon]);
+        enabled: !!selectedSalon
+    });
     const generateTimeSlots = () => {
         const slots = [];
         for (let i = 9; i <= 20; i++) {
@@ -124,189 +111,163 @@ const BookAppointment = () => {
 
         return false;
     };
-    const [staffList, setStaffList] = useState<any[]>([]);
+
     const [selectedStaff, setSelectedStaff] = useState<any>(null);
-    useEffect(() => {
-        if (!selectedSalon) return;
 
-        const fetchStaff = async () => {
-            try {
-                const res = await axios.get(
-                    `https://localhost:7074/api/auth/getsalonstaff/${selectedSalon.id}`
-                );
+    const { data: staffList = [], isLoading: staffLoading, error: staffError } = useQuery({
+        queryKey: [
+            "staffList",
+            selectedSalon?.id
+        ],
 
-                setStaffList(res.data);
+        queryFn: async () => {
 
-                if (res.data.success) {
-                    setStaffList(res.data.data);
+            const res = await axios.get(
+                `https://localhost:7074/api/auth/getsalonstaff/${selectedSalon.id}`
+            );
+
+            return res.data;
+        },
+
+        enabled: !!selectedSalon
+    });
+    const queryClient = useQueryClient();
+    const createBookingMutation =
+        useMutation({
+
+            mutationFn: async () => {
+
+                const authData =
+                    JSON.parse(
+                        localStorage.getItem(
+                            "persist:auth"
+                        )!
+                    );
+
+                const user =
+                    JSON.parse(
+                        authData.user
+                    );
+
+                if (
+                    !user?.id &&
+                    !user?._id
+                ) {
+                    throw new Error(
+                        "User not found, please login again"
+                    );
                 }
-            } catch (err) {
-                message.error("Failed to load staff");
-            }
-        };
 
-        fetchStaff();
-    }, [selectedSalon]);
+                const cleanServices =
+                    selectedServices.map(
+                        (s) => ({
+                            name: s.serviceName,
+                            price: s.price,
+                            duration: s.duration
+                        })
+                    );
 
-    // const handleBooking = async () => {
-    //     const user = JSON.parse(localStorage.getItem("user") || "{}");
-    //     console.log("user", user)
-    //     console.log("USER ID:", user._id);
-    //     if (!user?._id) {
-    //         message.error("User not found, please login again");
-    //         return;
-    //     }
-    //     try {
-    //         const cleanServices = selectedServices.map((s) => ({
-    //             name: s.name,
-    //             price: s.price,
-    //             duration: s.duration
-    //         }));
-    //         const res = await axios.post("https://localhost:7074/api/auth/bookappointment", {
-    //             salonId: selectedSalon.id,
-    //             services: cleanServices,
-    //             staffId: selectedStaff.id,
-    //             staffName: selectedStaff.fullName,
-    //             salonName: selectedSalon.salonname,
-    //             location: selectedSalon.city,
-    //             date,
-    //             time,
-    //             totalPrice,
-    //             userId: user._id,
-    //             customerName: user.name
-    //         });
+                const bookingData = {
 
-    //         if (res.data.success) {
-    //             message.success("Booking Confirmed ");
-    //             setStep(4);
+                    salonId:
+                        selectedSalon?.id,
 
-    //         }
+                    salonName:
+                        selectedSalon?.salonName,
 
-    //     } catch (err: any) {
+                    salonImage:
+                        selectedSalon?.profileImage,
 
-    //         console.log("BOOKING ERROR:", err);
+                    staffId:
+                        selectedStaff?.id,
 
-    //         console.log(
-    //             "RESPONSE:",
-    //             err.response
-    //         );
+                    staffName:
+                        selectedStaff?.fullName,
 
-    //         message.error(
-    //             err.response?.data?.message ||
-    //             "Booking failed"
-    //         );
-    //     }
-    // };
-    const handleBooking = async () => {
+                    services:
+                        cleanServices,
 
-        try {
+                    location:
+                        selectedSalon?.city,
 
-            console.log("HANDLE BOOKING CALLED");
+                    date:
+                        date?.format
+                            ? date.format(
+                                "YYYY-MM-DD"
+                            )
+                            : date,
 
-            const authData = JSON.parse(
-                localStorage.getItem("persist:auth")!
-            );
+                    time,
 
-            const user = JSON.parse(
-                authData.user
-            );
+                    totalPrice,
 
-            console.log("USER:", user);
-            console.log("USER:", user);
+                    userId:
+                        user.id ||
+                        user._id,
 
-            if (!user?.id && !user?._id) {
+                    customerName:
+                        user.name
+                };
 
-                message.error(
-                    "User not found, please login again"
-                );
+                const res =
+                    await axios.post(
+                        "https://localhost:7074/api/auth/bookappointment",
+                        bookingData
+                    );
 
-                return;
-            }
+                return {
+                    data: res.data,
+                    userId:
+                        user.id ||
+                        user._id
+                };
+            },
 
-            const cleanServices =
-                selectedServices.map((s) => ({
-                    name: s.serviceName,
-                    price: s.price,
-                    duration: s.duration
-                }));
+            onSuccess: (
+                result
+            ) => {
 
-            const bookingData = {
-
-                salonId:
-                    selectedSalon?.id,
-
-                salonName:
-                    selectedSalon?.salonName,
-                salonImage: selectedSalon.profileImage,
-
-                staffId:
-                    selectedStaff?.id,
-
-                staffName:
-                    selectedStaff?.fullName,
-
-                services:
-                    cleanServices,
-
-                location:
-                    selectedSalon?.city,
-
-                date:
-                    date?.format
-                        ? date.format("YYYY-MM-DD")
-                        : date,
-
-                time,
-
-                totalPrice,
-
-                userId:
-                    user.id || user._id,
-
-                customerName:
-                    user.name
-            };
-
-            console.log(
-                "BOOKING DATA:",
-                bookingData
-            );
-
-            const res = await axios.post(
-                "https://localhost:7074/api/auth/bookappointment",
-                bookingData
-            );
-
-            console.log(
-                "BOOKING RESPONSE:",
-                res.data
-            );
-
-            if (res.data.success) {
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        "customerBookings",
+                        result.userId
+                    ]
+                });
 
                 message.success(
                     "Booking Confirmed"
                 );
 
                 setStep(4);
+            },
+
+            onError: (
+                err: any
+            ) => {
+
+                message.error(
+                    err?.response?.data?.message ||
+                    err?.message ||
+                    "Booking Failed"
+                );
             }
-
-        } catch (err: any) {
-
-            console.log(
-                "BOOKING ERROR:",
-                err
-            );
-
-            message.error(
-                err.response?.data?.message ||
-                "Booking failed"
-            );
-        }
-    };
+        });
 
     const navigate = useNavigate();
-
+    useEffect(() => {
+        if (servicesError) {
+            message.error(
+                "Failed to load services"
+            );
+        }
+    }, [servicesError]);
+    useEffect(() => {
+        if (staffError) {
+            message.error(
+                "Failed to load services"
+            );
+        }
+    }, [staffError]);
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[13px]   ">
@@ -342,42 +303,49 @@ const BookAppointment = () => {
                     {step === 0 && (
                         <>
                             <h2 className="text-xl font-semibold mb-6">Choose Your Salon</h2>
-
-                            <div className="grid md:grid-cols-3 gap-6">
-                                {salons.map((salon) => (
-                                    <Card
-                                        key={salon.id}
-                                        onClick={() => setSelectedSalon(salon)}
-                                        className={`cursor-pointer rounded-xl text-center
+                            {isLoading ? (
+                                <div className="flex justify-center py-20">
+                                    <Spin size="large" />
+                                </div>
+                            ) : error ? (
+                                <Empty description="Failed to load salons" />
+                            ) : (
+                                <div className="grid md:grid-cols-3 gap-6">
+                                    {salons.map((salon) => (
+                                        <Card
+                                            key={salon.id}
+                                            onClick={() => setSelectedSalon(salon)}
+                                            className={`cursor-pointer rounded-xl text-center
     ${selectedSalon?.id === salon.id
-                                                ? "border-blue-500 ring-2 ring-blue-200"
-                                                : ""
-                                            }`}
-                                    ><div className="">
+                                                    ? "border-blue-500 ring-2 ring-blue-200"
+                                                    : ""
+                                                }`}
+                                        ><div className="">
 
-                                            <div>
-                                                <h3 className="text-lg font-semibold">{salon.salonName}</h3>
-                                                <p className="text-gray-500">{salon.city}</p>
-                                                {/* <p className="mt-2">⭐ {salon.rating || 4.5}</p> */}
+                                                <div>
+                                                    <h3 className="text-lg font-semibold">{salon.salonName}</h3>
+                                                    <p className="text-gray-500">{salon.city}</p>
+                                                    {/* <p className="mt-2">⭐ {salon.rating || 4.5}</p> */}
 
 
+                                                </div>
+                                                <Button
+                                                    type="primary"
+                                                    icon={<EyeOutlined />}
+                                                    className="w-full mt-6 rounded-full h-8 text-sm"
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/customer/salon-details/${salon.id}`
+                                                        )
+                                                    }
+                                                >
+                                                    View Details
+                                                </Button>
                                             </div>
-                                            <Button
-                                                type="primary"
-                                                icon={<EyeOutlined />}
-                                                className="w-full mt-6 rounded-full h-8 text-sm"
-                                                onClick={() =>
-                                                    navigate(
-                                                        `/customer/salon-details/${salon.id}`
-                                                    )
-                                                }
-                                            >
-                                                View Details
-                                            </Button>
-                                        </div>
-                                    </Card>
-                                ))}
-                            </div>
+                                        </Card>
+                                    ))}
+                                </div>
+                            )}
 
                             <div className="text-right mt-6">
                                 <Button
@@ -397,47 +365,36 @@ const BookAppointment = () => {
                             <h2 className="text-xl font-semibold mb-6">Select Services</h2>
 
                             <div className="space-y-4">
-                                {/* {services.map((service) => (
-                                    <Card key={service._id}>
-                                        <Checkbox
-                                            checked={selectedServices.some((s) => s._id === service._id)}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedServices([...selectedServices, service]);
-                                                } else {
-                                                    setSelectedServices(
-                                                        selectedServices.filter((s) => s._id !== service._id)
-                                                    );
-                                                }
-                                            }}
-                                        >
-                                            <strong>{service.name}</strong> — ${service.price} (
-                                            {service.duration} min)
-                                        </Checkbox>
-                                    </Card>
-                                ))} */}
-                                {services.map((service, index) => (
-                                    <Card key={index}>
-                                        <Checkbox
-                                            checked={selectedServices.includes(service)}
-                                            onChange={(e) => {
-                                                if (e.target.checked) {
-                                                    setSelectedServices([...selectedServices, service]);
-                                                } else {
-                                                    setSelectedServices(
-                                                        selectedServices.filter((s) => s !== service)
-                                                    );
-                                                }
-                                            }}
-                                        >
-                                            <strong>{service.serviceName}</strong> — ₹{service.price} (
-                                            {service.duration} min)
+                                {
+                                    servicesLoading ? (
+                                        <div className="flex justify-center py-10">
+                                            <Spin size="large" />
+                                        </div>
+                                    ) : (
+                                        services.map((service, index) => (
+                                            <Card key={index}>
+                                                <Checkbox
+                                                    checked={selectedServices.includes(service)}
+                                                    onChange={(e) => {
+                                                        if (e.target.checked) {
+                                                            setSelectedServices([...selectedServices, service]);
+                                                        } else {
+                                                            setSelectedServices(
+                                                                selectedServices.filter((s) => s !== service)
+                                                            );
+                                                        }
+                                                    }}
+                                                >
+                                                    <strong>{service.serviceName}</strong> — ₹{service.price} (
+                                                    {service.duration} min)
 
 
 
-                                        </Checkbox>
-                                    </Card>
-                                ))}
+                                                </Checkbox>
+                                            </Card>
+                                        ))
+                                    )
+                                }
                             </div>
 
                             <div className=" grid gap-4 md:flex justify-between mt-6">
@@ -458,27 +415,35 @@ const BookAppointment = () => {
                             <h2 className="text-xl font-semibold mb-6">Choose Staff</h2>
 
                             <div className="grid md:grid-cols-3 gap-6">
-                                {staffList.map((staff, index) => (
-                                    <Card
-                                        key={index}
-                                        onClick={() => setSelectedStaff(staff)}
-                                        className={`cursor-pointer text-center rounded-xl
-        ${selectedStaff === staff
-                                                ? "border-blue-500 ring-2 ring-blue-200"
-                                                : ""
-                                            }`}
-                                    >
-                                        <h3 className="text-lg font-semibold">{staff.fullName}</h3>
-                                        <p className="text-gray-500">{staff.role}</p>
-
-
-                                        <div className="flex flex-wrap gap-2 justify-center mt-2">
-                                            {staff.skills?.map((skill, i) => (
-                                                <Tag key={i}>{skill}</Tag>
-                                            ))}
+                                {
+                                    staffLoading ? (
+                                        <div className="flex justify-center py-10">
+                                            <Spin size="large" />
                                         </div>
-                                    </Card>
-                                ))}
+                                    ) : (
+                                        staffList.map((staff, index) => (
+                                            <Card
+                                                key={index}
+                                                onClick={() => setSelectedStaff(staff)}
+                                                className={`cursor-pointer text-center rounded-xl
+        ${selectedStaff === staff
+                                                        ? "border-blue-500 ring-2 ring-blue-200"
+                                                        : ""
+                                                    }`}
+                                            >
+                                                <h3 className="text-lg font-semibold">{staff.fullName}</h3>
+                                                <p className="text-gray-500">{staff.role}</p>
+
+
+                                                <div className="flex flex-wrap gap-2 justify-center mt-2">
+                                                    {staff.skills?.map((skill, i) => (
+                                                        <Tag key={i}>{skill}</Tag>
+                                                    ))}
+                                                </div>
+                                            </Card>
+                                        ))
+                                    )
+                                }
                             </div>
 
                             <div className="flex justify-between mt-6">
@@ -525,7 +490,10 @@ const BookAppointment = () => {
                                 <Button
                                     type="primary"
                                     disabled={!date || !time}
-                                    onClick={handleBooking}
+                                    loading={
+                                        createBookingMutation.isPending
+                                    }
+                                    onClick={() => createBookingMutation.mutate()}
                                 >
                                     Confirm Booking
                                 </Button></div>

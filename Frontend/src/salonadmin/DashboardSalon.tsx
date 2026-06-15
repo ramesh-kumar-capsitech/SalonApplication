@@ -10,8 +10,9 @@ import { Link } from 'react-router-dom';
 import AddEmployeeDrawer from "../components/AddEmployeeDrawer";
 import dayjs from 'dayjs';
 import { FaRupeeSign } from 'react-icons/fa';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
-// import { Link, PlusCircle } from 'lucide-react';
+
 const Dashboard = () => {
 
     const columns = [
@@ -97,27 +98,21 @@ const Dashboard = () => {
         },
     ];
 
-    const [bookings, setBookings] = useState([]);
-    const fetchBookings = async () => {
 
-        const authData = JSON.parse(
-            localStorage.getItem("persist:auth")!
-        );
+    const authData = JSON.parse(localStorage.getItem("persist:auth")!);
+    const user = JSON.parse(authData.user);
+    const salon = user.salonId;
 
-        const user = JSON.parse(authData.user);
+    const { data: bookings = [], isLoading, error } = useQuery({
+        queryKey: ["bookings", salon],
+        queryFn: async () => {
+            const res = await axios.get(`https://localhost:7074/api/auth/getbookingsalon/${salon}`)
+            return res.data;
+        },
+        enabled: !!salon
+    })
 
-        const salon = user.salonId;
 
-        const res = await axios.get(
-            `https://localhost:7074/api/auth/getbookingsalon/${salon}`
-        );
-
-        setBookings(res.data);
-    };
-
-    useEffect(() => {
-        fetchBookings();
-    }, []);
     const dataSource = bookings.map((item: any, index) => ({
         key: item.id || index,
         id: item.id?.slice(-6).toUpperCase(),
@@ -132,24 +127,47 @@ const Dashboard = () => {
         }),
         status: item.status,
     }));
-    const updateStatus = async (id, status) => {
-        try {
-            const res = await axios.put(
-                `https://localhost:7074/api/auth/updatebookingstatus/${id}`,
-                { status }
-            );
-
-            if (res.data.success) {
-                setBookings((prev) =>
-                    prev.map((b) =>
-                        b.id === id ? { ...b, status } : b
-                    )
-                );
+    const queryClient = useQueryClient();
+    const updateStatusMutation = useMutation({
+        mutationFn: async ({
+            id,
+            status
+        }:
+            {
+                id: string;
+                status: string;
             }
-        } catch (err) {
-            console.log(err);
+        ) => {
+            const res =
+                await axios.put(
+                    `https://localhost:7074/api/auth/updatebookingstatus/${id}`,
+                    { status }
+                );
+
+            return res.data;
+
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["bookings", salon]
+            });
+            message.success("Booking status updated ")
+        },
+        onError: () => {
+
+            message.error("Failed to update booking status")
         }
-    };
+
+    })
+    const updateStatus = (
+        id: string,
+        status: string
+    ) => {
+        updateStatusMutation.mutate({
+            id,
+            status
+        });
+    }
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const [form, setForm] = useState({
@@ -159,8 +177,8 @@ const Dashboard = () => {
         staffId: "",
         services: []
     });
-    const [staffList, setStaffList] = useState<any[]>([]);
-    const [serviceList, setServiceList] = useState<any[]>([]);
+    // const [staffList, setStaffList] = useState<any[]>([]);
+    // const [serviceList, setServiceList] = useState<any[]>([]);
     useEffect(() => {
 
         const authData =
@@ -173,81 +191,29 @@ const Dashboard = () => {
 
         const salonId = user.salonId;
 
-        getServices(salonId);
+        // getServices(salonId);
 
-        getEmployees(salonId);
+        // getEmployees(salonId);
 
     }, []);
-    const getEmployees = async (salonId) => {
 
-        try {
+    const { data: staffList = [] } = useQuery({
+        queryKey: ["staffList", salon],
+        queryFn: async () => {
+            const res = await axios.get(`https://localhost:7074/api/auth/getemployees/${salon}`)
+            return res.data;
+        },
+        enabled: !!salon
+    })
 
-            const res =
-                await axios.get(
-                    `https://localhost:7074/api/auth/getemployees/${salonId}`
-                );
-
-            setStaffList(res.data);
-
-        } catch (err) {
-
-            console.log(err);
-        }
-    };
-    // useEffect(() => {
-    //     const authData =
-    //         JSON.parse(
-    //             localStorage.getItem("persist:auth")!
-    //         );
-
-    //     const user =
-    //         JSON.parse(authData.user);
-
-    //     const salonId = user.salonId;
-
-    //     useEffect(() => {
-
-    //         getServices();
-
-    //     }, []);
-
-    //     const getServices = async () => {
-
-    //         try {
-
-    //             const res = await axios.get(
-    //                 `https://localhost:7074/api/auth/getsalonservices/${salonId}`
-    //             );
-
-    //             setServiceList(res.data);
-
-    //         } catch (err) {
-
-    //             console.log(err);
-    //         }
-    //     };
-
-
-    //     axios.get(`http://localhost:3001/auth/staff/${salonId}`)
-    //         .then(res => {
-    //             if (res.data.success) {
-    //                 setStaffList(res.data.data);
-    //             }
-    //         });
-
-    // }, []);
-    const getServices = async (salonId) => {
-
-        try {
-            const res = await axios.get(
-                `https://localhost:7074/api/auth/getsalonservices/${salonId}`
-            );
-            setServiceList(res.data);
-        } catch (err) {
-            console.log(err);
-
-        }
-    }
+    const { data: serviceList = [] } = useQuery({
+        queryKey: ["serviceList", salon],
+        queryFn: async () => {
+            const res = await axios.get(`https://localhost:7074/api/auth/getsalonservices/${salon}`)
+            return res.data;
+        },
+        enabled: !!salon
+    })
 
 
 
@@ -259,330 +225,273 @@ const Dashboard = () => {
     });
     const [editingService, setEditingService] = useState(null);
 
-    const handleAddService = async () => {
-        try {
-            const authData =
-                JSON.parse(
-                    localStorage.getItem("persist:auth")!
-                );
+    const addEditServiceMutation = useMutation({
 
-            const user =
-                JSON.parse(authData.user);
-
-            const salonId = user.salonId;
-            let res;
+        mutationFn: async () => {
 
             if (editingService) {
 
-                res = await axios.put(
-                    `https://localhost:7074/api/auth/editservice/${salonId}/${editingService.serviceId}`,
+                const res = await axios.put(
+                    `https://localhost:7074/api/auth/editservice/${salon}/${editingService.serviceId}`,
                     {
-                        serviceName:
-                            serviceForm.serviceName,
-
-                        duration:
-                            Number(serviceForm.duration),
-
-                        price:
-                            Number(serviceForm.price)
+                        serviceName: serviceForm.serviceName,
+                        duration: Number(serviceForm.duration),
+                        price: Number(serviceForm.price)
                     }
                 );
-            } else {
 
-                res = await axios.post(
-                    "https://localhost:7074/api/auth/addservice",
-                    {
-                        salonId,
-
-                        serviceName:
-                            serviceForm.serviceName,
-
-                        duration:
-                            Number(serviceForm.duration),
-
-                        price:
-                            Number(serviceForm.price)
-                    }
-                );
+                return res.data;
             }
 
-            if (res.data.success) {
-                message.success(editingService ? "Service Updated" : "Service Added");
-
-
-                getServices(salonId);
-                setIsModalOpenser(false);
-
-                setEditingService(null);
-
-                setServiceForm({
-                    serviceName: "",
-                    duration: "",
-                    price: ""
-                });
-            }
-
-        } catch (err) {
-            console.log(err);
-            message.error("Operation Failed");
-        }
-    };
-    const deleteService = async (serviceId) => {
-        try {
-
-            const authData =
-                JSON.parse(
-                    localStorage.getItem(
-                        "persist:auth"
-                    )!
-                );
-
-            const user =
-                JSON.parse(authData.user);
-
-            const salonId =
-                user.salonId;
-            const res = await axios.delete(
-                `https://localhost:7074/api/auth/deleteservice/${salonId}/${serviceId}`
+            const res = await axios.post(
+                "https://localhost:7074/api/auth/addservice",
+                {
+                    salonId: salon,
+                    serviceName: serviceForm.serviceName,
+                    duration: Number(serviceForm.duration),
+                    price: Number(serviceForm.price)
+                }
             );
 
-            if (res.data.success) {
-                message.success("Service Deleted");
-                getServices(salonId);
-            }
-        } catch (err) {
-            console.log(err);
+            return res.data;
+        },
 
-            message.error("Failed to delete service");
+        onSuccess: () => {
+
+            queryClient.invalidateQueries({
+                queryKey: ["serviceList", salon]
+            });
+
+            message.success(
+                editingService
+                    ? "Service Updated"
+                    : "Service Added"
+            );
+
+            setIsModalOpenser(false);
+
+            setEditingService(null);
+
+            setServiceForm({
+                serviceName: "",
+                duration: "",
+                price: ""
+            });
+        },
+
+        onError: () => {
+            message.error("Operation Failed");
         }
-    }
+    });
+    const handleAddService = () => {
+        addEditServiceMutation.mutate();
+    };
+    const deleteServiceMutation = useMutation({
+
+        mutationFn: async (serviceId: string) => {
+
+            const res = await axios.delete(
+                `https://localhost:7074/api/auth/deleteservice/${salon}/${serviceId}`
+            );
+
+            return res.data;
+        },
+
+        onSuccess: () => {
+
+            queryClient.invalidateQueries({
+                queryKey: ["serviceList", salon]
+            });
+
+            message.success("Service Deleted");
+        },
+
+        onError: () => {
+
+            message.error(
+                "Failed to delete service"
+            );
+        }
+    });
     const [staffForm] = Form.useForm();
     const [openDrawer, setOpenDrawer] = useState(false);
 
 
-    const handleAddEmployee =
-        async (values) => {
+    const employeeMutation = useMutation({
 
-            try {
+        mutationFn: async (values: any) => {
 
-                const authData =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "persist:auth"
-                        )!
-                    );
+            if (editingEmployee) {
 
-                const user =
-                    JSON.parse(authData.user);
-
-                const salonId =
-                    user.salonId;
-
-                let res;
-
-                if (editingEmployee) {
-
-                    res =
-                        await axios.put(
-                            `https://localhost:7074/api/auth/editemployee/${editingEmployee.id}`,
-                            {
-                                fullName:
-                                    values.fullName,
-
-                                role:
-                                    values.role,
-
-                                email:
-                                    values.email,
-
-                                phone:
-                                    values.phone,
-
-                                skills:
-                                    values.skills,
-
-                                experience:
-                                    Number(
-                                        values.experience
-                                    ),
-
-                                availability:
-                                    values.availability
-                            }
-                        );
-
-                } else {
-
-                    res =
-                        await axios.post(
-                            "https://localhost:7074/api/auth/addemployee",
-                            {
-                                salonId,
-
-                                fullName:
-                                    values.fullName,
-
-                                role:
-                                    values.role,
-
-                                email:
-                                    values.email,
-
-                                phone:
-                                    values.phone,
-
-                                skills:
-                                    values.skills,
-
-                                experience:
-                                    Number(
-                                        values.experience
-                                    ),
-
-                                availability:
-                                    values.availability
-                            }
-                        );
-                }
-
-                if (res.data.success) {
-
-                    message.success(
-                        editingEmployee
-                            ? "Employee Updated"
-                            : "Employee Added"
-                    );
-
-                    if (!editingEmployee) {
-
-                        Modal.success({
-
-                            title:
-                                "Employee Login Credentials",
-
-                            content: (
-                                <div>
-
-                                    <p>
-                                        Login ID:
-                                    </p>
-
-                                    <b>
-                                        {
-                                            res.data.data
-                                                ?.loginEmail
-                                        }
-                                    </b>
-
-                                    <p className="mt-3">
-                                        Password:
-                                    </p>
-
-                                    <b>
-                                        {
-                                            res.data.data
-                                                ?.loginPassword
-                                        }
-                                    </b>
-
-                                </div>
-                            )
-                        });
+                const res = await axios.put(
+                    `https://localhost:7074/api/auth/editemployee/${editingEmployee.id}`,
+                    {
+                        fullName: values.fullName,
+                        role: values.role,
+                        email: values.email,
+                        phone: values.phone,
+                        skills: values.skills,
+                        experience: Number(values.experience),
+                        availability: values.availability
                     }
-
-                    staffForm.resetFields();
-
-                    getEmployees(salonId);
-
-                    setEditingEmployee(null);
-
-                    setOpenDrawer(false);
-                }
-
-            } catch (err) {
-
-                console.log(err);
-
-                message.error(
-                    "Failed to add employee"
                 );
+
+                return res.data;
             }
-        };
+
+            const res = await axios.post(
+                "https://localhost:7074/api/auth/addemployee",
+                {
+                    salonId: salon,
+                    fullName: values.fullName,
+                    role: values.role,
+                    email: values.email,
+                    phone: values.phone,
+                    skills: values.skills,
+                    experience: Number(values.experience),
+                    availability: values.availability
+                }
+            );
+
+            return res.data;
+        },
+
+        onSuccess: (data) => {
+
+            queryClient.invalidateQueries({
+                queryKey: ["staffList", salon]
+            });
+
+            message.success(
+                editingEmployee
+                    ? "Employee Updated"
+                    : "Employee Added"
+            );
+
+            if (
+                !editingEmployee &&
+                data?.data
+            ) {
+
+                Modal.success({
+                    title:
+                        "Employee Login Credentials",
+
+                    content: (
+                        <div>
+                            <p>
+                                Login ID:
+                            </p>
+
+                            <b>
+                                {
+                                    data.data.loginEmail
+                                }
+                            </b>
+
+                            <p className="mt-3">
+                                Password:
+                            </p>
+
+                            <b>
+                                {
+                                    data.data.loginPassword
+                                }
+                            </b>
+                        </div>
+                    )
+                });
+            }
+
+            staffForm.resetFields();
+
+            setEditingEmployee(null);
+
+            setOpenDrawer(false);
+        },
+
+        onError: () => {
+
+            message.error(
+                "Failed to save employee"
+            );
+        }
+    });
+
 
     const [editingEmployee, setEditingEmployee] = useState(null);
-    const deleteEmployee =
-        async (employeeId) => {
+    const deleteEmployeeMutation =
+        useMutation({
 
-            try {
+            mutationFn: async (
+                employeeId: string
+            ) => {
 
                 const res =
                     await axios.delete(
                         `https://localhost:7074/api/auth/deleteemployee/${employeeId}`
                     );
 
-                if (res.data.success) {
+                return res.data;
+            },
 
-                    message.success(
-                        "Employee Deleted"
-                    );
+            onSuccess: () => {
 
-                    setStaffList(prev =>
-                        prev.filter(
-                            emp =>
-                                emp.id !== employeeId
-                        )
-                    );
-                }
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        "staffList",
+                        salon
+                    ]
+                });
 
-            } catch (err) {
+                message.success(
+                    "Employee Deleted"
+                );
+            },
 
-                console.log(err);
+            onError: () => {
 
                 message.error(
                     "Failed to delete employee"
                 );
             }
-        };
-    const toggleEmployeeStatus =
-        async (employeeId) => {
+        });
+    const toggleEmployeeMutation =
+        useMutation({
 
-            try {
+            mutationFn: async (
+                employeeId: string
+            ) => {
 
                 const res =
                     await axios.put(
                         `https://localhost:7074/api/auth/toggleemployee/${employeeId}`
                     );
 
-                if (res.data.success) {
+                return res.data;
+            },
 
-                    setStaffList(prev =>
-                        prev.map(emp =>
+            onSuccess: () => {
 
-                            emp.id === employeeId
-                                ? {
-                                    ...emp,
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        "staffList",
+                        salon
+                    ]
+                });
 
-                                    status:
-                                        res.data.status
-                                }
-                                : emp
-                        )
-                    );
+                message.success(
+                    "Employee Status Updated"
+                );
+            },
 
-                    message.success(
-                        `Employee ${res.data.status}`
-                    );
-                }
-
-            } catch (err) {
-
-                console.log(err);
+            onError: () => {
 
                 message.error(
                     "Failed to update status"
                 );
             }
-        }
+        });
     const [open, setOpen] = useState(false);
     const [selectedDate, setSelectedDate] =
         useState(null);
@@ -663,29 +572,10 @@ const Dashboard = () => {
         selectedDate
     ]);
     const [bookingForm] = Form.useForm();
-    const [Loading, setLoading] = useState(false);
-    const handleCreateBooking = async (
-        values
-    ) => {
 
-        try {
+    const createBookingMutation = useMutation({
 
-            setLoading(true);
-
-            const authData =
-                JSON.parse(
-                    localStorage.getItem(
-                        "persist:auth"
-                    )!
-                );
-
-            const user =
-                JSON.parse(
-                    authData.user
-                );
-
-            const salonId =
-                user.salonId;
+        mutationFn: async (values: any) => {
 
             const selectedService =
                 serviceList.find(
@@ -707,28 +597,21 @@ const Dashboard = () => {
                     "https://localhost:7074/api/auth/createsalonbooking",
 
                     {
-                        salonId:
-
-                            salonId,
+                        salonId: salon,
 
                         salonName:
-
                             user.salonName,
 
                         customerName:
-
                             values.customerName,
 
                         staffId:
-
                             values.staffId,
 
                         staffName:
-
                             selectedStaff?.fullName,
 
                         date:
-
                             dayjs(
                                 values.date
                             ).format(
@@ -736,15 +619,12 @@ const Dashboard = () => {
                             ),
 
                         time:
-
                             selectedTime,
 
                         totalPrice:
-
                             selectedService?.price || 0,
 
                         services: [
-
                             {
                                 name:
                                     selectedService?.serviceName,
@@ -759,47 +639,47 @@ const Dashboard = () => {
                     }
                 );
 
-            if (
-                res.data.success
-            ) {
+            return res.data;
+        },
 
-                message.success(
-                    "Booking Created"
-                );
-                await fetchBookings();
-                setOpen(false);
+        onSuccess: () => {
 
-                bookingForm.resetFields();
+            queryClient.invalidateQueries({
+                queryKey: [
+                    "bookings",
+                    salon
+                ]
+            });
 
-                setSelectedTime("");
+            message.success(
+                "Booking Created"
+            );
 
-                setSelectedDate(null);
+            setOpen(false);
 
+            bookingForm.resetFields();
 
-            }
+            setSelectedTime("");
 
-        } catch (err: any) {
+            setSelectedDate(null);
+        },
 
-            console.log(err);
+        onError: (err: any) => {
 
             message.error(
 
-                err.response?.data?.message ||
+                err?.response?.data?.message ||
 
                 "Booking Failed"
             );
-
-        } finally {
-
-            setLoading(false);
         }
-    };
+    });
     return (
         <div>
             <AddEmployeeDrawer
                 openDrawer={openDrawer}
                 setOpenDrawer={setOpenDrawer}
-                getEmployees={getEmployees}
+                // getEmployees={getEmployees}
                 editingEmployee={editingEmployee}
                 setEditingEmployee={
                     setEditingEmployee
@@ -856,7 +736,12 @@ const Dashboard = () => {
             >
                 <Form
                     layout="vertical"
-                    onFinish={handleCreateBooking}
+                    onFinish={(values) =>
+                        createBookingMutation.mutate(
+                            values
+                        )
+                    }
+
                     form={bookingForm}
                 >
                     <Form.Item
@@ -992,7 +877,7 @@ const Dashboard = () => {
 
                         htmlType="submit"
 
-                        loading={Loading}
+                        loading={createBookingMutation.isPending}
 
                         block
                     >
@@ -1162,7 +1047,8 @@ const Dashboard = () => {
                                         </span>
 
                                         <span className="flex items-center gap-1">
-                                            <FaRupeeSign />
+                                            {/* <FaRupeeSign /> */}
+                                            ₹
                                             {service.price}
                                         </span>
                                     </div>
@@ -1180,7 +1066,11 @@ const Dashboard = () => {
                                     }}>
                                         <EditOutlined />
                                     </button>
-                                    <button onClick={() => deleteService(service.serviceId)}><DeleteOutlined /></button>
+                                    <button onClick={() =>
+                                        deleteServiceMutation.mutate(
+                                            service.serviceId
+                                        )
+                                    }><DeleteOutlined /></button>
                                 </div>
 
                             </div>
@@ -1300,13 +1190,13 @@ const Dashboard = () => {
                                                         key === "delete"
                                                     ) {
 
-                                                        deleteEmployee(
+                                                        deleteEmployeeMutation.mutate(
                                                             member.id
                                                         );
                                                     }
                                                     else if (key === "toggle") {
 
-                                                        toggleEmployeeStatus(
+                                                        toggleEmployeeMutation.mutate(
                                                             member.id
                                                         );
                                                     }

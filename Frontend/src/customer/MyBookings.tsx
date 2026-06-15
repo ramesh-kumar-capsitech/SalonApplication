@@ -1,4 +1,4 @@
-import { Card, Avatar, Tag, Button, Segmented } from "antd";
+import { Card, Avatar, Tag, Button, Segmented, message } from "antd";
 import dayjs from "dayjs";
 import logo from '../assets/images/logo.png'
 import {
@@ -22,6 +22,7 @@ import {
 } from "@ant-design/icons";
 import { useEffect } from "react";
 import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
 const Detail: React.FC<DetailProps> = ({
     icon,
     label,
@@ -43,7 +44,28 @@ const Detail: React.FC<DetailProps> = ({
 
 const MyBookings = () => {
     const [tab, settab] = useState<"upcoming" | "past">("upcoming")
-    const [bookings, setBookings] = useState([]);
+    // const [bookings, setBookings] = useState([]);
+    const authData = JSON.parse(
+        localStorage.getItem("persist:auth")!
+    );
+
+    const user = JSON.parse(authData.user);
+
+    console.log("USER:", user);
+
+    if (!user?._id) {
+        console.log("User not found");
+        return;
+    }
+    const { data: bookings = [], isLoading, error } = useQuery({
+        queryKey: ["customerBookings",
+            user?.id || user?._id],
+        queryFn: async () => {
+            const res = await axios.get(`https://localhost:7074/api/auth/getbookings/${user._id}`);
+            return res.data;
+        },
+        enabled: !!(user?.id || user?._id)
+    })
     useEffect(() => {
         const authData = JSON.parse(
             localStorage.getItem("persist:auth")!
@@ -67,12 +89,7 @@ const MyBookings = () => {
                 setBookings(res.data)
             });
     }, []);
-    // const pastBookings = bookings.filter(
-    //     (b) => b.status === "Completed"
-    // );
-    // const upcomingBookings = bookings.filter(
-    //     (b) => b.status === "Pending" || b.status === "Confirmed" || b.status === "Rejected" || b.status === "In Progress"
-    // );
+
     const pastBookings = bookings.filter(
         (b: any) =>
             b.status?.toLowerCase() === "completed"
@@ -89,6 +106,13 @@ const MyBookings = () => {
                 b.status?.toLowerCase()
             )
     );
+    useEffect(() => {
+        if (error) {
+            message.error(
+                "Failed to load bookings"
+            );
+        }
+    }, [error]);
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[13px]   ">
@@ -129,25 +153,18 @@ const MyBookings = () => {
                             className="rounded-2xl border font-[Outfit]"
                             bodyStyle={{ padding: 28 }}
                         >
-                            {/* TOP HEADER */}
+
                             <div className="flex items-start justify-between">
                                 <div className="flex items-center gap-4">
-                                    {/* <Avatar
+                                    <Avatar
                                         size={48}
+                                        src={b.salonImage || undefined}
                                         className="overflow-hidden"
                                     >
-                                        <img
-                                            src={b.salonImage}
-                                            alt=""
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </Avatar> */}
+                                        {b.salonName?.charAt(0)?.toUpperCase()}
+                                    </Avatar>
 
-                                    <img
-                                        src={b.salonImage}
-                                        alt="profile"
-                                        className="w-10 h-10 mb-5 rounded-full object-cover"
-                                    />
+
 
                                     <div>
                                         <h2 className="font-semibold m-0">{b.salonName || "N/A"}</h2>

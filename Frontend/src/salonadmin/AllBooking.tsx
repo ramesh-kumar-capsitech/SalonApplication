@@ -1,7 +1,8 @@
-import { Card, Dropdown, Table, Tag } from 'antd';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Card, Dropdown, message, Table, Tag } from 'antd';
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
-// import salon from '../pages/Saloncheck';
+
+
 
 const AllBooking = () => {
     const columns = [
@@ -31,11 +32,10 @@ const AllBooking = () => {
             dataIndex: "time",
             key: "time",
         },
-
         {
             title: "Date",
             dataIndex: "date",
-            key: "date",
+            key: " date",
         },
         {
             title: "Status",
@@ -54,11 +54,13 @@ const AllBooking = () => {
                                     ? "red"
                                     : s === "completed"
                                         ? "green"
-                                        : "gold"
+                                        : s === "in progress"
+                                            ? "gold"
+                                            : "default"
                         }
                     >
                         {status}
-                    </Tag>
+                    </Tag >
                 );
             },
         },
@@ -73,6 +75,7 @@ const AllBooking = () => {
                             { key: "Confirmed", label: "Confirmed", disabled: record.status === "Confirmed" },
                             { key: "Completed", label: "Completed", disabled: record.status === "Completed" },
                             { key: "Rejected", label: "Rejected", disabled: record.status === "Rejected" },
+                            { key: "In Progress", label: "In Progress", disabled: record.status === "In Progress" },
                         ],
                         onClick: ({ key }) => updateStatus(record.key, key)
                     }}
@@ -84,19 +87,19 @@ const AllBooking = () => {
             ),
         },
     ];
+    const authData = JSON.parse(localStorage.getItem("persist:auth")!);
+    const user = JSON.parse(authData.user);
+    const salon = user.salonId;
 
-    const [bookings, setBookings] = useState([]);
-    useEffect(() => {
+    const { data: bookings = [], isLoading, error } = useQuery({
+        queryKey: ["bookings", salon],
+        queryFn: async () => {
+            const res = await axios.get(`https://localhost:7074/api/auth/getbookingsalon/${salon}`)
+            return res.data;
+        },
+        enabled: !!salon
+    })
 
-        const authData = JSON.parse(localStorage.getItem("persist:auth")!);
-        const user = JSON.parse(authData.user);
-        const salon = user.salonId;
-        axios
-            .get(`https://localhost:7074/api/auth/getbookingsalon/${salon}`)
-            .then((res) => {
-                setBookings(res.data);
-            });
-    }, []);
     const dataSource = bookings.map((item: any, index) => ({
         key: item.id || index,
         id: item.id?.slice(-6).toUpperCase(),
@@ -109,26 +112,52 @@ const AllBooking = () => {
             month: "long",
             day: "numeric",
         }),
+        staff: item.staffName,
         status: item.status,
     }));
-    const updateStatus = async (id, status) => {
-        try {
-            const res = await axios.put(
-                `https://localhost:7074/api/auth/updatebookingstatus/${id}`,
-                { status }
-            );
-
-            if (res.data.success) {
-                setBookings((prev) =>
-                    prev.map((b) =>
-                        b.id === id ? { ...b, status } : b
-                    )
-                );
+    const queryClient = useQueryClient();
+    const useStatusMutation = useMutation({
+        mutationFn: async ({
+            id,
+            status
+        }:
+            {
+                id: string;
+                status: string;
             }
-        } catch (err) {
-            console.log(err);
+        ) => {
+            const res =
+                await axios.put(
+                    `https://localhost:7074/api/auth/updatebookingstatus/${id}`,
+                    { status }
+                );
+
+            return res.data;
+
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["bookings"]
+            });
+            message.success("Booking status updated ")
+        },
+        onError: () => {
+
+            message.error("Failed to update booking status")
         }
-    };
+
+    })
+    const updateStatus = (
+        id: string,
+        status: string
+    ) => {
+        useStatusMutation.mutate({
+            id,
+            status
+        });
+    }
+
+
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[13px]   ">

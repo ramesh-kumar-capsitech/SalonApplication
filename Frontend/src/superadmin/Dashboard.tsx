@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 // import type { Breakpoint } from 'antd';
 import SalonFormDrawer from '../components/SalonFormDrawer';
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 const Dashboard = () => {
     const navigate = useNavigate();
     const lineData = [
@@ -166,15 +166,7 @@ const Dashboard = () => {
 
 
 
-    // const [bookings, setBookings] = useState([]);
-    // useEffect(() => {
-    //     axios.get("http://localhost:3001/auth/totalbookings").then(res => {
-    //         setBookings(res.data.data);
-    //         console.log(res.data.data)
-    //     }).catch(err => {
-    //         console.log(err)
-    //     })
-    // }, [])
+
 
 
 
@@ -203,21 +195,22 @@ const Dashboard = () => {
             status: salon.isActive
         };
     });
-    const [open, setOpen] =
-        useState(false);
+    const [open, setOpen] = useState(false);
 
     const [loading, setLoading] = useState(false);
-    const handleCreateSalon = async (
-        values: any
-    ) => {
-        try {
-            setLoading(true);
-
+    const queryClient = useQueryClient();
+    const createSalonMutation = useMutation({
+        mutationFn: async (values: any) => {
             const res = await axios.post(
                 "https://localhost:7074/api/auth/createsalonbyadmin",
                 values
             );
-
+            return res.data;
+        },
+        onSuccess: (data) => {
+            queryClient.invalidateQueries({
+                queryKey: ["approvedSalons"]
+            });
             message.success(
                 "Salon Created Successfully"
             );
@@ -229,41 +222,34 @@ const Dashboard = () => {
                     <div>
                         <p>
                             <strong>Email:</strong>{" "}
-                            {
-                                res.data.data
-                                    .loginEmail
-                            }
+                            {data.data.loginEmail}
                         </p>
 
                         <p>
                             <strong>Password:</strong>{" "}
-                            {
-                                res.data.data
-                                    .loginPassword
-                            }
+                            {data.data.loginPassword}
                         </p>
                     </div>
                 ),
             });
 
             setOpen(false);
-
-
-
-        } catch (error: any) {
+        },
+        onError: (error: any) => {
 
             message.error(
                 error?.response?.data
                     ?.message ||
                 "Something went wrong"
             );
-
-        } finally {
-
-            setLoading(false);
-
         }
-    };
+
+    }
+    )
+    const handleCreateSalon = (values: any) => {
+        createSalonMutation.mutate(values);
+    }
+
     return (
 
 
@@ -273,6 +259,7 @@ const Dashboard = () => {
                 onClose={() => setOpen(false)}
                 onSubmit={handleCreateSalon}
                 title="Add New Salon"
+                loading={createSalonMutation.isPending}
             />
 
 

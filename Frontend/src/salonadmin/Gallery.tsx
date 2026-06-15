@@ -6,15 +6,16 @@ import {
 } from "antd";
 
 import {
+    DeleteOutlined,
     PlusOutlined
 } from "@ant-design/icons";
 
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { data } from "react-router-dom";
 
 const Gallery = () => {
-    const [images,
-        setImages] = useState<string[]>([]);
 
     const [loading,
         setLoading] = useState(false);
@@ -28,22 +29,16 @@ const Gallery = () => {
     const user = JSON.parse(authData.user);
 
     const salonId = user.salonId;
-    const getGallery =
-        async () => {
-            console.log("SalonId:", salonId);
-            const res =
-                await axios.get(`https://localhost:7074/api/auth/gallery/${salonId}`);
+    const { data: images = [], isLoading, error } = useQuery({
+        queryKey: ["gallery", salonId],
+        queryFn: async () => {
+            const res = await axios.get(`https://localhost:7074/api/auth/gallery/${salonId}`)
+            return res.data;
+        },
+        enabled: !!salonId
+    })
 
-            setImages(
-                res.data
-            );
-        };
 
-    useEffect(() => {
-
-        getGallery();
-
-    }, []);
     const uploadImage =
         async (file: File) => {
 
@@ -65,17 +60,10 @@ const Gallery = () => {
                 );
 
                 const cloudinaryRes =
-                    await axios.post(
-
-                        "https://api.cloudinary.com/v1_1/dmhp2b2dj/image/upload",
-
-                        formData
+                    await axios.post("https://api.cloudinary.com/v1_1/dmhp2b2dj/image/upload", formData
                     );
 
-                const imageUrl =
-                    cloudinaryRes
-                        .data
-                        .secure_url;
+                const imageUrl = cloudinaryRes.data.secure_url;
 
                 await axios.post(
 
@@ -86,12 +74,15 @@ const Gallery = () => {
                         imageUrl
                     }
                 );
+                queryClient.invalidateQueries({
+                    queryKey: ["gallery", salonId]
+                });
 
                 message.success(
                     "Image Added"
                 );
 
-                getGallery();
+
 
             }
             catch (error: any) {
@@ -109,6 +100,56 @@ const Gallery = () => {
 
             return false;
         };
+    const queryClient = useQueryClient();
+    const deleteImageMutation =
+        useMutation({
+            mutationFn: async (
+                imageUrl: string
+            ) => {
+
+                const res =
+                    await axios.delete(
+                        "https://localhost:7074/api/auth/deletegalleryimage",
+                        {
+                            data: {
+                                salonId,
+                                imageUrl
+                            }
+                        }
+                    );
+
+                return res.data;
+            },
+
+            onSuccess: () => {
+
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        "gallery",
+                        salonId
+                    ]
+                });
+
+                message.success(
+                    "Image Deleted"
+                );
+            },
+
+            onError: () => {
+
+                message.error(
+                    "Delete Failed"
+                );
+            }
+        });
+    const handleDelete = (
+        imageUrl: string
+    ) => {
+
+        deleteImageMutation.mutate(
+            imageUrl
+        );
+    };
     return (
 
         <div>
@@ -167,12 +208,39 @@ const Gallery = () => {
                             {images.map(
                                 (img, index) => (
 
-                                    <img
+                                    <div
                                         key={index}
-                                        src={img}
-                                        alt=""
-                                        className="w-full h-60 rounded-xl object-cover"
-                                    />
+                                        className="relative group overflow-hidden rounded-xl"
+                                    >
+                                        <img
+                                            src={img}
+                                            alt=""
+                                            className="w-full h-60 object-cover"
+                                        />
+
+                                        <div
+                                            className="
+            absolute inset-0
+            bg-black/50
+            opacity-0
+            group-hover:opacity-100
+            transition-all duration-300
+            flex items-center justify-center
+        "
+                                        >
+                                            <Button
+                                                danger
+                                                shape="circle"
+                                                icon={<DeleteOutlined />}
+                                                loading={
+                                                    deleteImageMutation.isPending
+                                                }
+                                                onClick={() =>
+                                                    handleDelete(img)
+                                                }
+                                            />
+                                        </div>
+                                    </div>
 
                                 )
                             )}

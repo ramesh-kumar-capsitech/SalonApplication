@@ -77,7 +77,7 @@ const Signup = () => {
                             </div>
                             <div className='   '>
                                 <p className='font-semibold text-xl m-0 p-0 '>Welcome to</p>
-                                <p className='font-bold text-3xl m-0 p-0'>TrimTech</p>
+                                <p className='font-bold text-3xl m-0 p-0'>BookMySalon</p>
                             </div>
                         </div>
                         <div>

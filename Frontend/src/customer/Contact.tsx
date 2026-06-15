@@ -7,6 +7,8 @@ import {
     ClockCircleOutlined,
 } from "@ant-design/icons";
 
+import emailjs from "@emailjs/browser";
+import { message } from "antd";
 interface InfoCardProps {
     icon: React.ReactNode;
     title: string;
@@ -56,7 +58,7 @@ const Contact = () => {
             <hr />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 font-[Outfit] m-6">
 
-                {/* LEFT : CONTACT FORM */}
+
                 <Card className="rounded-2xl border" bodyStyle={{ padding: 28 }}>
                     <h2 className="text-lg font-semibold mb-6">
                         Send us a Message
@@ -97,8 +99,8 @@ const Contact = () => {
                         icon={<MailOutlined />}
                         title="Email"
                         lines={[
-                            "support@salonbook.com",
-                            "info@salonbook.com",
+                            "support@bookmysalon.com",
+                            "info@bookmysalon.com",
                         ]}
                     />
 
@@ -124,8 +126,8 @@ const Contact = () => {
                         icon={<ClockCircleOutlined />}
                         title="Business Hours"
                         lines={[
-                            "Monday - Friday: 9AM - 8PM",
-                            "Saturday - Sunday: 10AM - 6PM",
+                            "Monday - Sunday: 9AM - 8PM",
+
                         ]}
                     />
                 </div>

@@ -13,6 +13,7 @@ interface InfoRowProps {
 }
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
+import { useQuery } from '@tanstack/react-query';
 interface InfoRowProps {
     icon: React.ReactNode;
     text: string;
@@ -28,141 +29,129 @@ const InfoRow: React.FC<InfoRowProps> = ({ icon, text }) => {
 };
 
 const Users = () => {
-    const [allApproved, setAllApproved] = useState([]);
-    const [allDeactive, setAllDeactive] = useState([]);
+
     const [tab, settab] = useState<"admins" | "customers">("admins")
-    const [approvedsalons, setapprovedsalons] = React.useState([]);
-    const [deactive, setDeactive] = React.useState([]);
-    const [users, setusers] = React.useState([]);
-    const [allUsers, setAllUsers] = useState([]);
 
-    useEffect(() => {
 
-        axios
-            .get("https://localhost:7074/api/auth/getallsalons")
-            .then((res) => {
 
-                console.log(res.data);
+    const { data: salons = [] } = useQuery({
+        queryKey: ["salons"],
+        queryFn: async () => {
+            const res = await axios.get(
+                "https://localhost:7074/api/auth/getallsalons"
+            );
 
-                const allSalons = res.data;
-
-                const approved = allSalons
-                    .filter(
-                        (salon: any) =>
-                            salon.status === "approved"
+            return res.data;
+        }
+    });
+    const approvedsalons = salons
+        .filter(
+            (salon: any) =>
+                salon.isActive === "active"
+        )
+        .map((salon: any) => ({
+            ...salon,
+            initials:
+                salon.ownerName
+                    ?.split(" ")
+                    .map(
+                        (word: string) =>
+                            word[0]
                     )
-                    .map((salon: any) => ({
-                        ...salon,
+                    .join("")
+                    .toUpperCase() ?? "",
+        }));
 
-                        initials: salon.ownerName
-                            ?.split(" ")
-                            .map((word: string) => word[0])
-                            .join("")
-                            .toUpperCase() ?? "",
-                    }));
-
-                const deactiveSalons = allSalons
-                    .filter(
-                        (salon: any) =>
-                            salon.status === "deactive"
+    const deactive = salons
+        .filter(
+            (salon: any) =>
+                salon.isActive === "deactive"
+        )
+        .map((salon: any) => ({
+            ...salon,
+            initials:
+                salon.ownerName
+                    ?.split(" ")
+                    .map(
+                        (word: string) =>
+                            word[0]
                     )
-                    .map((salon: any) => ({
-                        ...salon,
-
-                        initials: salon.ownerName
-                            ?.split(" ")
-                            .map((word: string) => word[0])
-                            .join("")
-                            .toUpperCase() ?? "",
-                    }));
-
-                setapprovedsalons(approved);
-
-                setAllApproved(approved);
-
-                setDeactive(deactiveSalons);
-
-                setAllDeactive(deactiveSalons);
-
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-
-    }, []);
-    useEffect(() => {
-
-        axios
-            .get("https://localhost:7074/api/auth/customerbookingstats")
-            .then((res) => {
-
-                console.log(res.data);
-
-                const usersWithInitials = res.data.map(
-                    (user: any) => ({
-                        ...user,
-
-                        initials: user.name
-                            ?.split(" ")
-                            .map((word: string) => word[0])
-                            .join("")
-                            .toUpperCase() ?? "",
-                    })
+                    .join("")
+                    .toUpperCase() ?? "",
+        }));
+    const { data: users = [] } = useQuery({
+        queryKey: ["customers"],
+        queryFn: async () => {
+            const res =
+                await axios.get(
+                    "https://localhost:7074/api/auth/customerbookingstats"
                 );
 
-                setusers(usersWithInitials);
+            return res.data.map(
+                (user: any) => ({
+                    ...user,
 
-                setAllUsers(usersWithInitials);
-
-            })
-            .catch((err) => {
-                console.log(err);
-            });
-
-    }, []);
-
-    const handleSearch = (value: string) => {
-
-        const search = value.toLowerCase();
-
-        if (!search) {
-            setusers(allUsers);
-            return;
+                    initials:
+                        user.name
+                            ?.split(" ")
+                            .map(
+                                (
+                                    word: string
+                                ) =>
+                                    word[0]
+                            )
+                            .join("")
+                            .toUpperCase() ??
+                        "",
+                })
+            );
         }
+    });
+    const [customerSearch, setCustomerSearch] = useState("");
+    const [adminSearch, setAdminSearch] = useState("");
+    const filteredApprovedSalons = approvedsalons.filter(
+        (salon: any) => {
 
-        const filtered = allUsers.filter((user: any) => {
+            if (!adminSearch) return true;
 
             return (
-                user.name?.toLowerCase().includes(search) ||
-                user.email?.toLowerCase().includes(search) ||
-                user.mobile?.includes(search) ||
-                user.initials?.toLowerCase().includes(search)
+                salon.ownerName?.toLowerCase().includes(adminSearch.toLowerCase()) ||
+                salon.salonName?.toLowerCase().includes(adminSearch.toLowerCase()) ||
+                salon.email?.toLowerCase().includes(adminSearch.toLowerCase()) ||
+                salon.phone?.toString().includes(adminSearch) ||
+                salon.salonAddress?.toLowerCase().includes(adminSearch.toLowerCase()) ||
+                salon.initials?.toLowerCase().includes(adminSearch.toLowerCase())
             );
-        });
-
-        setusers(filtered);
-    };
-    const handleAdminSearch = (value: string) => {
-
-        const search = value.toLowerCase();
-
-        if (!search) {
-            setapprovedsalons(allApproved);
-            setDeactive(allDeactive);
-            return;
         }
+    );
+    const filteredDeactiveSalons = deactive.filter(
+        (salon: any) => {
 
-        const filterLogic = (salon: any) =>
-            salon.ownername?.toLowerCase().includes(search) ||
-            salon.salonname?.toLowerCase().includes(search) ||
-            salon.email?.toLowerCase().includes(search) ||
-            salon.phone?.includes(search) ||
-            salon.salonaddress?.toLowerCase().includes(search) ||
-            salon.initials?.toLowerCase().includes(search);
+            if (!adminSearch) return true;
 
-        setapprovedsalons(allApproved.filter(filterLogic));
-        setDeactive(allDeactive.filter(filterLogic));
-    };
+            return (
+                salon.ownerName?.toLowerCase().includes(adminSearch.toLowerCase()) ||
+                salon.salonName?.toLowerCase().includes(adminSearch.toLowerCase()) ||
+                salon.email?.toLowerCase().includes(adminSearch.toLowerCase()) ||
+                salon.phone?.toString().includes(adminSearch) ||
+                salon.salonAddress?.toLowerCase().includes(adminSearch.toLowerCase()) ||
+                salon.initials?.toLowerCase().includes(adminSearch.toLowerCase())
+            );
+        }
+    );
+
+    const filteredUsers = users.filter(
+        (user: any) => {
+            if (!customerSearch) return true;
+
+            return (
+                user.name?.toLowerCase().includes(customerSearch.toLowerCase()) ||
+                user.email?.toLowerCase().includes(customerSearch.toLowerCase()) ||
+                user.mobileNumber?.includes(customerSearch) ||
+                user.initials?.toLowerCase().includes(customerSearch.toLowerCase())
+            );
+        }
+    );
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3   ">
@@ -237,7 +226,7 @@ const Users = () => {
                     <div className="">
                         <p className="text-gray-500 m-0">Total Users</p>
                         <h2 className="text-2xl font-semibold text-gray-900 m-0  ">
-                            {approvedsalons.length + users.length + deactive.length}
+                            {filteredApprovedSalons.length + filteredUsers.length + filteredDeactiveSalons.length}
                         </h2>
                     </div>
 
@@ -251,11 +240,11 @@ const Users = () => {
                     onChange={(val) => settab(val as "admins" | "customers")}
                     options={[
                         {
-                            label: `Salon Admins (${approvedsalons.length + deactive.length})`,
+                            label: `Salon Admins (${filteredApprovedSalons.length + filteredDeactiveSalons.length})`,
                             value: 'admins',
                         },
                         {
-                            label: `Customers (${users.length})`,
+                            label: `Customers (${filteredUsers.length})`,
                             value: 'customers',
                         },
                     ]}
@@ -265,13 +254,13 @@ const Users = () => {
             {tab === "admins" && (
                 <div>
                     <div className='m-6 mt-0 md:w-[40%] '>
-                        <Input placeholder="Search Salon admins" className='  font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100   ' onChange={(e) => handleAdminSearch(e.target.value)} />
+                        <Input placeholder="Search Salon admins" className='  font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100   ' onChange={(e) => setAdminSearch(e.target.value)} />
                     </div>
 
 
 
                     <div className='grid md:grid-cols-2 gap-6 m-6 mt-0'>
-                        {approvedsalons.map((salon: any) => (
+                        {filteredApprovedSalons.map((salon: any) => (
                             <Card className="rounded-2xl border " bodyStyle={{ padding: 24 }}>
 
 
@@ -330,13 +319,14 @@ const Users = () => {
                             </Card>
                         ))}
 
-                        {deactive.map((salon: any) => (
+                        {filteredDeactiveSalons.map((salon: any) => (
                             <Card className="rounded-2xl border  " bodyStyle={{ padding: 24 }}>
 
 
                                 <div className="flex items-start gap-4">
                                     <Avatar
                                         size={56}
+                                        src={salon.profileImage || undefined}
                                         className="bg-blue-100 text-blue-600 font-semibold"
                                     >
                                         {salon.initials}
@@ -344,13 +334,13 @@ const Users = () => {
 
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3">
-                                            <h2 className="text-lg font-semibold">{salon.ownername}</h2>
+                                            <h2 className="text-lg font-semibold">{salon.ownerName}</h2>
                                             <Tag color="blue" className="rounded-full">
                                                 Admin
                                             </Tag>
                                         </div>
 
-                                        <p className="text-gray-500">Owner of {salon.salonname}</p>
+                                        <p className="text-gray-500">Owner of {salon.salonName}</p>
 
                                         <Tag color="yellow" className="mt-2 rounded-full px-3">
                                             Deactive
@@ -370,7 +360,7 @@ const Users = () => {
                                     />
                                     <InfoRow
                                         icon={<EnvironmentOutlined />}
-                                        text={salon.salonaddress}
+                                        text={salon.salonAddress}
                                     />
                                     <InfoRow
                                         icon={<CalendarOutlined />}
@@ -398,12 +388,12 @@ const Users = () => {
 
                 <div>
                     <div className='m-6 mt-0 md:w-[40%] '>
-                        <Input onChange={(e) => handleSearch(e.target.value)} allowClear placeholder="Search Customers" className='  font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100   ' />
+                        <Input onChange={(e) => setCustomerSearch(e.target.value)} allowClear placeholder="Search Customers" className='  font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100   ' />
                     </div>
 
 
                     <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 m-6 mt-0'>
-                        {users.map((user: any) => (
+                        {filteredUsers.map((user: any) => (
                             <Card
                                 className="rounded-2xl border"
                                 bodyStyle={{ padding: 24 }}

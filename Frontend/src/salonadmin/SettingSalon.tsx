@@ -21,7 +21,7 @@ import {
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-const Settingcustomer = () => {
+const SettingSalon = () => {
 
     const [form] = Form.useForm();
     const [profileForm] = Form.useForm();
@@ -48,14 +48,14 @@ const Settingcustomer = () => {
 
     const user = JSON.parse(authData.user);
 
-    const userId = user._id;
+    const userId = user.salonId;
 
     const { data: profileData } = useQuery({
         queryKey: ["adminProfile", userId],
 
         queryFn: async () => {
             const res = await axios.get(
-                `https://localhost:7074/api/auth/getcustomerprofile/${userId}`
+                `https://localhost:7074/api/auth/getsalonprofile/${userId}`
             );
 
             return res.data.data;
@@ -70,9 +70,9 @@ const Settingcustomer = () => {
     useEffect(() => {
         if (profileData) {
             profileForm.setFieldsValue({
-                fullName: profileData.name,
+                fullName: profileData.ownerName,
                 email: profileData.email,
-                phone: profileData.mobileNumber,
+                phone: profileData.phone,
             });
 
             setProfileImage(profileData.profileImage || "");
@@ -136,15 +136,15 @@ const Settingcustomer = () => {
 
                 const res =
                     await axios.put(
-                        `https://localhost:7074/api/auth/updatecustomerprofile/${userId}`,
+                        `https://localhost:7074/api/auth/updatesalonprofile/${userId}`,
                         {
-                            Name:
+                            ownerName:
                                 values.fullName,
 
                             Email:
                                 values.email,
 
-                            MobileNumber:
+                            phone:
                                 values.phone,
 
                             ProfileImage:
@@ -196,7 +196,7 @@ const Settingcustomer = () => {
 
                 const res =
                     await axios.put(
-                        `https://localhost:7074/api/auth/changecustomerpassword/${userId}`,
+                        `https://localhost:7074/api/auth/changesalonpassword/${userId}`,
                         values
                     );
 
@@ -477,16 +477,24 @@ const Settingcustomer = () => {
                                     <Button
 
                                         type="primary"
+
                                         htmlType="submit"
+
                                         size="large"
+
                                         loading={updateProfileMutation.isPending}
+
                                         className="rounded-full px-8"
                                     >
                                         Save Changes
                                     </Button>
+
                                 </div>
+
                             </Form>
+
                         </Card>
+
                     </div>
                 )
             }
@@ -498,12 +506,14 @@ const Settingcustomer = () => {
                 &&
                 (
                     <div className="m-6 mt-0">
+
                         <Card
                             className="rounded-2xl border"
                             bodyStyle={{
                                 padding: 28
                             }}
                         >
+
                             <div className="mb-6">
 
                                 <h2 className="text-lg font-semibold">
@@ -513,7 +523,9 @@ const Settingcustomer = () => {
                                 <p className="text-gray-500 text-sm">
                                     Update your password
                                 </p>
+
                             </div>
+
                             <Form
                                 layout="vertical"
                                 form={passwordForm}
@@ -521,9 +533,12 @@ const Settingcustomer = () => {
                                     handlePasswordChange
                                 }
                             >
+
                                 <Form.Item
+
                                     label={<span className="font-[Outfit] ">Current Password</span>}
                                     name="currentPassword"
+
                                     rules={[
                                         {
                                             required: true,
@@ -532,11 +547,14 @@ const Settingcustomer = () => {
                                         }
                                     ]}
                                 >
+
                                     <Input.Password
                                         prefix={<LockOutlined />}
                                         size="large"
                                     />
+
                                 </Form.Item>
+
                                 <Form.Item
 
                                     label={<span className="font-[Outfit] ">New Password</span>}
@@ -632,4 +650,4 @@ const Settingcustomer = () => {
     );
 };
 
-export default Settingcustomer;
+export default SettingSalon;

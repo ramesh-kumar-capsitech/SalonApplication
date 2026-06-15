@@ -12,6 +12,7 @@ import {
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import SalonFormDrawer from "../components/SalonFormDrawer";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 const StatBox = ({ icon, value, label, bg, color }: any) => (
     <div className={`${bg} rounded-lg p-1 text-center`}>
         <div className={`text-2xl ${color} mb-2`}>{icon}</div>
@@ -21,124 +22,62 @@ const StatBox = ({ icon, value, label, bg, color }: any) => (
 );
 
 const Salon = () => {
-    const [approvedsalons, setapprovedsalons] = React.useState([]);
-
-    const [deactive, setDeactive] = React.useState([]);
 
 
 
-    const [allApproved, setAllApproved] = useState([]);
-    const [allDeactivated, setAllDeactivated] = useState([]);
+
+
+
     const navigate = useNavigate();
-    // useEffect(() => {
-    //     axios.get("http://localhost:3001/auth/approved-salons")
-    //         .then(res => {
-    //             setapprovedsalons(res.data.data);
-    //             setAllApproved(res.data.data);
-    //         });
-
-    //     axios.get("http://localhost:3001/auth/deactive-salons")
-    //         .then(res => {
-    //             setdeactivatedsalons(res.data.data);
-    //             setAllDeactivated(res.data.data);
-    //         });
-
-    // }, []);
+    const [searchTerm, setSearchTerm] = useState("");
     const handleSearch = (value: string) => {
-        const search = value.toLowerCase();
+        setSearchTerm(value.toLowerCase());
 
-        if (!search) {
-            setapprovedsalons(allApproved);
-            setDeactive(allDeactivated);
-            return;
-        }
-
-        const filterLogic = (salon: any) =>
-            salon.salonName?.toLowerCase().includes(search) ||
-            salon.ownerName?.toLowerCase().includes(search) ||
-            salon.salonAddress?.toLowerCase().includes(search) ||
-            salon.city?.toLowerCase().includes(search) ||
-            salon.email?.toLowerCase().includes(search) ||
-            salon.phone?.toString().includes(search);
-
-        const filteredApproved = allApproved.filter(filterLogic);
-        const filteredDeactivated = allDeactivated.filter(filterLogic);
-
-        setapprovedsalons(filteredApproved);
-        setDeactive(filteredDeactivated);;
     };
-    // useEffect(() => {
-    //     axios.get("http://localhost:3001/auth/approved-salons").then(res => {
-    //         setapprovedsalons(res.data.data);
-    //         console.log(res.data.data)
-    //     }).catch(err => {
-    //         console.log(err)
 
-    //     })
-    // }, [])
-    // useEffect(() => {
-    //     axios.get("http://localhost:3001/auth/deactive-salons").then(res => {
-    //         setDeactive(res.data.data);
-    //         console.log(res.data.data)
-    //     }).catch(err => {
-    //         console.log(err)
-
-    //     })
-    // }, [])
-    const fetchAllSalons = async () => {
-
-        try {
-
+    const { data: salons = [], isLoading, } = useQuery({
+        queryKey: ["salons"],
+        queryFn: async () => {
             const res = await axios.get(
                 "https://localhost:7074/api/auth/getallsalons"
             );
-            console.log("SALONS:", res.data);
-            const allSalons = res.data;
 
-            const approved = allSalons.filter(
-                (salon: any) =>
-                    salon.status === "approved" &&
-                    salon.isActive === "active"
-            );
-
-            const deactiveSalons = allSalons.filter(
-                (salon: any) =>
-                    salon.status === "approved" &&
-                    salon.isActive === "deactive"
-            );
-
-            setapprovedsalons(approved);
-
-            setAllApproved(approved);
-
-            setDeactive(deactiveSalons);
-
-            setAllDeactivated(deactiveSalons);
-
-        } catch (err) {
-
-            console.log(err);
-
+            return res.data;
         }
-    };
-    useEffect(() => {
-        fetchAllSalons();
-    }, []);
+    });
+    const approvedsalons = salons.filter((salon: any) => {
+        const matchesSearch =
+            !searchTerm ||
+            salon.salonName?.toLowerCase().includes(searchTerm) ||
+            salon.ownerName?.toLowerCase().includes(searchTerm) ||
+            salon.salonAddress?.toLowerCase().includes(searchTerm) ||
+            salon.city?.toLowerCase().includes(searchTerm) ||
+            salon.email?.toLowerCase().includes(searchTerm) ||
+            salon.phone?.toString().includes(searchTerm);
 
-    // const handleMenuClick = (key: string, id: string) => {
-    //     if (key === "deactivate") {
-    //         deactivateSalonHandler(id);
-    //     }
+        return (
+            salon.status === "approved" &&
+            salon.isActive === "active" &&
+            matchesSearch
+        );
+    });
 
-    //     if (key === "edit") {
-    //         setEditingSalon(salon);
-    //         setOpen(true);
-    //     }
-    //     if (key === "active") {
-    //         activateSalonHandler(id);
-    //     }
+    const deactive = salons.filter((salon: any) => {
+        const matchesSearch =
+            !searchTerm ||
+            salon.salonName?.toLowerCase().includes(searchTerm) ||
+            salon.ownerName?.toLowerCase().includes(searchTerm) ||
+            salon.salonAddress?.toLowerCase().includes(searchTerm) ||
+            salon.city?.toLowerCase().includes(searchTerm) ||
+            salon.email?.toLowerCase().includes(searchTerm) ||
+            salon.phone?.toString().includes(searchTerm);
 
-    // };
+        return (
+            salon.status === "approved" &&
+            salon.isActive === "deactive" &&
+            matchesSearch
+        );
+    });
     const handleMenuClick = (
         key: string,
         id: string,
@@ -158,71 +97,148 @@ const Salon = () => {
             setOpen(true);
         }
     };
-    const deactivateSalonHandler = async (id: string) => {
-        try {
-            const res = await axios.put(`https://localhost:7074/api/auth/deactivate/${id}`);
-            message.success(res.data.message);
+    const queryClient = useQueryClient();
 
-            fetchAllSalons();
+    const deactivateMutation = useMutation({
+        mutationFn: async (
+            id: string
+        ) => {
+            const res =
+                await axios.put(
+                    `https://localhost:7074/api/auth/deactivate/${id}`
+                );
 
-        } catch {
-            message.error("Failed to deactivate");
-        }
-    };
-    const activateSalonHandler = async (id: string) => {
-        try {
-            const res = await axios.put(`https://localhost:7074/api/auth/activate/${id}`);
-            message.success(res.data.message);
+            return res.data;
+        },
 
-            fetchAllSalons();
+        onSuccess: (data) => {
 
-        } catch {
-            message.error("Failed to deactivate");
-        }
-    };
+            message.success(
+                data.message
+            );
+
+            queryClient
+                .invalidateQueries({
+                    queryKey: [
+                        "salons",
+                    ],
+                });
+        },
+
+        onError: () => {
+            message.error(
+                "Failed to deactivate"
+            );
+        },
+    });
+    const deactivateSalonHandler =
+        (id: string) => {
+            deactivateMutation.mutate(
+                id
+            );
+        };
+    const activateMutation =
+        useMutation({
+            mutationFn: async (
+                id: string
+            ) => {
+                const res =
+                    await axios.put(
+                        `https://localhost:7074/api/auth/activate/${id}`
+                    );
+
+                return res.data;
+            },
+
+            onSuccess: (data) => {
+
+                message.success(
+                    data.message
+                );
+
+                queryClient
+                    .invalidateQueries({
+                        queryKey: [
+                            "salons",
+                        ],
+                    });
+            },
+
+            onError: () => {
+                message.error(
+                    "Failed to activate"
+                );
+            },
+        });
+    const activateSalonHandler =
+        (id: string) => {
+            activateMutation.mutate(
+                id
+            );
+        };
     const [open, setOpen] = useState(false);
     const [editingSalon, setEditingSalon] = useState<any>(null);
-    const handleSalonSubmit = async (
-        values: any
-    ) => {
+    const salonMutation =
+        useMutation({
+            mutationFn: async (
+                values: any
+            ) => {
 
-        try {
+                if (editingSalon) {
+                    await axios.put(
+                        `https://localhost:7074/api/auth/updatesalon/${editingSalon.id}`,
+                        values
+                    );
 
-            if (editingSalon) {
-
-                await axios.put(
-                    `https://localhost:7074/api/auth/updatesalon/${editingSalon.id}`,
-                    values
-                );
-
-                message.success(
-                    "Salon Updated Successfully"
-                );
-
-            } else {
+                    return "updated";
+                }
 
                 await axios.post(
-                    "https://localhost:7074/api/auth/createsalonbyadmin",
+                    "/createsalonbyadmin",
                     values
                 );
 
+                return "created";
+            },
+
+            onSuccess: (
+                result
+            ) => {
+
                 message.success(
-                    "Salon Created Successfully"
+                    result ===
+                        "updated"
+                        ? "Salon Updated Successfully"
+                        : "Salon Created Successfully"
                 );
-            }
 
-            setOpen(false);
-            setEditingSalon(null);
+                queryClient
+                    .invalidateQueries({
+                        queryKey: [
+                            "salons",
+                        ],
+                    });
 
-            fetchAllSalons();
+                setOpen(false);
 
-        } catch (error) {
+                setEditingSalon(
+                    null
+                );
+            },
 
-            message.error(
-                "Something went wrong"
+            onError: () => {
+                message.error(
+                    "Something went wrong"
+                );
+            },
+        });
+    const handleSalonSubmit =
+        (values: any) => {
+
+            salonMutation.mutate(
+                values
             );
-        }
-    };
+        };
     return (
         <div>
             <SalonFormDrawer

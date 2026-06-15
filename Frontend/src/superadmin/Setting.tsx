@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 
 import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 const Setting = () => {
 
@@ -32,12 +33,7 @@ const Setting = () => {
             "profile"
         );
 
-    const [loading, setLoading] =
-        useState(false);
 
-    const [loadingProfile,
-        setLoadingProfile]
-        = useState(false);
 
     const [profileImage,
         setProfileImage]
@@ -46,56 +42,50 @@ const Setting = () => {
     const [initials,
         setInitials]
         = useState("");
+    const authData = JSON.parse(
+        localStorage.getItem("persist:auth")!
+    );
+
+    const user = JSON.parse(authData.user);
+
+    const userId = user.id;
+
+    const { data: profileData } = useQuery({
+        queryKey: ["adminProfile", userId],
+
+        queryFn: async () => {
+            const res = await axios.get(
+                `https://localhost:7074/api/auth/getadminprofile/${userId}`
+            );
+
+            return res.data.data;
+            console.log("API DATA =>", res.data);
+
+        },
+
+
+
+
+    });
     useEffect(() => {
+        if (profileData) {
+            profileForm.setFieldsValue({
+                fullName: profileData.name,
+                email: profileData.email,
+                phone: profileData.mobileNumber,
+            });
 
-        const getProfile = async () => {
+            setProfileImage(profileData.profileImage || "");
 
-            try {
-
-                const authData = JSON.parse(
-                    localStorage.getItem("persist:auth")!
-                );
-
-                const user = JSON.parse(authData.user);
-
-                const salonId = user.id;
-
-                const res = await axios.get(
-                    `https://localhost:7074/api/auth/getadminprofile/${salonId}`
-                );
-                console.log(res.data);
-
-                const data = res.data.data;
-
-                console.log(data);
-
-                profileForm.setFieldsValue({
-                    fullName: data.name,
-                    email: data.email,
-                    phone: data.mobileNumber,
-                });
-
-                setProfileImage(data.profileImage || "");
-
-                setInitials(
-                    data.name
-                        ?.split(" ")
-                        ?.map((word) => word[0])
-                        ?.join("")
-                        ?.toUpperCase()
-                );
-
-            } catch (err) {
-
-                console.log(err);
-            }
-        };
-
-        getProfile();
-
-    }, [form]);
-
-
+            setInitials(
+                profileData.name
+                    ?.split(" ")
+                    ?.map((word) => word[0])
+                    ?.join("")
+                    ?.toUpperCase()
+            );
+        }
+    }, [profileData]);
     const uploadImage =
         async (file) => {
 
@@ -138,33 +128,15 @@ const Setting = () => {
         };
 
 
-    const handleProfileUpdate =
-        async (values: any) => {
+    const queryClient = useQueryClient();
 
-            setLoadingProfile(true);
-
-            try {
-
-                const authData =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "persist:auth"
-                        )!
-                    );
-
-                const user =
-                    JSON.parse(
-                        authData.user
-                    );
-
-                const userId =
-                    user.id;
+    const updateProfileMutation =
+        useMutation({
+            mutationFn: async (values: any) => {
 
                 const res =
                     await axios.put(
-
                         `https://localhost:7074/api/auth/updateadminprofile/${userId}`,
-
                         {
                             Name:
                                 values.fullName,
@@ -176,87 +148,87 @@ const Setting = () => {
                                 values.phone,
 
                             ProfileImage:
-                                profileImage
+                                profileImage,
                         }
                     );
 
-                if (res.data.success) {
+                return res.data;
+            },
 
-                    message.success(
-                        "Profile updated successfully"
-                    );
-                }
+            onSuccess: () => {
 
-            } catch (error: any) {
-
-                console.log(error);
-
-                message.error(
-                    error?.response?.data?.message
-                    ||
-                    "Something went wrong"
+                message.success(
+                    "Profile updated successfully"
                 );
 
-            } finally {
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        "adminProfile",
+                        userId,
+                    ],
+                });
+            },
 
-                setLoadingProfile(false);
-            }
+            onError: (
+                error: any
+            ) => {
+
+                message.error(
+                    error?.response?.data
+                        ?.message ||
+                    "Something went wrong"
+                );
+            },
+        });
+    const handleProfileUpdate =
+        (values: any) => {
+
+            updateProfileMutation.mutate(
+                values
+            );
         };
 
-
-    const handlePasswordChange =
-        async (values: any) => {
-
-            setLoading(true);
-
-            try {
-
-                const authData =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "persist:auth"
-                        )!
-                    );
-
-                const user =
-                    JSON.parse(
-                        authData.user
-                    );
-
-                const userId =
-                    user.id;
+    const changePasswordMutation =
+        useMutation({
+            mutationFn: async (
+                values: any
+            ) => {
 
                 const res =
                     await axios.put(
-
                         `https://localhost:7074/api/auth/changeadminpassword/${userId}`,
-
                         values
                     );
 
-                if (res.data.success) {
+                return res.data;
+            },
 
-                    message.success(
-                        "Password updated successfully"
-                    );
+            onSuccess: () => {
 
-                    passwordForm.resetFields();
-                }
-
-            } catch (error: any) {
-
-                console.log(error);
-
-                message.error(
-                    error?.response?.data?.message
-                    ||
-                    "Something went wrong"
+                message.success(
+                    "Password updated successfully"
                 );
 
-            } finally {
+                passwordForm.resetFields();
+            },
 
-                setLoading(false);
-            }
+            onError: (
+                error: any
+            ) => {
+
+                message.error(
+                    error?.response?.data
+                        ?.message ||
+                    "Something went wrong"
+                );
+            },
+        });
+    const handlePasswordChange =
+        (values: any) => {
+
+            changePasswordMutation.mutate(
+                values
+            );
         };
 
     return (
@@ -291,13 +263,7 @@ const Setting = () => {
 
                     value={tab}
 
-                    onChange={(val) =>
-                        setTab(
-                            val as
-                            "profile"
-                            | "password"
-                        )
-                    }
+                    onChange={(val) => setTab(val as "profile" | "password")}
 
                     options={[
 
@@ -510,7 +476,7 @@ const Setting = () => {
 
                                         size="large"
 
-                                        loading={loadingProfile}
+                                        loading={updateProfileMutation.isPending}
 
                                         className="rounded-full px-8"
                                     >
@@ -659,7 +625,7 @@ const Setting = () => {
 
                                     htmlType="submit"
 
-                                    loading={loading}
+                                    loading={changePasswordMutation.isPending}
 
                                     className="rounded-full px-6"
                                 >

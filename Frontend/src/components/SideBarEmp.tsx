@@ -68,7 +68,7 @@ const Sidebar: React.FC = () => {
 
                     </div>
                     <div >
-                        <h1 className="text-lg  m-0 leading-[0.8]  ">TrimTech</h1>
+                        <h1 className="text-lg  m-0 leading-[0.8]  ">BookMySalon</h1>
                         <span className="  text-sm text-white/70">Premium Booking</span>
                     </div>
                 </div>

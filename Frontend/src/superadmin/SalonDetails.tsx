@@ -6,41 +6,59 @@ import {
     Table,
     Typography,
     Empty,
+    Spin,
 } from "antd";
 import { UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 ;
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 const { Title, Text } = Typography;
 
 function SalonDetails() {
     const { id } = useParams();
 
-    const [data, setData] =
-        useState<any>(null);
+    const { data, isLoading, error } = useQuery({
+        queryKey: [
+            "salonDetails",
+            id
+        ],
 
-    useEffect(() => {
-
-        fetchDetails();
-
-    }, [id]);
-
-    const fetchDetails =
-        async () => {
+        queryFn: async () => {
 
             const res =
                 await axios.get(
-
                     `https://localhost:7074/api/auth/salondetails/${id}`
-
                 );
 
-            setData(
-                res.data
-            );
-        };
+            return res.data;
+        },
+
+        enabled: !!id
+    });
+
+
+
+    if (isLoading) {
+        return (
+            <div className="flex justify-center items-center h-[500px]">
+                <Spin size="large" />
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="flex justify-center items-center h-[500px]">
+                <Empty
+                    description="Failed to load salon details"
+                />
+            </div>
+        );
+    }
+
 
 
 

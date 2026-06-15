@@ -19,23 +19,18 @@ import {
     UploadOutlined,
 } from "@ant-design/icons";
 import axios from 'axios';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 
 const SettingEmp = () => {
-    const [tab, settab] = useState<"profile" | "password">("profile")
     const [form] = Form.useForm();
-
-
-
     const [profileForm] = Form.useForm();
 
-    const [passwordForm] = Form.useForm()
-    const [loading, setLoading] =
-        useState(false);
+    const [passwordForm] = Form.useForm();
 
-    const [loadingProfile,
-        setLoadingProfile]
-        = useState(false);
+    const [tab, settab] = useState<"profile" | "password">("profile");
+
+
 
     const [profileImage,
         setProfileImage]
@@ -44,54 +39,50 @@ const SettingEmp = () => {
     const [initials,
         setInitials]
         = useState("");
+    const authData = JSON.parse(
+        localStorage.getItem("persist:auth")!
+    );
+
+    const user = JSON.parse(authData.user);
+
+    const empId = user.id;
+
+    const { data: profileData } = useQuery({
+        queryKey: ["adminProfile", empId],
+
+        queryFn: async () => {
+            const res = await axios.get(
+                `https://localhost:7074/api/auth/getemployeeprofile/${empId}`
+            );
+
+            return res.data.data;
+
+
+        },
+
+
+
+
+    });
     useEffect(() => {
+        if (profileData) {
+            profileForm.setFieldsValue({
+                fullName: profileData.fullName,
+                email: profileData.email,
+                phone: profileData.phone,
+            });
 
-        const getProfile = async () => {
+            setProfileImage(profileData.profileImage || "");
 
-            try {
-
-                const authData = JSON.parse(
-                    localStorage.getItem("persist:auth")!
-                );
-
-                const user = JSON.parse(authData.user);
-
-                const empId = user.id;
-
-                const res = await axios.get(
-                    `https://localhost:7074/api/auth/getemployeeprofile/${empId}`
-                );
-                console.log(res.data);
-
-                const data = res.data.data;
-
-                console.log(data);
-
-                profileForm.setFieldsValue({
-                    fullName: data.fullName,
-                    email: data.email,
-                    phone: data.phone,
-                });
-
-                setProfileImage(data.profileImage || "");
-
-                setInitials(
-                    data.fullName
-                        ?.split(" ")
-                        ?.map((word) => word[0])
-                        ?.join("")
-                        ?.toUpperCase()
-                );
-
-            } catch (err) {
-
-                console.log(err);
-            }
-        };
-
-        getProfile();
-
-    }, [form]);
+            setInitials(
+                profileData.FullName
+                    ?.split(" ")
+                    ?.map((word) => word[0])
+                    ?.join("")
+                    ?.toUpperCase()
+            );
+        }
+    }, [profileData]);
     const uploadImage =
         async (file) => {
 
@@ -132,123 +123,108 @@ const SettingEmp = () => {
                 );
             }
         };
-    const handleProfileUpdate =
-        async (values: any) => {
 
-            setLoadingProfile(true);
 
-            try {
+    const queryClient = useQueryClient();
 
-                const authData =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "persist:auth"
-                        )!
-                    );
-
-                const user =
-                    JSON.parse(
-                        authData.user
-                    );
-
-                const empId =
-                    user.id;
+    const updateProfileMutation =
+        useMutation({
+            mutationFn: async (values: any) => {
 
                 const res =
                     await axios.put(
-
                         `https://localhost:7074/api/auth/updateemployeeprofile/${empId}`,
-
                         {
                             fullName:
                                 values.fullName,
 
-                            email:
+                            Email:
                                 values.email,
 
                             phone:
                                 values.phone,
 
-                            profileImage:
-                                profileImage
+                            ProfileImage:
+                                profileImage,
                         }
                     );
 
-                if (res.data.success) {
+                return res.data;
+            },
 
-                    message.success(
-                        "Profile updated successfully"
-                    );
-                }
+            onSuccess: () => {
 
-            } catch (error: any) {
-
-                console.log(error);
-
-                message.error(
-                    error?.response?.data?.message
-                    ||
-                    "Something went wrong"
+                message.success(
+                    "Profile updated successfully"
                 );
 
-            } finally {
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        "adminProfile",
+                        empId,
+                    ],
+                });
+            },
 
-                setLoadingProfile(false);
+            onError: (error: any) => {
+
+                console.log(error);
+                console.log(error.response?.data);
+
+                message.error(
+                    "something went wrong"
+                )
             }
+        });
+    const handleProfileUpdate =
+        (values: any) => {
+
+            updateProfileMutation.mutate(
+                values
+            );
         };
-    const handlePasswordChange =
-        async (values: any) => {
 
-            setLoading(true);
-
-            try {
-
-                const authData =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "persist:auth"
-                        )!
-                    );
-
-                const user =
-                    JSON.parse(
-                        authData.user
-                    );
-
-                const empId =
-                    user.id;
+    const changePasswordMutation =
+        useMutation({
+            mutationFn: async (
+                values: any
+            ) => {
 
                 const res =
                     await axios.put(
-
                         `https://localhost:7074/api/auth/changeemployeepassword/${empId}`,
-
                         values
                     );
 
-                if (res.data.success) {
+                return res.data;
+            },
 
-                    message.success(
-                        "Password updated successfully"
-                    );
+            onSuccess: () => {
 
-                    passwordForm.resetFields();
-                }
-
-            } catch (error: any) {
-
-                console.log(error);
-
-                message.error(
-                    error?.response?.data?.message
-                    ||
-                    "Something went wrong"
+                message.success(
+                    "Password updated successfully"
                 );
 
-            } finally {
+                passwordForm.resetFields();
+            },
 
-                setLoading(false);
-            }
+            onError: (
+                error: any
+            ) => {
+
+                message.error(
+                    error?.response?.data
+                        ?.message ||
+                    "Something went wrong"
+                );
+            },
+        });
+    const handlePasswordChange =
+        (values: any) => {
+
+            changePasswordMutation.mutate(
+                values
+            );
         };
     return (
         <div>
@@ -324,9 +300,23 @@ const SettingEmp = () => {
                                         </Button>
                                     </Upload>
 
-                                    <Button type="link" danger>
-                                        Remove
-                                    </Button>
+
+                                    {
+                                        profileImage
+                                        &&
+                                        (
+                                            <Button
+
+                                                type="link"
+
+                                                danger
+
+                                                onClick={() => setProfileImage("")}
+                                            >
+                                                Remove
+                                            </Button>
+                                        )
+                                    }
                                 </div>
                             </div>
                         </div>
@@ -379,7 +369,7 @@ const SettingEmp = () => {
 
                                     size="large"
 
-                                    loading={loadingProfile}
+                                    loading={updateProfileMutation.isPending}
 
                                     className="rounded-full px-8"
                                 >
@@ -518,7 +508,9 @@ const SettingEmp = () => {
 
                             htmlType="submit"
 
-                            loading={loading}
+                            loading={
+                                changePasswordMutation.isPending
+                            }
 
                             className="rounded-full px-6"
                         >

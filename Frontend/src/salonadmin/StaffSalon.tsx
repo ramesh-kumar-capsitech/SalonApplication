@@ -20,6 +20,7 @@ interface InfoRowProps {
     text: string;
 }
 import AddEmployeeDrawer from "../components/AddEmployeeDrawer";
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const InfoRow: React.FC<InfoRowProps> = ({ icon, text }) => {
     return (
@@ -51,62 +52,11 @@ const InfoBlock: React.FC<InfoBlockProps> = ({ label, value, icon }) => {
 const StaffSalon = () => {
     const [tab, settab] = useState<"activestaff" | "request">("activestaff")
     const [Requests, setRequests] = useState([])
-    const [approvereq, setapprovereq] = useState([])
 
 
-    // useEffect(() => {
 
-    //     axios.get(`http://localhost:3001/auth/salon-job-requests/${salonId}`)
-    //         .then(res => {
-    //             setRequests(res.data.data)
-    //         })
 
-    // }, [])
-    useEffect(() => {
 
-        const authData =
-            JSON.parse(
-                localStorage.getItem(
-                    "persist:auth"
-                )!
-            );
-
-        const user =
-            JSON.parse(authData.user);
-
-        const salonId =
-            user.salonId;
-
-        if (salonId) {
-
-            getEmployees(salonId);
-        }
-
-    }, []);
-    // const [jobapplication, setjobapplication] = useState([])
-    // const handleApprove = async (id: string) => {
-
-    //     try {
-    //         await axios.put(`http://localhost:3001/auth/approve/jobapplication/${id}`);
-
-    //         message.success("JobApplication approved successfully!");
-    //         setRequests(prev =>
-    //             prev.filter((req: any) => req._id !== id)
-    //         );
-
-    //     } catch (error) {
-    //         console.log(error);
-    //     }
-    // };
-    // const handleReject = async (id: string) => {
-    //     await axios.put(`http://localhost:3001/auth/reject-application/${id}`, {
-    //         reason: "Incomplete documents"
-    //     });
-    //     message.success("Application rejected successfully!");
-    //     setRequests(prev =>
-    //         prev.filter((req: any) => req._id !== id)
-    //     );
-    // };
 
 
     const [openDrawer,
@@ -116,64 +66,71 @@ const StaffSalon = () => {
     const [editingEmployee,
         setEditingEmployee]
         = useState(null);
-    const getEmployees =
-        async (salonId) => {
+    const authData =
+        JSON.parse(
+            localStorage.getItem(
+                "persist:auth"
+            )!
+        );
 
-            try {
+    const user =
+        JSON.parse(authData.user);
 
-                const res =
-                    await axios.get(
-                        `https://localhost:7074/api/auth/getemployees/${salonId}`
-                    );
+    const salonId =
+        user.salonId;
+    const queryClient = useQueryClient();
 
-                setapprovereq(res.data);
+    const { data: approvereq = [], isLoading, } = useQuery({
+        queryKey: ["staffList", salonId],
 
-            } catch (err) {
+        queryFn: async () => {
 
-                console.log(err);
-            }
-        }
-    const toggleEmployeeStatus =
-        async (employeeId) => {
+            const res =
+                await axios.get(
+                    `https://localhost:7074/api/auth/getemployees/${salonId}`
+                );
 
-            try {
+            return res.data;
+        },
+
+        enabled: !!salonId
+    });
+    const toggleEmployeeMutation =
+        useMutation({
+
+            mutationFn: async (
+                employeeId: string
+            ) => {
 
                 const res =
                     await axios.put(
                         `https://localhost:7074/api/auth/toggleemployee/${employeeId}`
                     );
 
-                if (res.data.success) {
+                return res.data;
+            },
 
-                    setapprovereq(prev =>
+            onSuccess: () => {
 
-                        prev.map(emp =>
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        "staffList",
+                        salonId
+                    ]
+                });
 
-                            emp.id === employeeId
-                                ? {
-                                    ...emp,
+                message.success(
+                    "Employee status updated"
+                );
+            },
 
-                                    status:
-                                        res.data.status
-                                }
-                                : emp
-                        )
-                    );
-
-                    message.success(
-                        `Employee ${res.data.status}`
-                    );
-                }
-
-            } catch (err) {
-
-                console.log(err);
+            onError: () => {
 
                 message.error(
                     "Failed to update status"
                 );
             }
-        }
+        });
 
     return (
 
@@ -181,11 +138,8 @@ const StaffSalon = () => {
             <AddEmployeeDrawer
                 openDrawer={openDrawer}
                 setOpenDrawer={setOpenDrawer}
-                getEmployees={getEmployees}
                 editingEmployee={editingEmployee}
-                setEditingEmployee={
-                    setEditingEmployee
-                }
+                setEditingEmployee={setEditingEmployee}
             />
             <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3   ">
                 <div className='pt-3'>
@@ -271,11 +225,12 @@ const StaffSalon = () => {
                                 className="rounded-2xl border font-[Outfit]"
                                 bodyStyle={{ padding: 24 }}
                             >
-                                {/* HEADER */}
+
                                 <div className="flex items-start justify-between">
                                     <div className="flex items-center gap-4">
                                         <Avatar
                                             size={48}
+                                            src={appreq.profileImage || undefined}
                                             className="bg-blue-100 text-blue-600 font-semibold"
                                         >
                                             {appreq.fullName?.split(" ").map((w: any) => w[0]).join("").toUpperCase()}
@@ -342,7 +297,7 @@ const StaffSalon = () => {
                                                     key === "toggle"
                                                 ) {
 
-                                                    toggleEmployeeStatus(
+                                                    toggleEmployeeMutation.mutate(
                                                         appreq.id
                                                     );
                                                 }
@@ -357,7 +312,7 @@ const StaffSalon = () => {
                                 </div>
 
                                 {/* INFO */}
-                                <div className="bg-gray-50 rounded-xl p-4 mt-5 space-y-3 text-sm">
+                                <div className="bg-gray-50 rounded-xl p-4 mt-5 space-y-3 text-sm" >
                                     <InfoRow
                                         icon={<MailOutlined />}
                                         text={appreq.email}
@@ -384,20 +339,21 @@ const StaffSalon = () => {
                                     />
                                 </div>
 
-                                {/* STATS */}
+
                                 <div className="grid grid-cols-2 gap-4 mt-5">
                                     <div className="bg-blue-50 rounded-xl p-4 text-center">
                                         <h3 className="text-xl font-semibold text-blue-600">
-                                            8
+                                            {appreq.todaysBookings}
                                         </h3>
                                         <p className="text-gray-500 text-sm m-0">
-                                            Today's Bookings
+                                            Today Bookings
+
                                         </p>
                                     </div>
 
                                     <div className="bg-green-50 rounded-xl p-4 text-center">
                                         <h3 className="text-xl font-semibold text-green-600">
-                                            245
+                                            {appreq.totalBookings}
                                         </h3>
                                         <p className="text-gray-500 text-sm m-0">
                                             Total Bookings
@@ -412,9 +368,10 @@ const StaffSalon = () => {
                                     View Schedule
                                 </Button>
                             </Card>
-                        ))}
+                        ))
+                        }
 
-                    </div>
+                    </div >
                 )
             }
 

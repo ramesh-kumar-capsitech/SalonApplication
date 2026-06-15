@@ -1,4 +1,4 @@
-import { Avatar, Button, Card, Switch, Tag } from 'antd'
+import { Avatar, Button, Card, message, Switch, Tag } from 'antd'
 import {
     CheckCircleOutlined,
     PlayCircleOutlined,
@@ -6,32 +6,23 @@ import {
 } from "@ant-design/icons";
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const myshedule = () => {
-    const [bookings, setBookings] = useState<any[]>([])
-    useEffect(() => {
 
-        const authData = JSON.parse(
-            localStorage.getItem("persist:auth")!
-        );
+    const authData = JSON.parse(localStorage.getItem("persist:auth")!);
+    const user = JSON.parse(authData.user);
+    const empid = user.id
 
-        const user = JSON.parse(
-            authData.user
-        );
+    const { data: bookings = [], isLoading, error } = useQuery({
+        queryKey: ["bookings", empid],
+        queryFn: async () => {
+            const res = await axios.get(`https://localhost:7074/api/auth/getemployeebookings/${empid}`)
+            return res.data;
+        },
+        enabled: !!empid
+    })
 
-        axios
-            .get(
-                `https://localhost:7074/api/auth/getemployeebookings/${user.id}`
-            )
-            .then((res) => {
-
-                console.log("BOOKINGS:", res.data);
-
-                setBookings(res.data);
-            });
-
-    }, []);
-    // const today = new Date().toISOString().split("T")[0];
     const todayBookings = bookings.filter((b) => {
         const bookingDate = new Date(b.date).toDateString();
         const todayDate = new Date().toDateString();
@@ -51,7 +42,7 @@ const myshedule = () => {
     ).length;
 
     const inProgressCount = appointments.filter(
-        (a) => a.status === "In Progress"
+        (a) => a.status === "in progress"
     ).length;
 
     const upcomingCount = appointments.filter(
@@ -62,26 +53,47 @@ const myshedule = () => {
         month: "long",
         day: "numeric",
     });
-    const updateStatus = async (id: string, status: string) => {
-        try {
-            const res = await axios.put(
-                `https://localhost:7074/api/auth/updatebookingstatus/${id}`,
-                { status }
-            );
-
-            if (res.data.success) {
-                setBookings(prev =>
-                    prev.map(b =>
-                        b.id === id ? { ...b, status } : b
-                    )
-                );
+    const queryClient = useQueryClient();
+    const useStatusMutation = useMutation({
+        mutationFn: async ({
+            id,
+            status
+        }:
+            {
+                id: string;
+                status: string;
             }
-        } catch (err) {
-            console.log(err);
-            console.log(err.response);
+        ) => {
+            const res =
+                await axios.put(
+                    `https://localhost:7074/api/auth/updatebookingstatus/${id}`,
+                    { status }
+                );
 
+            return res.data;
+
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({
+                queryKey: ["bookings"]
+            });
+            message.success("Booking status updated ")
+        },
+        onError: () => {
+
+            message.error("Failed to update booking status")
         }
-    };
+
+    })
+    const updateStatus = (
+        id: string,
+        status: string
+    ) => {
+        useStatusMutation.mutate({
+            id,
+            status
+        });
+    }
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3   ">
@@ -239,7 +251,7 @@ const myshedule = () => {
                                     </div>
                                 )}
 
-                                {/* CONFIRMED */}
+
                                 {appt.status === "confirmed" && (
                                     <div className="flex gap-4 mt-4">
                                         <Button
@@ -253,6 +265,7 @@ const myshedule = () => {
                                         <Button
                                             icon={<ReloadOutlined />}
                                             className="flex-1 rounded-full"
+                                            onClick={() => updateStatus(appt.key, "pending")}
                                         >
                                             Reschedule
                                         </Button>
@@ -285,8 +298,8 @@ const myshedule = () => {
                 </Card>
 
 
-            </div>
-        </div>
+            </div >
+        </div >
     )
 }
 

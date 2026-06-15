@@ -7,7 +7,7 @@ import {
     Modal,
     message
 } from "antd";
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect } from "react";
 
@@ -20,6 +20,7 @@ const AddEmployeeDrawer = ({
 }) => {
 
     const [staffForm] = Form.useForm();
+    const queryClient = useQueryClient();
     useEffect(() => {
 
         if (
@@ -58,154 +59,131 @@ const AddEmployeeDrawer = ({
         openDrawer
     ]);
 
-    const handleAddEmployee =
-        async (values) => {
+    const employeeMutation = useMutation({
 
-            try {
+        mutationFn: async (values: any) => {
 
-                const authData =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "persist:auth"
-                        )!
-                    );
+            const authData =
+                JSON.parse(
+                    localStorage.getItem(
+                        "persist:auth"
+                    )!
+                );
 
-                const user =
-                    JSON.parse(authData.user);
+            const user =
+                JSON.parse(authData.user);
 
-                const salonId =
-                    user.salonId;
+            const salonId =
+                user.salonId;
 
-                let res;
+            if (editingEmployee) {
 
-                if (editingEmployee) {
-
-                    res =
-                        await axios.put(
-                            `https://localhost:7074/api/auth/editemployee/${editingEmployee.id}`,
-                            {
-                                fullName:
-                                    values.fullName,
-
-                                role:
-                                    values.role,
-
-                                email:
-                                    values.email,
-
-                                phone:
-                                    values.phone,
-
-                                skills:
-                                    values.skills,
-
-                                experience:
-                                    Number(
-                                        values.experience
-                                    ),
-
-                                availability:
-                                    values.availability
-                            }
-                        );
-
-                } else {
-
-                    res =
-                        await axios.post(
-                            "https://localhost:7074/api/auth/addemployee",
-                            {
-                                salonId,
-
-                                fullName:
-                                    values.fullName,
-
-                                role:
-                                    values.role,
-
-                                email:
-                                    values.email,
-
-                                phone:
-                                    values.phone,
-
-                                skills:
-                                    values.skills,
-
-                                experience:
-                                    Number(
-                                        values.experience
-                                    ),
-
-                                availability:
-                                    values.availability
-                            }
-                        );
-                }
-
-                if (res.data.success) {
-
-                    message.success(
-                        editingEmployee
-                            ? "Employee Updated"
-                            : "Employee Added"
-                    );
-
-                    if (!editingEmployee) {
-
-                        Modal.success({
-
-                            title:
-                                "Employee Login Credentials",
-
-                            content: (
-                                <div>
-
-                                    <p>
-                                        Login ID:
-                                    </p>
-
-                                    <b>
-                                        {
-                                            res.data.data
-                                                ?.loginEmail
-                                        }
-                                    </b>
-
-                                    <p className="mt-3">
-                                        Password:
-                                    </p>
-
-                                    <b>
-                                        {
-                                            res.data.data
-                                                ?.loginPassword
-                                        }
-                                    </b>
-
-                                </div>
-                            )
-                        });
+                return await axios.put(
+                    `https://localhost:7074/api/auth/editemployee/${editingEmployee.id}`,
+                    {
+                        fullName: values.fullName,
+                        role: values.role,
+                        email: values.email,
+                        phone: values.phone,
+                        skills: values.skills,
+                        experience: Number(values.experience),
+                        availability: values.availability
                     }
-
-                    getEmployees(salonId);
-
-                    staffForm.resetFields();
-
-                    setEditingEmployee(null);
-
-                    setOpenDrawer(false);
-                }
-
-            } catch (err) {
-
-                console.log(err);
-
-                message.error(
-                    "Operation Failed"
                 );
             }
-        };
+
+            return await axios.post(
+                "https://localhost:7074/api/auth/addemployee",
+                {
+                    salonId,
+                    fullName: values.fullName,
+                    role: values.role,
+                    email: values.email,
+                    phone: values.phone,
+                    skills: values.skills,
+                    experience: Number(values.experience),
+                    availability: values.availability
+                }
+            );
+        },
+
+        onSuccess: (res) => {
+
+            const authData =
+                JSON.parse(
+                    localStorage.getItem(
+                        "persist:auth"
+                    )!
+                );
+
+            const user =
+                JSON.parse(authData.user);
+
+            queryClient.invalidateQueries({
+                queryKey: [
+                    "staffList",
+                    user.salonId
+                ]
+            });
+
+            message.success(
+                editingEmployee
+                    ? "Employee Updated"
+                    : "Employee Added"
+            );
+
+            if (
+                !editingEmployee &&
+                res.data?.data
+            ) {
+
+                Modal.success({
+                    title:
+                        "Employee Login Credentials",
+
+                    content: (
+                        <div>
+                            <p>Login ID:</p>
+
+                            <b>
+                                {
+                                    res.data.data
+                                        .loginEmail
+                                }
+                            </b>
+
+                            <p className="mt-3">
+                                Password:
+                            </p>
+
+                            <b>
+                                {
+                                    res.data.data
+                                        .loginPassword
+                                }
+                            </b>
+                        </div>
+                    )
+                });
+            }
+
+            staffForm.resetFields();
+
+            setEditingEmployee(null);
+
+            setOpenDrawer(false);
+        },
+
+        onError: (err: any) => {
+
+            console.log(err);
+
+            message.error(
+                err?.response?.data?.message ||
+                "Operation Failed"
+            );
+        }
+    });
 
     return (
 
@@ -224,7 +202,7 @@ const AddEmployeeDrawer = ({
             <Form
                 layout="vertical"
                 form={staffForm}
-                onFinish={handleAddEmployee}
+                onFinish={(values) => employeeMutation.mutate(values)}
             >
 
 
@@ -282,7 +260,7 @@ const AddEmployeeDrawer = ({
 
                 </Form.Item>
 
-                {/* EMAIL */}
+
                 <Form.Item
                     label={<span className="font-[Outfit] ">Email</span>}
                     name="email"
@@ -307,7 +285,7 @@ const AddEmployeeDrawer = ({
 
                 </Form.Item>
 
-                {/* PHONE */}
+
                 <Form.Item
                     label={<span className="font-[Outfit] ">Phone Number</span>}
                     name="phone"
@@ -435,6 +413,7 @@ const AddEmployeeDrawer = ({
                     <Button
                         type="primary"
                         htmlType="submit"
+                        loading={employeeMutation.isPending}
                     >
                         Save Staff
                     </Button>
