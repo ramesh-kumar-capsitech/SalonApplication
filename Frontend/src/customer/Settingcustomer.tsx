@@ -20,6 +20,7 @@ import {
 
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getApiAuthGetcustomerprofileId, putApiAuthChangecustomerpasswordId, putApiAuthUpdatecustomerprofileId } from "../api/generated/loginsignuphome";
 
 const Settingcustomer = () => {
 
@@ -54,9 +55,7 @@ const Settingcustomer = () => {
         queryKey: ["adminProfile", userId],
 
         queryFn: async () => {
-            const res = await axios.get(
-                `https://localhost:7074/api/auth/getcustomerprofile/${userId}`
-            );
+            const res = await getApiAuthGetcustomerprofileId(userId)
 
             return res.data.data;
 
@@ -135,8 +134,7 @@ const Settingcustomer = () => {
             mutationFn: async (values: any) => {
 
                 const res =
-                    await axios.put(
-                        `https://localhost:7074/api/auth/updatecustomerprofile/${userId}`,
+                    await putApiAuthUpdatecustomerprofileId(userId,
                         {
                             Name:
                                 values.fullName,
@@ -180,13 +178,12 @@ const Settingcustomer = () => {
                 );
             },
         });
-    const handleProfileUpdate =
-        (values: any) => {
+    const handleProfileUpdate = (values: any) => {
 
-            updateProfileMutation.mutate(
-                values
-            );
-        };
+        updateProfileMutation.mutate(
+            values
+        );
+    };
 
     const changePasswordMutation =
         useMutation({
@@ -195,8 +192,7 @@ const Settingcustomer = () => {
             ) => {
 
                 const res =
-                    await axios.put(
-                        `https://localhost:7074/api/auth/changecustomerpassword/${userId}`,
+                    await putApiAuthChangecustomerpasswordId(userId,
                         values
                     );
 

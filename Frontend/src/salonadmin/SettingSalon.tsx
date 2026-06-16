@@ -20,6 +20,7 @@ import {
 
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getApiAuthGetsalonprofileId, putApiAuthChangesalonpasswordId, putApiAuthUpdatesalonprofileId } from "../api/generated/loginsignuphome";
 
 const SettingSalon = () => {
 
@@ -54,9 +55,7 @@ const SettingSalon = () => {
         queryKey: ["adminProfile", userId],
 
         queryFn: async () => {
-            const res = await axios.get(
-                `https://localhost:7074/api/auth/getsalonprofile/${userId}`
-            );
+            const res = await getApiAuthGetsalonprofileId(userId)
 
             return res.data.data;
 
@@ -128,15 +127,14 @@ const SettingSalon = () => {
         };
 
 
-    const queryClient = useQueryClient();
 
+    const queryClient = useQueryClient()
     const updateProfileMutation =
         useMutation({
             mutationFn: async (values: any) => {
 
                 const res =
-                    await axios.put(
-                        `https://localhost:7074/api/auth/updatesalonprofile/${userId}`,
+                    await putApiAuthUpdatesalonprofileId(userId,
                         {
                             ownerName:
                                 values.fullName,
@@ -195,9 +193,7 @@ const SettingSalon = () => {
             ) => {
 
                 const res =
-                    await axios.put(
-                        `https://localhost:7074/api/auth/changesalonpassword/${userId}`,
-                        values
+                    await putApiAuthChangesalonpasswordId(userId, values
                     );
 
                 return res.data;

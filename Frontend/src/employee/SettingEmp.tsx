@@ -20,6 +20,7 @@ import {
 } from "@ant-design/icons";
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getApiAuthGetemployeeprofileId, putApiAuthChangeemployeepasswordId, putApiAuthUpdateemployeeprofileId } from '../api/generated/loginsignuphome';
 
 
 const SettingEmp = () => {
@@ -51,9 +52,7 @@ const SettingEmp = () => {
         queryKey: ["adminProfile", empId],
 
         queryFn: async () => {
-            const res = await axios.get(
-                `https://localhost:7074/api/auth/getemployeeprofile/${empId}`
-            );
+            const res = await getApiAuthGetemployeeprofileId(empId)
 
             return res.data.data;
 
@@ -125,15 +124,14 @@ const SettingEmp = () => {
         };
 
 
-    const queryClient = useQueryClient();
 
+    const queryClient = useQueryClient()
     const updateProfileMutation =
         useMutation({
             mutationFn: async (values: any) => {
 
                 const res =
-                    await axios.put(
-                        `https://localhost:7074/api/auth/updateemployeeprofile/${empId}`,
+                    await putApiAuthUpdateemployeeprofileId(empId,
                         {
                             fullName:
                                 values.fullName,
@@ -191,8 +189,7 @@ const SettingEmp = () => {
             ) => {
 
                 const res =
-                    await axios.put(
-                        `https://localhost:7074/api/auth/changeemployeepassword/${empId}`,
+                    await putApiAuthChangeemployeepasswordId(empId,
                         values
                     );
 
@@ -328,7 +325,7 @@ const SettingEmp = () => {
                             onFinish={handleProfileUpdate}
                         >
                             <Form.Item
-                                label="Full Name"
+                                label={<span className="font-[Outfit] ">Full Name </span>}
                                 name="fullName"
                             >
                                 <Input
@@ -339,7 +336,7 @@ const SettingEmp = () => {
                             </Form.Item>
 
                             <Form.Item
-                                label="Email Address"
+                                label={<span className="font-[Outfit] ">Email Address</span>}
                                 name="email"
                             >
                                 <Input
@@ -350,7 +347,7 @@ const SettingEmp = () => {
                             </Form.Item>
 
                             <Form.Item
-                                label="Phone Number"
+                                label={<span className="font-[Outfit] ">Phone Number </span>}
                                 name="phone"
                                 rootClassName=' '
                             >
@@ -412,7 +409,7 @@ const SettingEmp = () => {
 
                         <Form.Item
 
-                            label="Current Password"
+                            label={<span className="font-[Outfit] ">Current Password</span>}
 
                             name="currentPassword"
 
@@ -434,7 +431,7 @@ const SettingEmp = () => {
 
                         <Form.Item
 
-                            label="New Password"
+                            label={<span className="font-[Outfit] ">New Password </span>}
 
                             name="newPassword"
 
@@ -456,7 +453,7 @@ const SettingEmp = () => {
 
                         <Form.Item
 
-                            label="Confirm Password"
+                            label={<span className="font-[Outfit] ">Confirm Password </span>}
 
                             name="confirmPassword"
 

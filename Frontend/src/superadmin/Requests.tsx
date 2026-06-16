@@ -11,6 +11,7 @@ import {
 import { Empty } from "antd";
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getApiAuthGetallsalons, putApiAuthApproveId, putApiAuthRejectId } from '../api/generated/loginsignuphome';
 interface InfoBlockProps {
     label: string;
     value: React.ReactNode;
@@ -35,13 +36,11 @@ const Requests = () => {
     const [tab, settab] = useState<"pending" | "approve" | "reject">("pending")
 
 
-    const queryClient = useQueryClient();
+
     const { data: allSalons = [] } = useQuery({
         queryKey: ["salons"],
         queryFn: async () => {
-            const res = await axios.get(
-                "https://localhost:7074/api/auth/getallsalons"
-            );
+            const res = await getApiAuthGetallsalons()
 
             return res.data;
         }
@@ -60,11 +59,10 @@ const Requests = () => {
         (salon: any) =>
             salon.status === "rejected"
     );
+    const queryClient = useQueryClient()
     const approveMutation = useMutation({
         mutationFn: async (id: string) => {
-            const res = await axios.put(
-                `https://localhost:7074/api/auth/approve/${id}`
-            );
+            const res = await putApiAuthApproveId(id)
 
             return res.data;
         },
@@ -87,8 +85,7 @@ const Requests = () => {
     const rejectMutation = useMutation({
         mutationFn: async (id: string) => {
 
-            const res = await axios.put(
-                `https://localhost:7074/api/auth/reject/${id}`,
+            const res = await putApiAuthRejectId(id,
                 {
                     reason:
                         "Incomplete details",
@@ -135,7 +132,7 @@ const Requests = () => {
 
                 <div className=" flex flex-col justify-center items-center">
                     <h1 className="text-lg leading-[0.8]  font-semibold text-orange-500">
-                        4
+                        {salons.length}
                     </h1>
                     <p className="text-gray-500  text-sm ">
                         Pending Requests

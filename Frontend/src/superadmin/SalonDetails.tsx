@@ -14,6 +14,7 @@ import axios from "axios";
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { getApiAuthSalondetailsSalonId } from "../api/generated/loginsignuphome";
 
 const { Title, Text } = Typography;
 
@@ -29,9 +30,7 @@ function SalonDetails() {
         queryFn: async () => {
 
             const res =
-                await axios.get(
-                    `https://localhost:7074/api/auth/salondetails/${id}`
-                );
+                await getApiAuthSalondetailsSalonId(id)
 
             return res.data;
         },

@@ -7,6 +7,7 @@ import {
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getApiAuthGetemployeebookingsEmployeeId, putApiAuthUpdatebookingstatusId } from '../api/generated/loginsignuphome';
 
 const TotalBooking = () => {
     const authData = JSON.parse(localStorage.getItem("persist:auth")!);
@@ -16,7 +17,7 @@ const TotalBooking = () => {
     const { data: bookings = [], isLoading, error } = useQuery({
         queryKey: ["bookings", empid],
         queryFn: async () => {
-            const res = await axios.get(`https://localhost:7074/api/auth/getemployeebookings/${empid}`)
+            const res = await getApiAuthGetemployeebookingsEmployeeId(empid)
             return res.data;
         },
         enabled: !!empid
@@ -43,7 +44,7 @@ const TotalBooking = () => {
         (a) => a.status === "pending"
     ).length;
 
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
     const useStatusMutation = useMutation({
         mutationFn: async ({
             id,
@@ -55,8 +56,7 @@ const TotalBooking = () => {
             }
         ) => {
             const res =
-                await axios.put(
-                    `https://localhost:7074/api/auth/updatebookingstatus/${id}`,
+                await putApiAuthUpdatebookingstatusId(id,
                     { status }
                 );
 

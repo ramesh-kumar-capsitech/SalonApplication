@@ -9,6 +9,7 @@ import { useAppDispatch } from "../redux/hooks";
 import { loginSuccess } from "../redux/authSlice";
 import { useAppSelector } from "../redux/hooks";
 import { useMutation } from "@tanstack/react-query";
+import { postApiAuthEmployeelogin, postApiAuthLogin, postApiAuthSalonlogin, postApiAuthSuperadminlogin } from "../api/generated/loginsignuphome";
 const Login = () => {
     const auth = useAppSelector((state: { auth: any }) => state.auth);
 
@@ -31,8 +32,7 @@ const Login = () => {
         }) => {
 
             try {
-                const superAdminRes = await axios.post(
-                    "https://localhost:7074/api/auth/superadminlogin",
+                const superAdminRes = await postApiAuthSuperadminlogin(
                     loginData
                 );
 
@@ -43,10 +43,10 @@ const Login = () => {
             } catch { }
 
             try {
-                const customerRes = await axios.post(
-                    "https://localhost:7074/api/auth/login",
-                    loginData
-                );
+                const customerRes = await postApiAuthLogin({
+                    email: loginData.email,
+                    password: loginData.password,
+                });
 
                 return {
                     role: "customer",
@@ -55,8 +55,7 @@ const Login = () => {
             } catch { }
 
             try {
-                const salonRes = await axios.post(
-                    "https://localhost:7074/api/auth/salonlogin",
+                const salonRes = await postApiAuthSalonlogin(
                     {
                         loginEmail: loginData.email,
                         loginPassword: loginData.password,
@@ -70,8 +69,7 @@ const Login = () => {
             } catch { }
 
             try {
-                const employeeRes = await axios.post(
-                    "https://localhost:7074/api/auth/employeelogin",
+                const employeeRes = await postApiAuthEmployeelogin(
                     {
                         loginEmail: loginData.email,
                         loginPassword: loginData.password,

@@ -11,6 +11,7 @@ import AddEmployeeDrawer from "../components/AddEmployeeDrawer";
 import dayjs from 'dayjs';
 import { FaRupeeSign } from 'react-icons/fa';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { deleteApiAuthDeleteemployeeId, deleteApiAuthDeleteserviceSalonIdServiceId, getApiAuthGetbookedslotsStaffIdDate, getApiAuthGetbookingsalonSalonId, getApiAuthGetemployeesSalonId, getApiAuthGetsalonservicesSalonId, postApiAuthAddemployee, postApiAuthAddservice, postApiAuthCreatesalonbooking, putApiAuthEditemployeeId, putApiAuthEditserviceSalonIdServiceId, putApiAuthToggleemployeeId, putApiAuthUpdatebookingstatusId } from '../api/generated/loginsignuphome';
 
 
 const Dashboard = () => {
@@ -106,7 +107,7 @@ const Dashboard = () => {
     const { data: bookings = [], isLoading, error } = useQuery({
         queryKey: ["bookings", salon],
         queryFn: async () => {
-            const res = await axios.get(`https://localhost:7074/api/auth/getbookingsalon/${salon}`)
+            const res = await getApiAuthGetbookingsalonSalonId(salon)
             return res.data;
         },
         enabled: !!salon
@@ -127,7 +128,7 @@ const Dashboard = () => {
         }),
         status: item.status,
     }));
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
     const updateStatusMutation = useMutation({
         mutationFn: async ({
             id,
@@ -139,8 +140,7 @@ const Dashboard = () => {
             }
         ) => {
             const res =
-                await axios.put(
-                    `https://localhost:7074/api/auth/updatebookingstatus/${id}`,
+                await putApiAuthUpdatebookingstatusId(id,
                     { status }
                 );
 
@@ -177,8 +177,7 @@ const Dashboard = () => {
         staffId: "",
         services: []
     });
-    // const [staffList, setStaffList] = useState<any[]>([]);
-    // const [serviceList, setServiceList] = useState<any[]>([]);
+
     useEffect(() => {
 
         const authData =
@@ -191,16 +190,13 @@ const Dashboard = () => {
 
         const salonId = user.salonId;
 
-        // getServices(salonId);
-
-        // getEmployees(salonId);
 
     }, []);
 
     const { data: staffList = [] } = useQuery({
         queryKey: ["staffList", salon],
         queryFn: async () => {
-            const res = await axios.get(`https://localhost:7074/api/auth/getemployees/${salon}`)
+            const res = await getApiAuthGetemployeesSalonId(salon)
             return res.data;
         },
         enabled: !!salon
@@ -209,7 +205,7 @@ const Dashboard = () => {
     const { data: serviceList = [] } = useQuery({
         queryKey: ["serviceList", salon],
         queryFn: async () => {
-            const res = await axios.get(`https://localhost:7074/api/auth/getsalonservices/${salon}`)
+            const res = await getApiAuthGetsalonservicesSalonId(salon)
             return res.data;
         },
         enabled: !!salon
@@ -231,20 +227,20 @@ const Dashboard = () => {
 
             if (editingService) {
 
-                const res = await axios.put(
-                    `https://localhost:7074/api/auth/editservice/${salon}/${editingService.serviceId}`,
+                const res = await putApiAuthEditserviceSalonIdServiceId(
+                    salon,
+                    editingService.serviceId,
                     {
                         serviceName: serviceForm.serviceName,
                         duration: Number(serviceForm.duration),
-                        price: Number(serviceForm.price)
+                        price: Number(serviceForm.price),
                     }
                 );
 
                 return res.data;
             }
 
-            const res = await axios.post(
-                "https://localhost:7074/api/auth/addservice",
+            const res = await postApiAuthAddservice(
                 {
                     salonId: salon,
                     serviceName: serviceForm.serviceName,
@@ -290,9 +286,10 @@ const Dashboard = () => {
 
         mutationFn: async (serviceId: string) => {
 
-            const res = await axios.delete(
-                `https://localhost:7074/api/auth/deleteservice/${salon}/${serviceId}`
-            );
+            const res = await deleteApiAuthDeleteserviceSalonIdServiceId(
+                salon,
+                serviceId
+            )
 
             return res.data;
         },
@@ -323,8 +320,8 @@ const Dashboard = () => {
 
             if (editingEmployee) {
 
-                const res = await axios.put(
-                    `https://localhost:7074/api/auth/editemployee/${editingEmployee.id}`,
+                const res = await putApiAuthEditemployeeId(
+                    editingEmployee,
                     {
                         fullName: values.fullName,
                         role: values.role,
@@ -339,8 +336,7 @@ const Dashboard = () => {
                 return res.data;
             }
 
-            const res = await axios.post(
-                "https://localhost:7074/api/auth/addemployee",
+            const res = await postApiAuthAddemployee(
                 {
                     salonId: salon,
                     fullName: values.fullName,
@@ -428,9 +424,7 @@ const Dashboard = () => {
             ) => {
 
                 const res =
-                    await axios.delete(
-                        `https://localhost:7074/api/auth/deleteemployee/${employeeId}`
-                    );
+                    await deleteApiAuthDeleteemployeeId(employeeId)
 
                 return res.data;
             },
@@ -464,9 +458,7 @@ const Dashboard = () => {
             ) => {
 
                 const res =
-                    await axios.put(
-                        `https://localhost:7074/api/auth/toggleemployee/${employeeId}`
-                    );
+                    await putApiAuthToggleemployeeId(employeeId)
 
                 return res.data;
             },
@@ -548,10 +540,9 @@ const Dashboard = () => {
             }
 
             const res =
-                await axios.get(
-
-                    `https://localhost:7074/api/auth/getbookedslots/${selectedStaff}/${dayjs(selectedDate).format("YYYY-MM-DD")}`
-
+                await getApiAuthGetbookedslotsStaffIdDate(
+                    selectedStaff,
+                    dayjs(selectedDate).format("YYYY-MM-DD")
                 );
 
             setBookedSlots(
@@ -592,9 +583,7 @@ const Dashboard = () => {
                 );
 
             const res =
-                await axios.post(
-
-                    "https://localhost:7074/api/auth/createsalonbooking",
+                await postApiAuthCreatesalonbooking(
 
                     {
                         salonId: salon,

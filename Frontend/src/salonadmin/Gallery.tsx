@@ -14,6 +14,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { data } from "react-router-dom";
+import { deleteApiAuthDeletegalleryimage, getApiAuthGallerySalonId, postApiAuthAddgalleryimage } from "../api/generated/loginsignuphome";
 
 const Gallery = () => {
 
@@ -32,13 +33,13 @@ const Gallery = () => {
     const { data: images = [], isLoading, error } = useQuery({
         queryKey: ["gallery", salonId],
         queryFn: async () => {
-            const res = await axios.get(`https://localhost:7074/api/auth/gallery/${salonId}`)
+            const res = await getApiAuthGallerySalonId(salonId)
             return res.data;
         },
         enabled: !!salonId
     })
 
-
+    const queryClient = useQueryClient()
     const uploadImage =
         async (file: File) => {
 
@@ -65,9 +66,7 @@ const Gallery = () => {
 
                 const imageUrl = cloudinaryRes.data.secure_url;
 
-                await axios.post(
-
-                    "https://localhost:7074/api/auth/addgalleryimage",
+                await postApiAuthAddgalleryimage(
 
                     {
                         salonId,
@@ -100,7 +99,7 @@ const Gallery = () => {
 
             return false;
         };
-    const queryClient = useQueryClient();
+
     const deleteImageMutation =
         useMutation({
             mutationFn: async (
@@ -108,14 +107,13 @@ const Gallery = () => {
             ) => {
 
                 const res =
-                    await axios.delete(
-                        "https://localhost:7074/api/auth/deletegalleryimage",
+                    await deleteApiAuthDeletegalleryimage(
                         {
-                            data: {
-                                salonId,
-                                imageUrl
-                            }
+
+                            salonId,
+                            imageUrl
                         }
+
                     );
 
                 return res.data;
@@ -135,8 +133,8 @@ const Gallery = () => {
                 );
             },
 
-            onError: () => {
-
+            onError: (err) => {
+                console.log(err)
                 message.error(
                     "Delete Failed"
                 );

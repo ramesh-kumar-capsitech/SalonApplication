@@ -131,7 +131,7 @@ const BookAppointment = () => {
 
         enabled: !!selectedSalon
     });
-    const queryClient = useQueryClient();
+
     const createBookingMutation =
         useMutation({
 

@@ -10,6 +10,8 @@ import { Link, useNavigate } from 'react-router-dom';
 // import type { Breakpoint } from 'antd';
 import SalonFormDrawer from '../components/SalonFormDrawer';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getApiAuthGetallsalons, getApiAuthGetallusers, postApiAuthCreatesalonbyadmin } from '../api/generated/loginsignuphome';
+
 const Dashboard = () => {
     const navigate = useNavigate();
     const lineData = [
@@ -134,9 +136,7 @@ const Dashboard = () => {
     const { data: approvedSalons = [], } = useQuery({
         queryKey: ["approvedSalons"],
         queryFn: async () => {
-            const res = await axios.get(
-                "https://localhost:7074/api/auth/getallsalons"
-            );
+            const res = await getApiAuthGetallsalons()
             return res.data.filter(
                 (salon: any) => salon.status === "approved"
             );
@@ -145,9 +145,7 @@ const Dashboard = () => {
     const { data: users = [], } = useQuery({
         queryKey: ["users"],
         queryFn: async () => {
-            const res = await axios.get(
-                "https://localhost:7074/api/auth/getallusers"
-            );
+            const res = await getApiAuthGetallusers()
             return res.data
         }
     })
@@ -171,7 +169,7 @@ const Dashboard = () => {
 
 
     const totalrevenue = bookings
-        .filter((booking) => booking.status === "Completed")
+        .filter((booking) => booking.status === "completed")
         .reduce((total, booking) => total + booking.totalPrice, 0);
     const tableData = approvedSalons.map((salon, index) => {
 
@@ -198,11 +196,10 @@ const Dashboard = () => {
     const [open, setOpen] = useState(false);
 
     const [loading, setLoading] = useState(false);
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
     const createSalonMutation = useMutation({
         mutationFn: async (values: any) => {
-            const res = await axios.post(
-                "https://localhost:7074/api/auth/createsalonbyadmin",
+            const res = await postApiAuthCreatesalonbyadmin(
                 values
             );
             return res.data;

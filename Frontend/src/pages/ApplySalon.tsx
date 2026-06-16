@@ -22,6 +22,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
+import { postApiAuthApplysalon } from "../api/generated/loginsignuphome";
 
 
 
@@ -46,8 +47,7 @@ const ApplySalon = () => {
     const navigate = useNavigate()
     const applySalonMutation = useMutation({
         mutationFn: async (finalData: any) => {
-            const res = await axios.post(
-                "https://localhost:7074/api/auth/applysalon",
+            const res = await postApiAuthApplysalon(
                 finalData
             );
 

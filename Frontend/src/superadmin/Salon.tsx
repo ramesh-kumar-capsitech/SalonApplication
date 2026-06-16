@@ -13,6 +13,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import SalonFormDrawer from "../components/SalonFormDrawer";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getApiAuthGetallsalons, putApiAuthActivateId, putApiAuthDeactivateId } from '../api/generated/loginsignuphome';
 const StatBox = ({ icon, value, label, bg, color }: any) => (
     <div className={`${bg} rounded-lg p-1 text-center`}>
         <div className={`text-2xl ${color} mb-2`}>{icon}</div>
@@ -38,9 +39,7 @@ const Salon = () => {
     const { data: salons = [], isLoading, } = useQuery({
         queryKey: ["salons"],
         queryFn: async () => {
-            const res = await axios.get(
-                "https://localhost:7074/api/auth/getallsalons"
-            );
+            const res = await getApiAuthGetallsalons()
 
             return res.data;
         }
@@ -97,16 +96,14 @@ const Salon = () => {
             setOpen(true);
         }
     };
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
 
     const deactivateMutation = useMutation({
         mutationFn: async (
             id: string
         ) => {
             const res =
-                await axios.put(
-                    `https://localhost:7074/api/auth/deactivate/${id}`
-                );
+                await putApiAuthDeactivateId(id)
 
             return res.data;
         },
@@ -143,10 +140,7 @@ const Salon = () => {
                 id: string
             ) => {
                 const res =
-                    await axios.put(
-                        `https://localhost:7074/api/auth/activate/${id}`
-                    );
-
+                    await putApiAuthActivateId(id)
                 return res.data;
             },
 

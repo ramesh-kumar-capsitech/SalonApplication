@@ -14,6 +14,7 @@ interface InfoRowProps {
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { useQuery } from '@tanstack/react-query';
+import { getApiAuthCustomerbookingstats, getApiAuthGetallsalons } from '../api/generated/loginsignuphome';
 interface InfoRowProps {
     icon: React.ReactNode;
     text: string;
@@ -37,9 +38,7 @@ const Users = () => {
     const { data: salons = [] } = useQuery({
         queryKey: ["salons"],
         queryFn: async () => {
-            const res = await axios.get(
-                "https://localhost:7074/api/auth/getallsalons"
-            );
+            const res = await getApiAuthGetallsalons()
 
             return res.data;
         }
@@ -83,9 +82,7 @@ const Users = () => {
         queryKey: ["customers"],
         queryFn: async () => {
             const res =
-                await axios.get(
-                    "https://localhost:7074/api/auth/customerbookingstats"
-                );
+                await getApiAuthCustomerbookingstats()
 
             return res.data.map(
                 (user: any) => ({

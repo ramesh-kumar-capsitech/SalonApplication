@@ -21,6 +21,7 @@ interface InfoRowProps {
 }
 import AddEmployeeDrawer from "../components/AddEmployeeDrawer";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { getApiAuthGetemployeesSalonId, putApiAuthToggleemployeeId } from '../api/generated/loginsignuphome';
 
 const InfoRow: React.FC<InfoRowProps> = ({ icon, text }) => {
     return (
@@ -78,7 +79,7 @@ const StaffSalon = () => {
 
     const salonId =
         user.salonId;
-    const queryClient = useQueryClient();
+
 
     const { data: approvereq = [], isLoading, } = useQuery({
         queryKey: ["staffList", salonId],
@@ -86,15 +87,14 @@ const StaffSalon = () => {
         queryFn: async () => {
 
             const res =
-                await axios.get(
-                    `https://localhost:7074/api/auth/getemployees/${salonId}`
-                );
+                await getApiAuthGetemployeesSalonId(salonId)
 
             return res.data;
         },
 
         enabled: !!salonId
     });
+    const queryClient = useQueryClient()
     const toggleEmployeeMutation =
         useMutation({
 
@@ -103,9 +103,7 @@ const StaffSalon = () => {
             ) => {
 
                 const res =
-                    await axios.put(
-                        `https://localhost:7074/api/auth/toggleemployee/${employeeId}`
-                    );
+                    await putApiAuthToggleemployeeId(employeeId)
 
                 return res.data;
             },

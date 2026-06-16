@@ -23,6 +23,7 @@ import {
 import { useEffect } from "react";
 import axios from "axios";
 import { useQuery } from "@tanstack/react-query";
+import { getApiAuthGetbookingsUserId } from "../api/generated/loginsignuphome";
 const Detail: React.FC<DetailProps> = ({
     icon,
     label,
@@ -61,34 +62,12 @@ const MyBookings = () => {
         queryKey: ["customerBookings",
             user?.id || user?._id],
         queryFn: async () => {
-            const res = await axios.get(`https://localhost:7074/api/auth/getbookings/${user._id}`);
+            const res = await getApiAuthGetbookingsUserId(user._id);
             return res.data;
         },
         enabled: !!(user?.id || user?._id)
     })
-    useEffect(() => {
-        const authData = JSON.parse(
-            localStorage.getItem("persist:auth")!
-        );
 
-        const user = JSON.parse(
-            authData.user
-        );
-
-        console.log("USER:", user);
-
-        if (!user?._id) {
-            console.log("User not found");
-            return;
-        }
-
-        axios
-            .get(`https://localhost:7074/api/auth/getbookings/${user._id}`)
-            .then((res) => {
-                console.log("BOOKINGS:", res.data);
-                setBookings(res.data)
-            });
-    }, []);
 
     const pastBookings = bookings.filter(
         (b: any) =>

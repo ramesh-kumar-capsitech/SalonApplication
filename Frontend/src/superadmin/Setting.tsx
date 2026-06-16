@@ -20,6 +20,7 @@ import {
 
 import axios from "axios";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getApiAuthGetadminprofileId, putApiAuthChangeadminpasswordId, putApiAuthUpdateadminprofileId } from "../api/generated/loginsignuphome";
 
 const Setting = () => {
 
@@ -54,9 +55,7 @@ const Setting = () => {
         queryKey: ["adminProfile", userId],
 
         queryFn: async () => {
-            const res = await axios.get(
-                `https://localhost:7074/api/auth/getadminprofile/${userId}`
-            );
+            const res = await getApiAuthGetadminprofileId(userId)
 
             return res.data.data;
             console.log("API DATA =>", res.data);
@@ -128,15 +127,14 @@ const Setting = () => {
         };
 
 
-    const queryClient = useQueryClient();
+    const queryClient = useQueryClient()
 
     const updateProfileMutation =
         useMutation({
             mutationFn: async (values: any) => {
 
                 const res =
-                    await axios.put(
-                        `https://localhost:7074/api/auth/updateadminprofile/${userId}`,
+                    await putApiAuthUpdateadminprofileId(userId,
                         {
                             Name:
                                 values.fullName,
@@ -195,8 +193,7 @@ const Setting = () => {
             ) => {
 
                 const res =
-                    await axios.put(
-                        `https://localhost:7074/api/auth/changeadminpassword/${userId}`,
+                    await putApiAuthChangeadminpasswordId(userId,
                         values
                     );
 

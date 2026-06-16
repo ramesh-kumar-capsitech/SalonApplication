@@ -7,6 +7,7 @@ import message from 'antd/es/message'
 import { Form, Input, Button } from "antd";
 import { useMutation } from "@tanstack/react-query";
 import axios from 'axios'
+import { postApiAuthSignup } from '../api/generated/loginsignuphome'
 const Signup = () => {
 
     const navigate = useNavigate()
@@ -16,8 +17,7 @@ const Signup = () => {
     const [form] = Form.useForm();
     const signupMutation = useMutation({
         mutationFn: async (values: any) => {
-            const res = await axios.post(
-                "https://localhost:7074/api/auth/signup",
+            const res = await postApiAuthSignup(
                 values
             );
 
