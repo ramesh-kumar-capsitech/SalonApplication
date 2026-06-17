@@ -21,6 +21,7 @@ import {
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getApiAuthGetallsalons, getApiAuthGetsalonservicesSalonId, getApiAuthGetsalonstaffSalonId, postApiAuthBookappointment } from "../api/generated/loginsignuphome";
 
 const { Title, Text } = Typography;
 
@@ -51,9 +52,7 @@ const BookAppointment = () => {
 
         queryFn: async () => {
 
-            const res = await axios.get(
-                "https://localhost:7074/api/auth/getallsalons"
-            );
+            const res = await getApiAuthGetallsalons()
 
             return res.data.filter(
                 (salon: any) =>
@@ -70,9 +69,7 @@ const BookAppointment = () => {
 
         queryFn: async () => {
 
-            const res = await axios.get(
-                `https://localhost:7074/api/auth/getsalonservices/${selectedSalon.id}`
-            );
+            const res = await getApiAuthGetsalonservicesSalonId(selectedSalon.id)
 
             return res.data;
         },
@@ -122,9 +119,7 @@ const BookAppointment = () => {
 
         queryFn: async () => {
 
-            const res = await axios.get(
-                `https://localhost:7074/api/auth/getsalonstaff/${selectedSalon.id}`
-            );
+            const res = await getApiAuthGetsalonstaffSalonId(selectedSalon.id)
 
             return res.data;
         },
@@ -210,8 +205,7 @@ const BookAppointment = () => {
                 };
 
                 const res =
-                    await axios.post(
-                        "https://localhost:7074/api/auth/bookappointment",
+                    await postApiAuthBookappointment(
                         bookingData
                     );
 
@@ -252,7 +246,7 @@ const BookAppointment = () => {
                 );
             }
         });
-
+    const queryClient = useQueryClient()
     const navigate = useNavigate();
     useEffect(() => {
         if (servicesError) {

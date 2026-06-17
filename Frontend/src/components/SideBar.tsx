@@ -1,4 +1,4 @@
-import React, { type FC } from "react";
+import React, { useEffect, useState, type FC } from "react";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo1.png'
 import { HomeOutlined, TeamOutlined } from '@ant-design/icons';
@@ -8,13 +8,38 @@ import { SettingOutlined } from '@ant-design/icons';
 import { LogoutOutlined } from '@ant-design/icons';
 import { message } from 'antd';
 import { logout } from "../redux/authSlice";
-import { useAppDispatch } from "../redux/hooks";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
 
 const Sidebar: React.FC = () => {
     // const dispatch = useAppDispatch();
     // dispatch(logout());
     const navigate = useNavigate();
+    const [loggeduser, setloggeduser] = useState('')
+    const [email, setemail] = useState('')
+    const [profileImage, setProfileImage] = useState("");
+    const [firstname, setfirstname] = useState('')
+    const user = useAppSelector(
+        (state) => state.auth.user
+    );
+    useEffect(() => {
 
+        if (user) {
+
+            setloggeduser(user.name || "");
+            setemail(user.email || "");
+            setProfileImage(user.profileImage || "");
+            const initials = user.name
+                ? user.name
+                    .split(" ")
+                    .map((w: string) => w[0])
+                    .join("")
+                    .toUpperCase()
+                : "";
+
+            setfirstname(initials);
+        }
+
+    }, [user]);
     const handleLogout = () => {
         const isConfirmed = confirm("Are you sure you want to logout?");
 
@@ -32,7 +57,7 @@ const Sidebar: React.FC = () => {
             <div>
 
                 <div className="flex items-center  gap-3 mb-4">
-                    <div className=" md:w-11 md:h-11 bg-white/20 rounded-xl flex items-center justify-center">
+                    <div className="md:w-11 md:h-11 bg-white/20 rounded-sm md:rounded-xl flex items-center justify-center">
                         <img src={logo} alt="" />
                     </div>
                     <div className="hidden md:block ">
@@ -52,7 +77,7 @@ const Sidebar: React.FC = () => {
                                 isActive
                                     ? "bg-white/30 rounded-lg"
                                     : ""
-                            }> <li className="   flex gap-[7px] items-center justify-center md:justify-start hover:bg-white/20  rounded-lg px-4 py-3 md:px-3 md:py-2 " >
+                            }> <li className="flex gap-[7px] items-center justify-center md:justify-start  hover:bg-white/20 rounded-lg  px-4 py-3 md:px-3 md:py-2" >
                                 <HomeOutlined className="text-white " />
 
                                 {/* <Camera color="red" size={4} /> */}
@@ -115,12 +140,27 @@ const Sidebar: React.FC = () => {
 
             <div className="space-y-6">
 
-                <div className="flex items-center gap-3 md:bg-white/10 rounded-xl  md:p-3">
-                    <div className=" w-12 h-10  md:w-10 md:h-10 bg-blue-500 rounded-xl md:rounded-full flex items-center justify-center font-semibold">
-                        {/* <img src={logo} alt="Logo" /> */}TT
+                <div className="flex items-center gap-3 md:bg-white/10 rounded-xl mt-3  md:p-3">
+                    <div className=" w-12 h-10  md:w-10 md:h-10 bg-blue-500 rounded-full md:rounded-full flex items-center justify-center font-semibold">
+                        {
+                            profileImage ? (
+
+                                <img
+                                    src={profileImage}
+                                    alt="profile"
+                                    className="w-10 h-10 rounded-full object-cover"
+                                />
+
+                            ) : (
+
+                                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-semibold">
+                                    {firstname}
+                                </div>
+                            )
+                        }
                     </div>
                     <div className="hidden md:block ">
-                        <p className="font-medium m-0">TrimTech</p>
+                        <p className="font-medium m-0">{loggeduser}</p>
                         <p className="text-sm text-white/70 m-0">Super Admin</p>
                     </div>
                 </div>

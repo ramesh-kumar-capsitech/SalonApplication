@@ -88,7 +88,7 @@ const Sidebar: React.FC = () => {
                         <NavLink to='/salonadmin/dashboardsalon'> <li className="   flex gap-[7px] justify-start hover:bg-white/20  rounded-lg px-3 py-2 " >
                             <HomeOutlined className="text-white " />
 
-                            <p className="font-semibold m-0 "> DashBoard</p>
+                            <p className="font-semibold m-0 ">DashBoard</p>
                         </li>
                         </NavLink>
 

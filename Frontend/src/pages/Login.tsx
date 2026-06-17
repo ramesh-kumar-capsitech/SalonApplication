@@ -1,5 +1,5 @@
 import logo from '../assets/images/logo.png'
-
+import { Form, Input, Button, Card } from "antd";
 import loginIllustration from '../assets/images/login.svg'
 import { data, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
@@ -105,7 +105,8 @@ const Login = () => {
                 message.success(
                     "Super Admin Login Success"
                 );
-
+                console.log(result.data);
+                console.log(result.data.admin);
                 navigate("/superadmin");
             }
             if (result.role === "customer") {
@@ -157,22 +158,18 @@ const Login = () => {
                 navigate("/salonadmin");
             }
             if (result.role === "employee") {
-                const employee =
-                    result.data.employee;
+                const employee = result.data.employee;
 
                 dispatch(
                     loginSuccess({
                         token: result.data.token,
                         user: {
                             id: employee.id,
-                            salonId:
-                                employee.salonId,
+                            salonId: employee.salonId,
 
-                            fullName:
-                                employee.fullName,
+                            fullName: employee.fullName,
 
-                            profileImage:
-                                employee.profileImage,
+                            profileImage: employee.profileImage,
 
                             role: "employee",
                         },
@@ -197,33 +194,12 @@ const Login = () => {
 
 
 
-    const handleSubmit = async (
-        e: React.FormEvent
-    ) => {
-        e.preventDefault();
-
-        if (
-            !logininfo.email ||
-            !logininfo.password
-        ) {
-            message.error(
-                "All fields are required"
-            );
-            return;
-        }
-
+    const handleSubmit = async () => {
         try {
-            const result =
-                await loginMutation.mutateAsync(
-                    logininfo
-                );
-
+            const result = await loginMutation.mutateAsync(logininfo);
             console.log(result);
-        }
-        catch (error: any) {
-            message.error(
-                error.message
-            );
+        } catch (error: any) {
+            message.error(error.message);
         }
     };
 
@@ -259,7 +235,7 @@ const Login = () => {
                             </div>
                         </div>
                         <div>
-                            <form action="" onSubmit={handleSubmit}>
+                            {/* <form action="" onSubmit={handleSubmit}>
 
                                 <div className="mb-5">
                                     <label className="block text-sm    text-gray-600 mb-1">
@@ -306,7 +282,70 @@ const Login = () => {
                                 <button type="submit" className="w-[300px] bg-[#0052CC] text-white py-3 rounded-sm font-[Outfit] font-semibold hover:bg-blue-600 transition">
                                     Sign in
                                 </button>
-                            </form>
+                            </form> */}
+                            <Form
+                                layout="vertical"
+                                onFinish={handleSubmit}
+                            >
+                                <Form.Item
+                                    label={<span className='font-[Outfit]'>Email</span>}
+                                    name="email"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please enter your email",
+                                        },
+                                    ]}
+                                >
+                                    <Input
+                                        placeholder="Email"
+                                        value={logininfo.email}
+                                        onChange={handleChange}
+                                        name="email"
+                                        size="large"
+                                    />
+                                </Form.Item>
+
+                                <Form.Item
+                                    label={<span className='font-[Outfit]'>Password</span>}
+                                    name="password"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please enter your password",
+                                        },
+                                    ]}
+                                >
+                                    <Input.Password
+                                        placeholder="Password"
+                                        value={logininfo.password}
+                                        onChange={handleChange}
+                                        name="password"
+                                        size="large"
+                                    />
+                                </Form.Item>
+
+                                <div className="w-[300px] text-center mb-3">
+                                    Don't have an account?
+                                    <span className="text-blue-700 hover:underline">
+                                        <Link to="/signup"> as customer</Link>
+                                    </span>
+                                    {" "}and{" "}
+                                    <span className="text-blue-700 hover:underline">
+                                        <Link to="/applysalon"> Apply for Salon </Link>
+                                    </span>
+                                </div>
+
+                                <Button
+                                    type="primary"
+                                    htmlType="submit"
+                                    block
+                                    size="large"
+                                    loading={loginMutation.isPending}
+                                >
+                                    {loginMutation.isPending ? "Signing In..." : "Sign In"}
+                                </Button>
+                            </Form>
                         </div>
 
                     </div>

@@ -22,9 +22,12 @@ interface InfoRowProps {
 
 const InfoRow: React.FC<InfoRowProps> = ({ icon, text }) => {
     return (
-        <div className="flex items-center gap-3 text-gray-700">
+        <div className="flex items-start gap-3 text-gray-700">
             <span className="text-gray-500 text-lg">{icon}</span>
-            <span>{text}</span>
+
+            <span className="break-words">
+                {text}
+            </span>
         </div>
     );
 };
@@ -256,9 +259,9 @@ const Users = () => {
 
 
 
-                    <div className='grid md:grid-cols-2 gap-6 m-6 mt-0'>
+                    <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 m-6 mt-0'>
                         {filteredApprovedSalons.map((salon: any) => (
-                            <Card className="rounded-2xl border " bodyStyle={{ padding: 24 }}>
+                            <Card className="rounded-2xl border   h-full " bodyStyle={{ padding: 24 }}>
 
 
                                 <div className="flex items-start gap-4">
@@ -300,6 +303,7 @@ const Users = () => {
                                         icon={<EnvironmentOutlined />}
                                         text={salon.salonAddress}
                                     />
+
                                     <InfoRow
                                         icon={<CalendarOutlined />}
                                         text={`Joined: ${new Date(salon.createdAt).toLocaleDateString(

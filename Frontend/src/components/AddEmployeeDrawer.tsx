@@ -10,6 +10,7 @@ import {
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 import { useEffect } from "react";
+import { postApiAuthAddemployee, putApiAuthEditemployeeId } from "../api/generated/loginsignuphome";
 
 const AddEmployeeDrawer = ({
     openDrawer,
@@ -78,8 +79,7 @@ const AddEmployeeDrawer = ({
 
             if (editingEmployee) {
 
-                return await axios.put(
-                    `https://localhost:7074/api/auth/editemployee/${editingEmployee.id}`,
+                return await putApiAuthEditemployeeId(editingEmployee.id,
                     {
                         fullName: values.fullName,
                         role: values.role,
@@ -92,8 +92,7 @@ const AddEmployeeDrawer = ({
                 );
             }
 
-            return await axios.post(
-                "https://localhost:7074/api/auth/addemployee",
+            return await postApiAuthAddemployee(
                 {
                     salonId,
                     fullName: values.fullName,

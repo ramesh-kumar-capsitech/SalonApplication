@@ -235,17 +235,17 @@ const Salon = () => {
         };
     return (
         <div>
-            <SalonFormDrawer
-                open={open}
-                onClose={() => {
-                    setOpen(false);
-                    setEditingSalon(null);
-                }}
-                initialValues={editingSalon}
-                onSubmit={handleSalonSubmit}
-            />
-            <div className="flex items-center justify-between px-3 py-[13px] pb-[6px]   ">
 
+            <div className="flex items-center justify-between px-3 py-[13px] pb-[6px]   ">
+                <SalonFormDrawer
+                    open={open}
+                    onClose={() => {
+                        setOpen(false);
+                        setEditingSalon(null);
+                    }}
+                    initialValues={editingSalon}
+                    onSubmit={handleSalonSubmit}
+                />
                 <div className='pt-3'>
                     <h1 className="text-lg leading-[1] m-0 font-semibold text-gray-900">
                         Super Admin Dashboard

@@ -251,18 +251,18 @@ const Dashboard = () => {
 
 
         <div className=' ' >
-            <SalonFormDrawer
-                open={open}
-                onClose={() => setOpen(false)}
-                onSubmit={handleCreateSalon}
-                title="Add New Salon"
-                loading={createSalonMutation.isPending}
-            />
 
 
 
-            <div className="flex-1  ">
 
+            <div className="flex items-center justify-between px-3 py-[13px] pb-[6px]    ">
+                <SalonFormDrawer
+                    open={open}
+                    onClose={() => setOpen(false)}
+                    onSubmit={handleCreateSalon}
+                    title="Add New Salon"
+                    loading={createSalonMutation.isPending}
+                />
                 <div className="md:flex items-center justify-between px-3 py-[13px]   ">
                     <div>
                         <h1 className="text-lg leading-[0.8] font-semibold text-gray-900">

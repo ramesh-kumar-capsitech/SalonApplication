@@ -202,6 +202,8 @@ public class AuthController : ControllerBase
             admin = new
             {
                 id = admin.Id,
+                name = admin.Name,
+                profileImage = admin.ProfileImage,
                 email = admin.Email,
                 role = admin.Role
             }
