@@ -57,8 +57,8 @@ const Login = () => {
             try {
                 const salonRes = await postApiAuthSalonlogin(
                     {
-                        loginEmail: loginData.email,
-                        loginPassword: loginData.password,
+                        email: loginData.email,
+                        password: loginData.password,
                     }
                 );
 
@@ -71,8 +71,8 @@ const Login = () => {
             try {
                 const employeeRes = await postApiAuthEmployeelogin(
                     {
-                        loginEmail: loginData.email,
-                        loginPassword: loginData.password,
+                        email: loginData.email,
+                        password: loginData.password,
                     }
                 );
 
@@ -134,28 +134,30 @@ const Login = () => {
                     loginSuccess({
                         token: result.data.token,
                         user: {
-                            salonId:
-                                result.data.salon.id,
+                            salonId: result.data.salon.id,
 
                             salonownername:
                                 result.data.salon.ownerName,
 
                             email:
-                                result.data.salon.loginEmail,
+                                result.data.salon.email,
 
                             profileImage:
                                 result.data.salon.profileImage,
+                            status: result.data.salon.status,
 
                             role: "salonadmin",
                         },
                     })
                 );
 
-                message.success(
-                    "Salon Admin Login Success"
-                );
+                message.success("Salon Admin Login Success");
 
-                navigate("/salonadmin");
+                if (result.data.salon.status === "approved") {
+                    navigate("/salonadmin");
+                } else {
+                    navigate("/salonstatus");
+                }
             }
             if (result.role === "employee") {
                 const employee = result.data.employee;
@@ -176,9 +178,7 @@ const Login = () => {
                     })
                 );
 
-                message.success(
-                    "Employee Login Success"
-                );
+                message.success("Employee Login Success");
 
                 navigate("/employee");
             }
@@ -186,9 +186,7 @@ const Login = () => {
         },
 
         onError: () => {
-            message.error(
-                "Invalid Credentials"
-            );
+            message.error("Invalid Credentials");
         }
     });
 
@@ -221,7 +219,6 @@ const Login = () => {
                 </div>
 
                 <div className='w-full flex md:w-1/2 md:flex  justify-center items-center '>
-
                     <div>
                         <div className='flex items-center gap-4 mb-5'>
 

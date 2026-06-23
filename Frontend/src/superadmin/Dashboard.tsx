@@ -219,12 +219,12 @@ const Dashboard = () => {
                     <div>
                         <p>
                             <strong>Email:</strong>{" "}
-                            {data.data.loginEmail}
+                            {data.data.email}
                         </p>
 
                         <p>
                             <strong>Password:</strong>{" "}
-                            {data.data.loginPassword}
+                            {data.data.password}
                         </p>
                     </div>
                 ),
@@ -255,7 +255,7 @@ const Dashboard = () => {
 
 
 
-            <div className="flex items-center justify-between px-3 py-[13px] pb-[6px]    ">
+            <div className="    ">
                 <SalonFormDrawer
                     open={open}
                     onClose={() => setOpen(false)}
@@ -263,7 +263,7 @@ const Dashboard = () => {
                     title="Add New Salon"
                     loading={createSalonMutation.isPending}
                 />
-                <div className="md:flex items-center justify-between px-3 py-[13px]   ">
+                <div className="md:flex items-center justify-between  px-3 py-[13px]   ">
                     <div>
                         <h1 className="text-lg leading-[0.8] font-semibold text-gray-900">
                             Super Admin Dashboard
@@ -273,10 +273,14 @@ const Dashboard = () => {
                         </p>
                     </div>
 
-                    <button className="bg-blue-600 text-white px-5 py-2.5 rounded-full font-sm hover:bg-blue-700 transition" onClick={() => setOpen(true)}>
+                    <button className=" hidden md:block bg-blue-600 text-white px-5 py-2.5 rounded-full font-sm hover:bg-blue-700 transition" onClick={() => setOpen(true)}>
                         Add New Salon
                     </button>
+                    <button className="md:hidden mt-1 flex items-center gap-1 text-blue-600 font-medium hover:underline "
+                        onClick={() => setOpen(true)}>
 
+                        Add New Salon
+                    </button>
 
                 </div>
 
@@ -411,7 +415,6 @@ const Dashboard = () => {
                 </div>
             </div>
             <div className="bg-white rounded-2xl border m-6 p-6 ">
-
                 <div className="mb-6">
                     <h2 className="text-xl font-semibold text-gray-900">
                         Top Performing Salons
@@ -420,8 +423,6 @@ const Dashboard = () => {
                         Salons ranked by bookings and revenue
                     </p>
                 </div>
-
-
                 <Table
                     columns={columns}
                     scroll={{ x: "max-content" }}

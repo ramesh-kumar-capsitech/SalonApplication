@@ -259,13 +259,7 @@ const SettingSalon = () => {
 
                     value={tab}
 
-                    onChange={(val) =>
-                        setTab(
-                            val as
-                            "profile"
-                            | "password"
-                        )
-                    }
+                    onChange={(val) => setTab(val as "profile" | "password")}
 
                     options={[
 
@@ -280,7 +274,7 @@ const SettingSalon = () => {
                         },
                     ]}
 
-                    className="rounded-lg bg-gray-100 w-[16%] font-[Outfit] p-1"
+                    className="rounded-lg bg-gray-100  sm:w-64 md:w-40 font-[Outfit] p-1"
                 />
 
             </div>
@@ -296,24 +290,20 @@ const SettingSalon = () => {
                         <Card
                             className="rounded-2xl border"
                             bodyStyle={{
-                                padding: 32
+                                padding: 16
                             }}
                         >
 
 
 
-                            <div className="flex items-start gap-6 mb-8">
+                            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-8">
 
                                 <Avatar
                                     size={72}
                                     src={profileImage}
                                     className="bg-blue-100 text-blue-600 font-semibold"
                                 >
-                                    {
-                                        !profileImage
-                                        &&
-                                        initials
-                                    }
+                                    {!profileImage && initials}
                                 </Avatar>
 
                                 <div>
@@ -326,16 +316,14 @@ const SettingSalon = () => {
                                         Upload a new profile picture
                                     </p>
 
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
 
                                         <Upload
 
                                             showUploadList={false}
 
                                             beforeUpload={(file) => {
-
                                                 uploadImage(file);
-
                                                 return false;
                                             }}
                                         >
@@ -394,14 +382,12 @@ const SettingSalon = () => {
 
                                         {
                                             required: true,
-                                            message:
-                                                "Name is required"
+                                            message: "Name is required"
                                         },
 
                                         {
                                             min: 3,
-                                            message:
-                                                "Minimum 3 characters required"
+                                            message: "Minimum 3 characters required"
                                         }
                                     ]}
                                 >
@@ -423,8 +409,7 @@ const SettingSalon = () => {
 
                                         {
                                             required: true,
-                                            message:
-                                                "Email is required"
+                                            message: "Email is required"
                                         },
 
                                         {
@@ -480,7 +465,7 @@ const SettingSalon = () => {
 
                                         loading={updateProfileMutation.isPending}
 
-                                        className="rounded-full px-8"
+                                        className="rounded-full w-full sm:w-auto px-8"
                                     >
                                         Save Changes
                                     </Button>
@@ -538,8 +523,7 @@ const SettingSalon = () => {
                                     rules={[
                                         {
                                             required: true,
-                                            message:
-                                                "Enter current password"
+                                            message: "Enter current password"
                                         }
                                     ]}
                                 >
@@ -560,8 +544,7 @@ const SettingSalon = () => {
                                     rules={[
                                         {
                                             required: true,
-                                            message:
-                                                "Enter new password"
+                                            message: "Enter new password"
                                         }
                                     ]}
                                 >
@@ -579,36 +562,25 @@ const SettingSalon = () => {
 
                                     name="confirmPassword"
 
-                                    dependencies={[
-                                        "newPassword"
-                                    ]}
+                                    dependencies={["newPassword"]}
 
                                     rules={[
 
                                         {
                                             required: true,
-                                            message:
-                                                "Confirm password"
+                                            message: "Confirm password"
                                         },
 
                                         ({ getFieldValue }) => ({
 
                                             validator(_, value) {
 
-                                                if (
-                                                    !value
-                                                    ||
-                                                    getFieldValue(
-                                                        "newPassword"
-                                                    ) === value
-                                                ) {
+                                                if (!value || getFieldValue("newPassword") === value) {
 
                                                     return Promise.resolve();
                                                 }
 
-                                                return Promise.reject(
-                                                    "Passwords do not match"
-                                                );
+                                                return Promise.reject("Passwords do not match");
                                             }
                                         })
                                     ]}
@@ -629,7 +601,7 @@ const SettingSalon = () => {
 
                                     loading={changePasswordMutation.isPending}
 
-                                    className="rounded-full px-6"
+                                    className="rounded-full w-full sm:w-auto px-6"
                                 >
                                     Update Password
                                 </Button>

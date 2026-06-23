@@ -160,7 +160,7 @@ const AllBooking = () => {
 
     return (
         <div>
-            <div className="flex items-center justify-between px-3 py-[13px]   ">
+            <div className="md:flex items-center justify-between  px-3 py-[13px]   ">
                 <div>
                     <h1 className="text-lg leading-[0.8] font-semibold text-gray-900">
                         All Booking
@@ -173,7 +173,7 @@ const AllBooking = () => {
             </div>
 
             <hr />
-            <div className='m-6 '>
+            <div className=' m-6 '>
                 <Card
                     className="rounded-2xl border font-[Outfit]"
                     bodyStyle={{ padding: 28 }}
@@ -190,7 +190,8 @@ const AllBooking = () => {
                     <Table
                         columns={columns}
                         dataSource={dataSource}
-                        pagination={false}
+                        pagination={{ pageSize: 5 }}
+                        scroll={{ x: "max-content" }}
                     />
                 </Card>
             </div>

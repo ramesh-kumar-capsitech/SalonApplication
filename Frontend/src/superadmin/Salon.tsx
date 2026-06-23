@@ -13,7 +13,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import SalonFormDrawer from "../components/SalonFormDrawer";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { getApiAuthGetallsalons, putApiAuthActivateId, putApiAuthDeactivateId } from '../api/generated/loginsignuphome';
+import { getApiAuthGetallsalons, putApiAuthActivateId, putApiAuthDeactivateId, putApiAuthUpdatesalonId } from '../api/generated/loginsignuphome';
 const StatBox = ({ icon, value, label, bg, color }: any) => (
     <div className={`${bg} rounded-lg p-1 text-center`}>
         <div className={`text-2xl ${color} mb-2`}>{icon}</div>
@@ -179,8 +179,7 @@ const Salon = () => {
             ) => {
 
                 if (editingSalon) {
-                    await axios.put(
-                        `https://localhost:7074/api/auth/updatesalon/${editingSalon.id}`,
+                    await putApiAuthUpdatesalonId(editingSalon.id,
                         values
                     );
 
@@ -275,7 +274,7 @@ const Salon = () => {
                     <div className="">
                         <p className="text-gray-500">Total Salons</p>
                         <h2 className="text-3xl font-semibold text-blue-700 mt-2">
-                            {approvedsalons.length}
+                            {approvedsalons.length + deactive.length}
                         </h2>
                     </div>
 
@@ -321,7 +320,7 @@ const Salon = () => {
 
                 </div>
             </div>
-            <div className=' grid lg:grid-cols-2 m-6 gap-6 '>
+            <div className='grid grid-cols-1 xl:grid-cols-2 gap-4 md:gap-6 p-4 md:p-6'>
                 {approvedsalons.map((salon: any) => (
                     <Card
                         className="rounded-2xl border"
@@ -342,7 +341,7 @@ const Salon = () => {
                                         <EnvironmentOutlined />{salon.city}
                                     </span>
                                     <span>Joined: {new Date(salon.
-                                        createdAt).toLocaleDateString()}</span>
+                                        approvedAt).toLocaleDateString()}</span>
                                 </div>
                             </div>
 
@@ -350,9 +349,9 @@ const Salon = () => {
                                 menu={{
                                     items: [
                                         { key: "edit", label: "Edit" },
-                                        { key: "deactivate", label: "Deactivate" },
+                                        { key: "active", label: "Active" },
                                     ],
-                                    onClick: ({ key }) => handleMenuClick(key, salon.id, salon)
+                                    onClick: ({ key }) => handleMenuClick(key, salon.id)
                                 }}
                             >
                                 <Button shape="circle" icon={<MoreOutlined />} />
@@ -366,20 +365,26 @@ const Salon = () => {
                                 <p className="font-medium">{salon.ownerName}</p>
 
                                 <p className="text-gray-500 mt-4">Email</p>
-                                <p>{salon.email}</p>
+                                <p className="break-all text-sm">
+                                    {salon.email}
+                                </p>
 
                                 <p className="text-gray-500 mt-4">Address</p>
-                                <p>{salon.salonAddress}</p>
+                                <p className="break-words text-sm">
+                                    {salon.salonAddress}
+                                </p>
                             </div>
 
                             <div>
                                 <p className="text-gray-500">Phone</p>
-                                <p>{salon.phone}</p>
+                                <p className="break-all text-sm">
+                                    {salon.phone}
+                                </p>
                             </div>
                         </div>
 
 
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mt-6">
                             <StatBox
                                 icon={<UserOutlined />}
                                 value={salon.staffCount || 0}
@@ -414,7 +419,7 @@ const Salon = () => {
                         <Button
                             type="primary"
                             icon={<EyeOutlined />}
-                            className="w-full mt-6 rounded-full h-8 text-sm"
+                            className="w-full mt-6 rounded-full h-10 text-sm"
                             onClick={() =>
                                 navigate(
                                     `/superadmin/salon-details/${salon.id}`

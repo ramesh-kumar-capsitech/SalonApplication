@@ -20,10 +20,9 @@ public class ApplySaloncontroller : ControllerBase
     [FromBody] ApplySalon salon
 )
     {
-        var result =
-            _salonService.ApplySalon(salon);
+        var result = _salonService.ApplySalon(salon);
 
-        if (result == "salon already exists")
+        if (result == "Email already exists")
         {
             return BadRequest(new
             {
@@ -128,7 +127,7 @@ public class ApplySaloncontroller : ControllerBase
                     {
                     new Claim(
                         ClaimTypes.Email,
-                        loggedInSalon.LoginEmail!
+                        loggedInSalon.Email!
                     ),
 
                     new Claim(
@@ -374,15 +373,9 @@ UpdateSalonProfile(
     ApplySalon model
 )
     {
-        var result =
-            _salonService
-            .CreateSalonByAdmin(
-                model
-            );
+        var result = _salonService.CreateSalonByAdmin(model);
 
-        if (
-            result is string
-        )
+        if (result is string)
         {
             return BadRequest(
                 new

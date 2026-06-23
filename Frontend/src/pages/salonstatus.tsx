@@ -1,32 +1,40 @@
-import { Spin, Button, Card } from "antd";
-import { LogoutOutlined } from "@ant-design/icons";
+import { Spin, Button, Card, message } from "antd";
+import { CloseCircleOutlined, LogoutOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import logo from '../assets/images/logo.png'
 import { useEffect, useState } from "react";
+import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { logout } from "../redux/authSlice";
 const salonstatus = () => {
     const [ownername, setownername] = useState('')
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const handleLogout = () => {
-        localStorage.removeItem('loginid');
-        localStorage.removeItem('status');
+        const confirmLogout = window.confirm(
+            "Are you sure you want to logout?"
+        );
 
-        localStorage.removeItem('password');
+        if (!confirmLogout) return;
 
+        dispatch(logout());
 
-        navigate("/salonstatuscheck");
+        message.success("Logged out successfully");
+
+        navigate("/");
     };
     useEffect(() => {
-        setownername(localStorage.getItem('name') ?? '');
+        setownername(user.salonownername);
 
     }, [])
     const [status, setStatus] = useState("processing")
-    const [loginEmail, setLoginEmail] = useState("")
-    const [loginPassword, setLoginPassword] = useState("")
+
+    const user = useAppSelector(
+        (state) => state.auth.user
+    );
     useEffect(() => {
-        setLoginEmail(localStorage.getItem("loginid") ?? '')
-        setLoginPassword(localStorage.getItem("password") ?? '')
-        setStatus(localStorage.getItem("status") ?? '')
+
+        setStatus(user.status || "");
 
     }, [])
     return (
@@ -39,20 +47,21 @@ const salonstatus = () => {
 
                     </div>
                     <div className='text-white'>
-                        <h1 className="text-lg  m-0 leading-[0.8]  ">TrimTech</h1>
+                        <h1 className="text-lg  m-0 leading-[0.8]  ">BookMySalon</h1>
                         <span className="  text-sm text-white/70">Premium Booking</span>
                     </div>
                 </div>
-                <div>
-                    <h2 className="text-xl font-bold text-gray-800">{ownername}</h2>
-                </div>
+
             </div>
             <div className=" flex justify-center items-center m-6 ">
-                {status === "processing" && (
+                {status === "pending" && (
                     <Card
                         className="w-full max-w-md text-center rounded-2xl shadow-lg"
                         bodyStyle={{ padding: 40 }}
                     >
+                        <div>
+                            <h3 className="text-xl mb-6 font-bold text-gray-800">Mr.{ownername}</h3>
+                        </div>
                         <Spin size="large" />
 
                         <h2 className="mt-6 text-xl font-semibold">
@@ -60,7 +69,7 @@ const salonstatus = () => {
                         </h2>
 
                         <p className="text-gray-500 mt-2">
-                            Please wait while we complete the process.
+                            Please wait while we complete the process, in the 2-3 working days.
                         </p>
 
                         <Button
@@ -73,37 +82,62 @@ const salonstatus = () => {
                         </Button>
                     </Card>
                 )}
-                {status === "approved" && (
-                    <div>
-
-                        <h2 className="text-green-600 text-xl font-semibold">
-                            Your salon is approved
-                        </h2>
-
-                        <div className="bg-green-50 p-4 rounded-xl mt-4 text-left">
-
-                            <p className="text-sm text-gray-500">Login Email</p>
-                            <p className="font-semibold">{loginEmail}</p>
-
-                            {loginPassword && (
-                                <>
-                                    <p className="text-sm text-gray-500 mt-3">Password</p>
-                                    <p className="font-semibold">{loginPassword}</p>
-
-                                </>
-                            )}
-                            <Button
-                                danger
-                                icon={<LogoutOutlined />}
-                                className="mt-8"
-                                onClick={handleLogout}
-                            >
-                                Logout
-                            </Button>
+                {status === "rejected" && (
+                    <Card
+                        className="w-full max-w-md text-center rounded-2xl shadow-lg"
+                        bodyStyle={{ padding: 40 }}
+                    >
+                        <div className="flex justify-center mb-4">
+                            <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center">
+                                <CloseCircleOutlined className="text-3xl text-red-600" />
+                            </div>
                         </div>
 
+                        <h3 className="text-xl font-bold text-gray-800">
+                            Mr. {ownername}
+                        </h3>
 
-                    </div>
+                        <h2 className="mt-4 text-2xl font-semibold text-red-600">
+                            Application Rejected
+                        </h2>
+
+                        <p className="text-gray-600 mt-4">
+                            Unfortunately, your salon application could not be approved at this time.
+                        </p>
+
+                        <div className="mt-5 p-4 bg-red-50 border border-red-200 rounded-lg text-left">
+                            <p className="font-semibold text-red-700 mb-2">
+                                Rejection Reason:
+                            </p>
+
+                            <p className="text-gray-700">
+                                Incomplete documentation was submitted during the application process.
+                                Please ensure that all information and supporting documents are accurate,
+                                complete, and original before reapplying.
+                            </p>
+                        </div>
+
+                        <p className="text-gray-600 mt-5">
+                            You may submit a new application after correcting the information and uploading valid documents.
+                        </p>
+
+                        <Button
+                            type="primary"
+                            className="mt-8"
+                            onClick={() => navigate("/applysalon")}
+                        >
+                            Apply Again
+                        </Button>
+
+                        <Button
+                            danger
+                            icon={<LogoutOutlined />}
+                            className="mt-3 ml-3"
+                            onClick={handleLogout}
+                        >
+                            Logout
+                        </Button>
+                    </Card>
                 )}
             </div>
         </div>

@@ -34,10 +34,12 @@ const Signup = () => {
             }
         },
 
-        onError: () => {
-            message.error(
-                "Something went wrong"
-            );
+        onError: (error: any) => {
+            const errorMessage =
+                error?.response?.data?.message ||
+                "Something went wrong";
+
+            message.error(errorMessage);
         }
     });
     const handleSignup = (values: any) => {

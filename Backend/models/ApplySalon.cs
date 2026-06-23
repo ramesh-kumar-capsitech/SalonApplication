@@ -16,8 +16,9 @@ public class ApplySalon
     public string? Phone { get; set; }
 
     public string? Email { get; set; }
-
-    public string? JoinedYear { get; set; }
+    public string? Password { get; set; }
+    public string? JoinedYear
+    { get; set; }
 
     public string? TotalStaff { get; set; }
 
@@ -26,9 +27,7 @@ public class ApplySalon
     public string? SalonDescription { get; set; }
     public List<string> GalleryImages { get; set; } = new();
     public string Status { get; set; } = "pending";
-    public string? LoginEmail { get; set; }
 
-    public string? LoginPassword { get; set; }
     public string? RejectReason { get; set; }
     public string IsActive { get; set; } = "deactive";
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

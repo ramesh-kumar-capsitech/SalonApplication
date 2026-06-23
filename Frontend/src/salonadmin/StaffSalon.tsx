@@ -1,4 +1,4 @@
-import { Input, Modal, Segmented, Select } from 'antd'
+import { Empty, Input, Modal, Segmented, Select } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { Card, Avatar, Tag, Button, Dropdown, message } from "antd";
 import {
@@ -7,6 +7,7 @@ import {
     CalendarOutlined,
     ScissorOutlined,
     MoreOutlined,
+    PlusCircleOutlined,
 } from "@ant-design/icons";
 import { Divider } from "antd";
 import {
@@ -139,7 +140,7 @@ const StaffSalon = () => {
                 editingEmployee={editingEmployee}
                 setEditingEmployee={setEditingEmployee}
             />
-            <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3   ">
+            <div className="md:flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3   ">
                 <div className='pt-3'>
                     <h1 className="text-lg leading-[0.8] m-0 font-semibold text-gray-900">
                         Staff Management
@@ -148,16 +149,22 @@ const StaffSalon = () => {
                         Manage staff and new request
                     </p>
                 </div>
-                <button className="bg-blue-600 text-white px-5 py-2.5 rounded-full font-sm hover:bg-blue-700 transition" onClick={() => setOpenDrawer(true)}
+                <button className="hidden md:block  bg-blue-600 text-white px-5 py-2.5 rounded-full font-sm hover:bg-blue-700 transition" onClick={() => setOpenDrawer(true)}
                 >
                     Add Staff Member
+                </button>
+                <button
+                    className="md:hidden self-start sm:self-auto text-blue-600 text-sm md:font-medium hover:underline"
+                    onClick={() => setOpenDrawer(true)}
+                >
+                    Add Staff
                 </button>
 
 
             </div>
             <hr />
-            <div className='m-6 flex gap-6 '>
-                <div className="w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
+            <div className='  m-6 grid grid-cols-1 md:flex gap-6 '>
+                <div className="  lg:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
 
 
 
@@ -171,7 +178,7 @@ const StaffSalon = () => {
                     </div>
 
                 </div>
-                <div className="w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
+                <div className="lg:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
 
 
 
@@ -185,7 +192,7 @@ const StaffSalon = () => {
                     </div>
 
                 </div>
-                <div className="w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
+                <div className="lg:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
 
 
 
@@ -198,34 +205,45 @@ const StaffSalon = () => {
 
                 </div>
             </div>
-            <div>
+            <div className="m-6 md:m-6 mt-0">
                 <Segmented
+                    block
                     value={tab}
-                    onChange={(val) => settab(val as "activestaff" | "request")}
+                    onChange={(val) =>
+                        settab(val as "activestaff" | "request")
+                    }
                     options={[
                         {
                             label: `Active Staff (${approvereq.length})`,
-                            value: 'activestaff',
+                            value: "activestaff",
                         },
                         {
                             label: `Pending Request (${Requests.length})`,
-                            value: 'request',
+                            value: "request",
                         },
                     ]}
-                    className="rounded-lg bg-gray-100 w-[26%] font-[Outfit]  p-1 m-6 mt-0"
+                    className="w-full md:w-[40%] rounded-lg bg-gray-100 p-1 font-[Outfit]"
                 />
             </div>
             {
                 tab === "activestaff" && (
-                    <div className='grid grid-cols-2 gap-6 m-6 mt-0'>
-                        {approvereq.map((appreq: any) => (
+                    <div className='grid grid-cols-1 lg:grid-cols-2 gap-6 m-3 md:m-6 mt-0'>
+                        {approvereq.length === 0 ? (
+
+                            <Card className="rounded-2xl border">
+                                <Empty
+                                    description="No Pending Requests"
+                                />
+                            </Card>
+
+                        ) : (approvereq.map((appreq: any) => (
                             <Card
                                 className="rounded-2xl border font-[Outfit]"
                                 bodyStyle={{ padding: 24 }}
                             >
 
-                                <div className="flex items-start justify-between">
-                                    <div className="flex items-center gap-4">
+                                <div className="flex items-start justify-between gap-4">
+                                    <div className="flex items-center gap-4 min-w-0">
                                         <Avatar
                                             size={48}
                                             src={appreq.profileImage || undefined}
@@ -235,12 +253,12 @@ const StaffSalon = () => {
                                         </Avatar>
 
                                         <div>
-                                            <h2 className="font-semibold m-0">{appreq.fullName}</h2>
-                                            <p className="text-gray-500 text-sm m-0">
+                                            <h2 className="font-semibold m-0 break-words">{appreq.fullName}</h2>
+                                            <p className="text-gray-500 text-sm m-0 break-words">
                                                 {appreq.role}
                                             </p>
 
-                                            <div className="flex gap-2 mt-1">
+                                            <div className="flex flex-wrap gap-2 mt-1">
                                                 <Tag
                                                     color={
                                                         appreq.status === "active"
@@ -255,58 +273,57 @@ const StaffSalon = () => {
                                                             : "Deactive"
                                                     }
                                                 </Tag>
-                                                <Tag color="blue" className="rounded-full">
-                                                    Available
-                                                </Tag>
+
                                             </div>
                                         </div>
                                     </div>
+                                    <div className="">
+                                        <Dropdown
+                                            menu={{
 
-                                    <Dropdown
-                                        menu={{
+                                                items: [
 
-                                            items: [
+                                                    {
+                                                        key: "edit",
+                                                        label: "Edit Profile"
+                                                    },
 
-                                                {
-                                                    key: "edit",
-                                                    label: "Edit Profile"
-                                                },
+                                                    {
+                                                        key: "toggle",
 
-                                                {
-                                                    key: "toggle",
+                                                        label:
+                                                            appreq.status === "active"
+                                                                ? "Deactivate"
+                                                                : "Activate"
+                                                    },
+                                                ],
 
-                                                    label:
-                                                        appreq.status === "active"
-                                                            ? "Deactivate"
-                                                            : "Activate"
-                                                },
-                                            ],
+                                                onClick: ({ key }) => {
 
-                                            onClick: ({ key }) => {
+                                                    if (key === "edit") {
 
-                                                if (key === "edit") {
+                                                        setEditingEmployee(appreq);
 
-                                                    setEditingEmployee(appreq);
+                                                        setOpenDrawer(true);
+                                                    }
 
-                                                    setOpenDrawer(true);
+                                                    else if (
+                                                        key === "toggle"
+                                                    ) {
+
+                                                        toggleEmployeeMutation.mutate(
+                                                            appreq.id
+                                                        );
+                                                    }
                                                 }
-
-                                                else if (
-                                                    key === "toggle"
-                                                ) {
-
-                                                    toggleEmployeeMutation.mutate(
-                                                        appreq.id
-                                                    );
-                                                }
-                                            }
-                                        }}
-                                    >
-                                        <Button
-                                            type="text"
-                                            icon={<MoreOutlined />}
-                                        />
-                                    </Dropdown>
+                                            }}
+                                        >
+                                            <Button
+                                                type="text"
+                                                icon={<MoreOutlined />}
+                                            />
+                                        </Dropdown>
+                                    </div>
                                 </div>
 
                                 {/* INFO */}
@@ -338,7 +355,7 @@ const StaffSalon = () => {
                                 </div>
 
 
-                                <div className="grid grid-cols-2 gap-4 mt-5">
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-5">
                                     <div className="bg-blue-50 rounded-xl p-4 text-center">
                                         <h3 className="text-xl font-semibold text-blue-600">
                                             {appreq.todaysBookings}
@@ -359,7 +376,7 @@ const StaffSalon = () => {
                                     </div>
                                 </div>
 
-                                {/* ACTION */}
+
                                 <Button
                                     className="w-full mt-5 rounded-full"
                                 >
@@ -367,7 +384,8 @@ const StaffSalon = () => {
                                 </Button>
                             </Card>
                         ))
-                        }
+
+                        )}
 
                     </div >
                 )
@@ -376,92 +394,103 @@ const StaffSalon = () => {
             {
                 tab === "request" && (
                     <div className="grid gap-6 m-6 mt-0">
-                        {Requests.map((req: any) => (
+                        {Requests.length === 0 ? (
 
-                            <Card
-                                key={req._id}
-                                className="rounded-2xl border font-[Outfit]"
-                                bodyStyle={{ padding: 28 }}
-                            >
-
-                                {/* HEADER */}
-                                <div className="flex items-start justify-between">
-
-                                    <div className="flex items-center gap-4">
-                                        <Avatar
-                                            size={48}
-                                            className="bg-yellow-100 text-yellow-600 font-semibold"
-                                        >
-                                            {req.name?.split(" ").map((w: any) => w[0]).join("").toUpperCase()}
-                                        </Avatar>
-
-                                        <div>
-                                            <h2 className="font-semibold m-0">{req.name}</h2>
-                                            <p className="text-gray-500 text-sm m-0">{req.role}</p>
-
-                                            <Tag color="gold" className="rounded-full mt-1">
-                                                Pending Review
-                                            </Tag>
-                                        </div>
-                                    </div>
-
-                                    <div className="text-right">
-                                        <p className="text-gray-500 text-sm m-0">Requested</p>
-                                        <p className="font-medium m-0">
-                                            {new Date(req.createdAt).toLocaleDateString()}
-                                        </p>
-                                    </div>
-
-                                </div>
-
-                                <Divider className="my-6" />
-
-                                {/* INFO */}
-                                <div className="bg-gray-50 rounded-xl p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
-
-                                    <InfoBlock
-                                        label="Email"
-                                        value={req.email}
-                                        icon={<MailOutlined />}
-                                    />
-
-                                    <InfoBlock
-                                        label="Phone"
-                                        value={req.phone}
-                                        icon={<PhoneOutlined />}
-                                    />
-
-                                </div>
-
-                                {/* ACTIONS */}
-                                <div className="flex gap-4 mt-6">
-
-                                    <Button
-                                        type="primary"
-                                        icon={<CheckOutlined />}
-                                        onClick={() => handleApprove(req._id)}
-                                        // onClick={() => {
-                                        //     alert("Button Clicked");
-                                        // }}
-                                        className="flex-1 h-8 rounded-full bg-green-500 hover:bg-green-600"
-                                    >
-                                        Approve
-                                    </Button>
-
-                                    <Button
-                                        danger
-                                        icon={<CloseOutlined />}
-                                        onClick={() => { handleReject(req._id) }}
-                                        className="flex-1 h-8 rounded-full"
-                                    >
-                                        Reject
-                                    </Button>
-
-                                </div>
-
+                            <Card className="rounded-2xl border">
+                                <Empty
+                                    description="No Pending Requests"
+                                />
                             </Card>
 
-                        ))}
+                        ) : (
+
+                            Requests.map((req: any) => (
+                                <Card
+                                    key={req._id}
+                                    className="rounded-2xl border font-[Outfit]"
+                                    bodyStyle={{ padding: 28 }}
+                                >
+
+                                    {/* HEADER */}
+                                    <div className="flex items-start justify-between">
+
+                                        <div className="flex items-center gap-4">
+                                            <Avatar
+                                                size={48}
+                                                className="bg-yellow-100 text-yellow-600 font-semibold"
+                                            >
+                                                {req.name?.split(" ").map((w: any) => w[0]).join("").toUpperCase()}
+                                            </Avatar>
+
+                                            <div>
+                                                <h2 className="font-semibold m-0">{req.name}</h2>
+                                                <p className="text-gray-500 text-sm m-0">{req.role}</p>
+
+                                                <Tag color="gold" className="rounded-full mt-1">
+                                                    Pending Review
+                                                </Tag>
+                                            </div>
+                                        </div>
+
+                                        <div className="text-right">
+                                            <p className="text-gray-500 text-sm m-0">Requested</p>
+                                            <p className="font-medium m-0">
+                                                {new Date(req.createdAt).toLocaleDateString()}
+                                            </p>
+                                        </div>
+
+                                    </div>
+
+                                    <Divider className="my-6" />
+
+                                    {/* INFO */}
+                                    <div className="bg-gray-50 rounded-xl p-5 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+                                        <InfoBlock
+                                            label="Email"
+                                            value={req.email}
+                                            icon={<MailOutlined />}
+                                        />
+
+                                        <InfoBlock
+                                            label="Phone"
+                                            value={req.phone}
+                                            icon={<PhoneOutlined />}
+                                        />
+
+                                    </div>
+
+                                    {/* ACTIONS */}
+                                    <div className="flex gap-4 mt-6">
+
+                                        <Button
+                                            type="primary"
+                                            icon={<CheckOutlined />}
+                                            onClick={() => handleApprove(req._id)}
+                                            // onClick={() => {
+                                            //     alert("Button Clicked");
+                                            // }}
+                                            className="flex-1 h-8 rounded-full bg-green-500 hover:bg-green-600"
+                                        >
+                                            Approve
+                                        </Button>
+
+                                        <Button
+                                            danger
+                                            icon={<CloseOutlined />}
+                                            onClick={() => { handleReject(req._id) }}
+                                            className="flex-1 h-8 rounded-full"
+                                        >
+                                            Reject
+                                        </Button>
+
+                                    </div>
+
+                                </Card>
+
+                            ))
+
+                        )}
                     </div>
                 )
             }

@@ -80,7 +80,7 @@ function SalonDetails() {
 
                 <Divider />
 
-                {/* Profile Section */}
+
                 <div className="flex gap-6 items-start">
                     <Avatar
                         size={100}
@@ -93,7 +93,7 @@ function SalonDetails() {
                         <h2 className="text-2xl font-semibold mb-4">
                             {data?.salon?.salonName}
                         </h2>
-                        <div className="bg-gray-50 rounded-xl p-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="hidden md:block bg-gray-50 rounded-xl p-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <p className="text-gray-500">Owner</p>
                                 <p className="font-medium"> {data?.salon?.ownerName}</p>
@@ -113,6 +113,24 @@ function SalonDetails() {
                         </div>
                     </div>
                 </div>
+                <div className=" md:hidden bg-gray-50 rounded-xl p-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p className="text-gray-500">Owner</p>
+                        <p className="font-medium"> {data?.salon?.ownerName}</p>
+
+                        <p className="text-gray-500 mt-4">Email</p>
+                        <p>{data?.salon?.email}</p>
+
+
+                    </div>
+
+                    <div>
+                        <p className="text-gray-500 ">Address</p>
+                        <p> {data?.salon?.salonAddress}</p>
+                        <p className="text-gray-500 mt-4">Phone</p>
+                        <p>{data?.salon?.phone}</p>
+                    </div>
+                </div>
 
                 <Divider />
 
@@ -124,7 +142,7 @@ function SalonDetails() {
                 <div className="">
                     {data?.galleryImages?.length > 0 ? (
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
                             {data.galleryImages.map(
                                 (img: string, index: number) => (
@@ -141,10 +159,8 @@ function SalonDetails() {
 
                     ) : (
 
-                        <div className="flex  justify-center items-center py-10">
-                            <Empty
-                                description="No Gallery Images"
-                            />
+                        <div className="flex   justify-center items-center py-10">
+                            <Empty description={<span className="font-[Outfit]">No Gallery Images</span>} />
                         </div>
 
                     )}
@@ -161,6 +177,7 @@ function SalonDetails() {
                 <Table
                     pagination={false}
                     dataSource={data?.employees || []}
+                    scroll={{ x: "max-content" }}
                     columns={[
                         {
                             title: "Name",
@@ -193,6 +210,7 @@ function SalonDetails() {
                 <Table
                     pagination={false}
                     dataSource={data?.salon?.services || []}
+                    scroll={{ x: "max-content" }}
                     columns={[
                         {
                             title: "Service Name",
@@ -220,6 +238,7 @@ function SalonDetails() {
 
                 <Table
                     pagination={false}
+                    scroll={{ x: "max-content" }}
                     dataSource={data?.bookings || []}
                     columns={[
                         {

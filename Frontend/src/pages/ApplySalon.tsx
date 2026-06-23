@@ -23,6 +23,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useMutation } from "@tanstack/react-query";
 import { postApiAuthApplysalon } from "../api/generated/loginsignuphome";
+import Password from "antd/es/input/Password";
 
 
 
@@ -36,6 +37,7 @@ const ApplySalon = () => {
             city: values.city,
             phone: values.phone,
             email: values.email,
+            password: values.password,
             joinedYear: values.joinedyear,
             totalStaff: values.staff,
             salonAddress: values.salonaddress,
@@ -88,6 +90,7 @@ const ApplySalon = () => {
         ownername: "",
         phone: "",
         email: "",
+        password: "",
         joinedyear: "",
         salonaddress: "",
         salondescription: "",
@@ -205,7 +208,35 @@ const ApplySalon = () => {
                                     <Input prefix={<MailOutlined />} placeholder="salon@email.com" onChange={handleChange} name="email" />
                                 </Form.Item>
                             </Col>
+                            <Col span={12}>
+                                <Form.Item
+                                    label={<span className='font-[Outfit]'>Password</span>}
+                                    name="password"
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Please enter password",
+                                        },
+                                        {
+                                            min: 6,
+                                            message: "Password must be at least 6 characters",
+                                        },
+                                    ]}
+                                >
+                                    <Input.Password
+                                        placeholder="Password"
+                                        onChange={handleChange}
+                                        name="password"
 
+                                    />
+                                </Form.Item>
+                            </Col>
+
+
+
+
+                        </Row>
+                        <Row gutter={24}>
                             <Col span={12}>
                                 <Form.Item
                                     label={<span className="font-[Outfit] ">Joined Year</span>}
@@ -218,9 +249,6 @@ const ApplySalon = () => {
                                     <Input placeholder="Jun 2025" onChange={handleChange} name="joinedyear" />
                                 </Form.Item>
                             </Col>
-                        </Row>
-                        <Row gutter={24}>
-
                             <Col span={12}>
                                 <Form.Item
                                     label={<span className="font-[Outfit] ">Total Staff</span>}

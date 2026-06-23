@@ -1,7 +1,7 @@
 ﻿
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
-   
+
 
 public class Employee
 {
@@ -23,16 +23,15 @@ public class Employee
     public List<string>? Skills { get; set; }
 
     public int Experience { get; set; }
-
+    public string? Password { get; set; }
     public string? Availability { get; set; }
 
     public string Status { get; set; }
         = "active";
 
-    public string? LoginEmail { get; set; }
 
-    public string? LoginPassword { get; set; }
-    public DateTime CreatedAt    {
+    public DateTime CreatedAt
+    {
         get;
         set;
     } = DateTime.UtcNow;
@@ -41,9 +40,9 @@ public class Employee
 
 public class EmployeeLoginRequest
 {
-    public string LoginEmail { get; set; }
+    public string Email { get; set; }
 
-    public string LoginPassword { get; set; }
+    public string Password { get; set; }
 }
 
 public class EmployeeProfileUpdate

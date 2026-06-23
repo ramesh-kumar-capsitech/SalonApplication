@@ -116,8 +116,8 @@ const myshedule = () => {
 
             </div>
             <hr />
-            <div className='m-6 flex gap-6 '>
-                <div className="w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
+            <div className='m-6 grid md:flex gap-6 '>
+                <div className="md:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
 
 
 
@@ -131,7 +131,7 @@ const myshedule = () => {
                     </div>
 
                 </div>
-                <div className="w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
+                <div className="md:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
 
 
 
@@ -145,7 +145,7 @@ const myshedule = () => {
                     </div>
 
                 </div>
-                <div className="w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
+                <div className="md:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
 
 
 
@@ -183,25 +183,26 @@ const myshedule = () => {
                                     : ""
                                     }`}
                             >
-                                <div className="flex items-start justify-between">
+                                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
 
-                                    <div className="flex gap-4">
-                                        <div className="text-sm text-gray-500 w-20">
+
+                                    <div className="grid  md:flex gap-3 min-w-0">
+
+                                        <div className="text-sm text-gray-500 w-16 sm:w-20 flex-shrink-0">
                                             {appt.time}
                                         </div>
 
-                                        <Avatar className="bg-blue-100 text-blue-600">
+                                        <Avatar className="hidden md:block bg-blue-100 text-blue-600 flex-shrink-0">
                                             {appt.customer?.[0]}
-
                                         </Avatar>
 
-                                        <div>
-                                            <p className="font-medium m-0">
+                                        <div className="min-w-0">
+                                            <p className="font-medium m-0 break-words">
                                                 {appt.customer}
                                             </p>
-                                            <p className="text-sm text-gray-500 m-0">
-                                                {appt.service}·
-                                                {/* {appt.duration} */}
+
+                                            <p className="text-sm text-gray-500 m-0 break-words">
+                                                {appt.service}
                                             </p>
 
                                             {appt.status === "Completed" && (
@@ -212,28 +213,29 @@ const myshedule = () => {
                                         </div>
                                     </div>
 
-                                    {/* STATUS */}
-                                    <Tag
-                                        color={
-                                            appt.status === "completed"
-                                                ? "green"
-                                                : appt.status === "confirmed"
-                                                    ? "blue"
-                                                    : appt.status === "rejected"
-                                                        ? "red"
-                                                        : "gold"
-                                        }
-                                    >
-                                        {appt.status}
-                                    </Tag>
+                                    {/* Right Section */}
+                                    <div className="self-start sm:self-auto">
+                                        <Tag
+                                            color={
+                                                appt.status === "completed"
+                                                    ? "green"
+                                                    : appt.status === "confirmed"
+                                                        ? "blue"
+                                                        : appt.status === "rejected"
+                                                            ? "red"
+                                                            : "gold"
+                                            }
+                                        >
+                                            {appt.status}
+                                        </Tag>
+                                    </div>
+
                                 </div>
 
 
-                                {/* ACTIONS */}
 
-                                {/* PENDING */}
                                 {appt.status === "pending" && (
-                                    <div className="flex gap-4 mt-4">
+                                    <div className=" grid  md:flex gap-4 mt-4">
                                         <Button
                                             type="primary"
                                             className="flex-1 rounded-full bg-green-500"
@@ -253,26 +255,31 @@ const myshedule = () => {
 
 
                                 {appt.status === "confirmed" && (
-                                    <div className="flex gap-4 mt-4">
+                                    <div className="flex flex-col sm:flex-row gap-3 mt-4">
                                         <Button
                                             type="primary"
                                             icon={<PlayCircleOutlined />}
-                                            className="flex-1 rounded-full"
-                                            onClick={() => updateStatus(appt.key, "in progress")}
+                                            className="w-full sm:flex-1 rounded-full"
+                                            onClick={() =>
+                                                updateStatus(appt.key, "in progress")
+                                            }
                                         >
                                             Start Service
                                         </Button>
+
                                         <Button
                                             icon={<ReloadOutlined />}
-                                            className="flex-1 rounded-full"
-                                            onClick={() => updateStatus(appt.key, "pending")}
+                                            className="w-full sm:flex-1 rounded-full"
+                                            onClick={() =>
+                                                updateStatus(appt.key, "pending")
+                                            }
                                         >
                                             Reschedule
                                         </Button>
                                     </div>
                                 )}
 
-                                {/* IN PROGRESS */}
+
                                 {appt.status === "in progress" && (
                                     <div className="mt-4">
                                         <Button
@@ -281,7 +288,7 @@ const myshedule = () => {
                                             className="w-full rounded-full bg-green-500"
                                             onClick={() => updateStatus(appt.key, "completed")}
                                         >
-                                            Mark as Completed
+                                            Completed
                                         </Button>
                                     </div>
                                 )}

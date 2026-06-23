@@ -2,6 +2,9 @@
 
 public class AuthService
 {
+    private readonly IMongoCollection<ApplySalon> _salonrequests;
+    private readonly IMongoCollection<Employee> _employees;
+    private readonly IMongoCollection<Admin> _salons;
     private readonly IMongoCollection<RegisterUsers> _users;
     private readonly IMongoCollection<Admin> _admins;
 
@@ -10,19 +13,26 @@ public class AuthService
         var client = new MongoClient("mongodb://localhost:27017");
 
         var db = client.GetDatabase("authdb");
+        _salonrequests = db.GetCollection<ApplySalon>("salonrequests");
 
+        _employees = db.GetCollection<Employee>("employees");
         _users = db.GetCollection<RegisterUsers>("users");
         _admins = db.GetCollection<Admin>("admins");
+        _salons = db.GetCollection<Admin>("admins");
     }
 
     public string Signup(RegisterUsers user)
     {
-        var existing = _users
-            .Find(x => x.Email == user.Email)
-            .FirstOrDefault();
+        var salonRequest = _salonrequests
+        .Find(x => x.Email == user.Email)
+        .FirstOrDefault();
 
-        if (existing != null)
-            return "User already exists";
+        var userr = _users.Find(x => x.Email == user.Email).FirstOrDefault();
+        var salonAdmin = _salons.Find(x => x.Email == user.Email).FirstOrDefault();
+        if (salonRequest != null || userr != null || salonAdmin != null)
+        {
+            return "Email already exists";
+        }
 
         _users.InsertOne(user);
 

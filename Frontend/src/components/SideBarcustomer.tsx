@@ -57,116 +57,145 @@ const SideBarcustomer = () => {
     };
 
     return (
-        <div>
-            <aside className="fixed h-screen font-inter w-[20%] bg-gradient-to-b from-blue-700 to-blue-600 text-white flex flex-col justify-between px-5 py-6">
+        <aside className="fixed inset-y-0 left-0 w-[20%] bg-gradient-to-b from-blue-700 to-blue-600 text-white flex flex-col px-2 md:px-5 py-6">
 
 
+            <div>
+
+                <div className="flex items-center justify-center md:justify-start gap-0 md:gap-3 mb-4">
+                    <div className="md:hidden lg:block  w-10 h-10 md:w-11 md:h-11 bg-white/20 rounded-xl flex items-center justify-center">
+                        <img src={logo} alt="" className="w-full h-full object-contain" />
+                    </div>
+                    <div className="hidden md:block ">
+                        <h1 className="text-lg  m-0 leading-[0.8]  ">BookMySalon</h1>
+                        <span className="  text-sm text-white/70">Premium Booking</span>
+                    </div>
+                </div>
                 <div>
+                    <hr className="border-white/20 mb-6" />
+                </div>
+            </div>
+            <div className="flex-1">
 
-                    <div className="flex items-center  gap-3 mb-4">
-                        <div className="w-11 h-11 bg-white/20 rounded-xl flex items-center justify-center">
-                            <img src={logo} alt="" />
+                <nav className="space-y-2">
+                    <ul className="text-sm space-y-2 ">
+                        <NavLink to='/customer/BookAppointment'> <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20" >
+                            <CalendarOutlined />
 
-                        </div>
-                        <div >
-                            <h1 className="text-lg  m-0 leading-[0.8]  ">BookMySalon</h1>
-                            <span className="  text-sm text-white/70">Premium Booking</span>
-                        </div>
+                            <p className="hidden md:block font-semibold m-0 "> Book Appointment</p>
+                        </li>
+                        </NavLink>
+                        <NavLink to='/customer/mybookings'>
+                            <li className="flex items-center justify-center md:justify-start gap-2 px-2 md:px-3  py-2  rounded-lg hover:bg-white/20 ">
+                                <AppstoreOutlined />
+                                <p className="hidden md:block font-semibold m-0 ">My Bookings</p>
+                            </li>
+                        </NavLink>
+                        <NavLink to='/customer/aboutus'> <li className="flex items-center
+justify-center md:justify-start
+gap-2
+px-2 md:px-3
+py-2
+rounded-lg
+hover:bg-white/20">
+                            <InfoCircleOutlined />
+
+                            <p className="hidden md:block font-semibold m-0 ">About us</p>
+                        </li>
+                        </NavLink>
+                        <NavLink to='/customer/contact'>  <li className="flex items-center
+justify-center md:justify-start
+gap-2
+px-2 md:px-3
+py-2
+rounded-lg
+hover:bg-white/20 ">
+                            <PhoneOutlined />
+
+                            <p className="hidden md:block font-semibold m-0  ">Contact</p>
+                        </li>
+                        </NavLink>
+                        <NavLink to='/customer/terms'>
+                            <li className="flex items-center
+justify-center md:justify-start
+gap-2
+px-2 md:px-3
+py-2
+rounded-lg
+hover:bg-white/20 ">
+                                <FileTextOutlined />
+
+                                <p className="hidden md:block font-semibold m-0 ">Terms</p>
+                            </li>
+                        </NavLink>
+                        <NavLink to='/customer/privacy'>
+                            <li className="flex items-center
+justify-center md:justify-start
+gap-2
+px-2 md:px-3
+py-2
+rounded-lg
+hover:bg-white/20 ">
+                                <SafetyOutlined />
+
+                                <p className="hidden md:block font-semibold m-0 ">Privacy</p>
+                            </li>
+                        </NavLink>
+                        <NavLink to='/customer/settingcustomer'>
+                            <li className="flex items-center
+justify-center md:justify-start
+gap-2
+px-2 md:px-3
+py-2
+rounded-lg
+hover:bg-white/20">
+                                <SettingOutlined />
+
+                                <p className="hidden md:block font-semibold m-0 ">Setting</p>
+                            </li>
+                        </NavLink>
+                    </ul>
+                </nav>
+
+            </div>
+
+
+            <div className="mt-auto pt-6">
+
+                <div className="flex items-center gap-3 md:bg-white/10 rounded-xl mt-3  md:p-3">
+                    <div className=" w-12 h-12 md:w-10 md:h-7  lg:w-10 lg:h-10 bg-blue-500 rounded-full md:rounded-full flex items-center justify-center font-semibold">
+                        {
+                            profileImage ? (
+
+                                <img
+                                    src={profileImage}
+                                    alt="profile"
+                                    className="w-full h-full rounded-full object-cover"
+                                />
+
+                            ) : (
+
+                                <div className="w-full h-full bg-blue-500 rounded-full flex items-center justify-center font-semibold">
+                                    {firstname}
+                                </div>
+                            )
+                        }
                     </div>
-                    <div>
-                        <hr className="border-white/20 mb-6" />
+                    <div className="hidden md:block ">
+                        <p className="font-medium m-0">{loggeduser}</p>
+
                     </div>
-
-
-                    <nav className="space-y-2">
-                        <ul className="text-sm space-y-2 ">
-                            <NavLink to='/customer/BookAppointment'> <li className="   flex gap-[7px] justify-start hover:bg-white/20  rounded-lg px-3 py-2 " >
-                                <CalendarOutlined />
-
-                                <p className="font-semibold m-0 "> Book Appointment</p>
-                            </li>
-                            </NavLink>
-                            <NavLink to='/customer/mybookings'>
-                                <li className="flex gap-[7px] justify-start  hover:bg-white/20 rounded-lg px-3 py-2 ">
-                                    <AppstoreOutlined />
-                                    <p className="font-semibold m-0 ">My Bookings</p>
-                                </li>
-                            </NavLink>
-                            <NavLink to='/customer/aboutus'> <li className="flex gap-[7px] justify-start   hover:bg-white/20 rounded-lg px-3 py-2">
-                                <InfoCircleOutlined />
-
-                                <p className="font-semibold m-0 ">About us</p>
-                            </li>
-                            </NavLink>
-                            <NavLink to='/customer/contact'>  <li className="flex gap-[7px] justify-start   hover:bg-white/20 rounded-lg px-3 py-2 ">
-                                <PhoneOutlined />
-
-                                <p className="font-semibold m-0  ">Contact</p>
-                            </li>
-                            </NavLink>
-                            <NavLink to='/customer/terms'>
-                                <li className="flex gap-[7px] justify-start   hover:bg-white/20 rounded-lg px-3 py-2 ">
-                                    <FileTextOutlined />
-
-                                    <p className="font-semibold m-0 ">Terms</p>
-                                </li>
-                            </NavLink>
-                            <NavLink to='/customer/privacy'>
-                                <li className="flex gap-[7px] justify-start   hover:bg-white/20 rounded-lg px-3 py-2 ">
-                                    <SafetyOutlined />
-
-                                    <p className="font-semibold m-0 ">Privacy</p>
-                                </li>
-                            </NavLink>
-                            <NavLink to='/customer/settingcustomer'>
-                                <li className="flex gap-[7px] justify-start   hover:bg-white/20 rounded-lg px-3 py-2 ">
-                                    <SettingOutlined />
-
-                                    <p className="font-semibold m-0 ">Setting</p>
-                                </li>
-                            </NavLink>
-                        </ul>
-                    </nav>
                 </div>
 
 
-                <div className="space-y-6">
+                <button onClick={handleLogout} className="bg-white/20 md:bg-transparent  mt-2 w-full flex gap-[7px] justify-center items-center md:justify-start   hover:bg-white/20 rounded-lg px-3 py-2">
+                    <LogoutOutlined className="text-red-500" />
+                    <p className="hidden md:block font-semibold m-0">Logout</p>
+                </button>
 
-                    <div className="flex items-center gap-3 bg-white/10 rounded-xl p-3">
-                        <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-semibold">
-                            {
-                                profileImage ? (
+            </div>
 
-                                    <img
-                                        src={profileImage}
-                                        alt="profile"
-                                        className="w-10 h-10 rounded-full object-cover"
-                                    />
-
-                                ) : (
-
-                                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-semibold">
-                                        {firstname}
-                                    </div>
-                                )
-                            }
-                        </div>
-                        <div>
-                            <p className="font-medium m-0">{loggeduser}</p>
-                            <p className="text-sm text-white/70 m-0">Customer</p>
-                        </div>
-                    </div>
-
-
-                    <button onClick={handleLogout} className=" w-full flex gap-[7px] justify-start   hover:bg-white/20 rounded-lg px-3 py-2">
-                        <LogoutOutlined className="text-red-500" />
-                        <p className=" font-semibold m-0">Logout</p>
-                    </button>
-
-                </div>
-
-            </aside >
-        </div >
+        </aside >
     )
 }
 

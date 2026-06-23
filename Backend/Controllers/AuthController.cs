@@ -14,7 +14,7 @@ public class AuthController : ControllerBase
     {
         var result = _service.Signup(user);
 
-        if (result == "User already exists")
+        if (result == "Email already exists")
         {
             return BadRequest(new
             {

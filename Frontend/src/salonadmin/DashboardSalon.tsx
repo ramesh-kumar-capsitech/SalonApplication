@@ -874,33 +874,40 @@ const Dashboard = () => {
                     </Button>
                 </Form>
             </Drawer>
-            <div className="flex-1  ">
+            <div className="  ">
 
-                <div className="flex items-center justify-between px-3 py-[13px]   ">
+                <div className="md:flex items-center justify-between  px-3 py-[13px]  ">
                     <div>
                         <h1 className="text-lg leading-[0.8] font-semibold text-gray-900">
                             Salon Admin Dashboard
                         </h1>
+
                         <p className="text-gray-500 text-sm mt-1">
                             Platform-wide analytics and management
                         </p>
+                        <button className="md:hidden flex items-center gap-1 text-blue-600 text-sm  hover:underline "
+                            onClick={() => setOpen(true)}>
+
+                            New Booking
+                        </button>
                     </div>
                     <div className='flex gap-2'>
                         <Link to="/salonadmin/settingsalon">
-                            <button className=" text-gray-500 px-4 py-2 rounded-full border  font-sm hover:bg-gray-200 transition">
+                            <button className="hidden md:block  text-gray-500 px-4 py-2 rounded-full border  font-sm hover:bg-gray-200 transition">
                                 Setting
                             </button>
                         </Link>
-                        <button className="bg-blue-600 text-white px-4 py-2 rounded-full font-sm hover:bg-blue-700 transition"
+                        <button className="hidden md:block bg-blue-600 text-white px-4 py-2 rounded-full font-sm hover:bg-blue-700 transition"
                             onClick={() => setOpen(true)}>
                             New Booking
                         </button>
+
                     </div>
                 </div>
 
                 <hr />
-                <div className='flex justify-evenly w-full gap-6 px-6 my-6 '>
-                    <div className=" w-1/4 bg-white rounded-2xl border border-gray-200 p-6">
+                <div className='grid md:grid-cols-2 lg:flex md:justify-evenly w-full gap-6 px-6 my-6'>
+                    <div className=" lg:w-1/4 bg-white rounded-2xl border border-gray-200 p-6">
 
 
                         <div className="flex items-start justify-between">
@@ -924,7 +931,7 @@ const Dashboard = () => {
                         </div>
 
                     </div>
-                    <div className="w-1/4 bg-white rounded-2xl border border-gray-200 p-6">
+                    <div className="lg:w-1/4 bg-white rounded-2xl border border-gray-200 p-6">
 
 
                         <div className="flex items-start justify-between">
@@ -948,7 +955,7 @@ const Dashboard = () => {
                         </div>
 
                     </div>
-                    <div className="w-1/4 bg-white rounded-2xl border border-gray-200 p-6">
+                    <div className="lg:w-1/4 bg-white rounded-2xl border border-gray-200 p-6">
 
 
                         <div className="flex items-start justify-between">
@@ -971,7 +978,7 @@ const Dashboard = () => {
                         </div>
 
                     </div>
-                    <div className="w-1/4 bg-white rounded-2xl border border-gray-200 p-6">
+                    <div className="lg:w-1/4 bg-white rounded-2xl border border-gray-200 p-6">
 
 
                         <div className="flex items-start justify-between">
@@ -998,221 +1005,222 @@ const Dashboard = () => {
                 </div>
 
             </div>
-            <div className='flex gap-6  m-6 mt-0'>
+            <div className='grid md:grid-cols-1 lg:flex md:justify-evenly w-full gap-6 px-6  my-6'>
                 <Card
-                    className="rounded-2xl border font-[Outfit]  w-1/2 "
-                    bodyStyle={{ padding: 28 }}
+                    className="rounded-2xl border font-[Outfit] w-full "
+                    bodyStyle={{ padding: 20 }}
                 >
-                    <div className="flex items-center justify-between ">
-
-
-                        <div className="mb-3">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
                             <h2 className="text-lg font-semibold">Services Management</h2>
                             <p className="text-gray-500 text-sm">
                                 Manage your salon services
                             </p>
                         </div>
-                        <div>
-                            <button className="flex items-center gap-1 text-blue-600 font-medium hover:underline "
-                                onClick={() => setIsModalOpenser(true)}>
 
-                                Add Service
-                            </button>
-                        </div>
+                        <button
+                            className="flex items-center gap-1 text-blue-600 font-medium hover:underline self-start sm:self-auto"
+                            onClick={() => setIsModalOpenser(true)}
+                        >
+                            Add Service
+                        </button>
                     </div>
-                    <div className="space-y-4">
-                        {serviceList.map(service => (
+
+                    <div className="space-y-4 mt-4">
+                        {serviceList.map((service) => (
                             <div
                                 key={service.serviceId}
-                                className="border rounded-xl p-4 flex items-center justify-between"
+                                className="border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3"
                             >
-                                <div>
-                                    <h3 className="font-medium">{service.serviceName}</h3>
+                                <div className="min-w-0">
+                                    <h3 className="font-medium break-words">
+                                        {service.serviceName}
+                                    </h3>
 
-                                    <div className="flex items-center gap-4 text-gray-500 text-sm mt-1">
+                                    <div className="flex flex-wrap items-center gap-4 text-gray-500 text-sm mt-1">
                                         <span className="flex items-center gap-1">
                                             <ClockCircleOutlined />
                                             {service.duration}
                                         </span>
 
                                         <span className="flex items-center gap-1">
-                                            {/* <FaRupeeSign /> */}
-                                            ₹
-                                            {service.price}
+                                            ₹ {service.price}
                                         </span>
                                     </div>
                                 </div>
 
-                                <div className="flex gap-2">
-                                    <button onClick={() => {
-                                        setEditingService(service);
-                                        setServiceForm({
-                                            serviceName: service.serviceName,
-                                            duration: service.duration,
-                                            price: service.price
-                                        });
-                                        setIsModalOpenser(true);
-                                    }}>
+                                <div className="flex gap-3 self-end sm:self-auto">
+                                    <button
+                                        onClick={() => {
+                                            setEditingService(service);
+                                            setServiceForm({
+                                                serviceName: service.serviceName,
+                                                duration: service.duration,
+                                                price: service.price,
+                                            });
+                                            setIsModalOpenser(true);
+                                        }}
+                                    >
                                         <EditOutlined />
                                     </button>
-                                    <button onClick={() =>
-                                        deleteServiceMutation.mutate(
-                                            service.serviceId
-                                        )
-                                    }><DeleteOutlined /></button>
-                                </div>
 
+                                    <button
+                                        onClick={() =>
+                                            deleteServiceMutation.mutate(service.serviceId)
+                                        }
+                                    >
+                                        <DeleteOutlined />
+                                    </button>
+                                </div>
                             </div>
                         ))}
                     </div>
                 </Card>
                 <Card
-                    className="rounded-2xl border font-[Outfit]  w-1/2"
+                    className="rounded-2xl border font-[Outfit] w-full  "
                     bodyStyle={{ padding: 28 }}
                 >
-                    <div className="flex items-center justify-between ">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
+                        <div>
+                            <h2 className="text-lg font-semibold">
+                                Staff Overview
+                            </h2>
 
-
-                        <div className="mb-3">
-                            <h2 className="text-lg font-semibold">Staff Overview</h2>
                             <p className="text-gray-500 text-sm">
                                 Manage your salon staff
                             </p>
                         </div>
-                        <div>
-                            <button className="flex items-center gap-1 text-blue-600 font-medium hover:underline "
-                                onClick={() => setOpenDrawer(true)}>
 
-                                Add Staff
-                            </button>
-                        </div>
+                        <button
+                            className="self-start sm:self-auto text-blue-600 font-medium hover:underline"
+                            onClick={() => setOpenDrawer(true)}
+                        >
+                            Add Staff
+                        </button>
                     </div>
 
                     <div className="space-y-4">
                         {staffList.map((member) => (
                             <div
                                 key={member.id}
-                                className="border rounded-xl p-4 flex items-center justify-between"
+                                className="border rounded-xl p-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
                             >
-                                {/* LEFT */}
-                                <div className="flex items-center gap-4">
-                                    <Avatar className="bg-blue-100 text-blue-600">
-                                        {member.fullName.split(" ").map((n) => n[0]).join("").toUpperCase()}
+
+                                <div className="flex items-center gap-4 min-w-0">
+                                    <Avatar className="bg-blue-100 text-blue-600 flex-shrink-0">
+                                        {member.fullName
+                                            .split(" ")
+                                            .map((n) => n[0])
+                                            .join("")
+                                            .toUpperCase()}
                                     </Avatar>
 
-                                    <div>
-                                        <p className="font-medium m-0">{member.fullName}</p>
-                                        <p className="text-sm text-gray-500 m-0">
+                                    <div className="min-w-0">
+                                        <p className=" font-medium m-0 break-words">
+                                            {member.fullName}
+                                        </p>
+
+                                        <p className="text-sm text-gray-500 m-0 break-words">
                                             {member.role}
                                         </p>
                                     </div>
                                 </div>
 
-                                <div className="flex items-center gap-4">
-                                    <div className="text-right">
-                                        <Tag
-                                            color={member.status === "active" ? "green" : "gold"}
-                                            className="rounded-full mb-1"
-                                        >
-                                            {member.status}
-                                        </Tag>
 
-                                        <p className="text-sm text-gray-500 m-0">
-                                            {/* {member.bookings} bookings today */}
-                                        </p>
-                                    </div>
-                                    <div>
-                                        <Dropdown
-                                            menu={{
-                                                items: [
-                                                    {
-                                                        key: "edit",
-                                                        label: "Edit"
-                                                    },
-                                                    {
-                                                        key: "delete",
-                                                        label: "Delete"
-                                                    },
-                                                    {
-                                                        key: "toggle",
-                                                        label:
-                                                            member.status === "active"
-                                                                ? "Deactivate"
-                                                                : "Activate"
-                                                    }
-                                                ],
+                                <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
+                                    <Tag
+                                        color={member.status === "active" ? "green" : "gold"}
+                                        className="rounded-full m-0"
+                                    >
+                                        {member.status}
+                                    </Tag>
 
-                                                onClick: ({ key }) => {
+                                    <Dropdown
+                                        menu={{
+                                            items: [
+                                                {
+                                                    key: "edit",
+                                                    label: "Edit",
+                                                },
+                                                {
+                                                    key: "delete",
+                                                    label: "Delete",
+                                                },
+                                                {
+                                                    key: "toggle",
+                                                    label:
+                                                        member.status === "active"
+                                                            ? "Deactivate"
+                                                            : "Activate",
+                                                },
+                                            ],
+                                            onClick: ({ key }) => {
 
-                                                    if (key === "edit") {
+                                                if (key === "edit") {
 
-                                                        setEditingEmployee(member);
+                                                    setEditingEmployee(member);
 
-                                                        staffForm.setFieldsValue({
+                                                    staffForm.setFieldsValue({
 
-                                                            fullName:
-                                                                member.fullName,
+                                                        fullName:
+                                                            member.fullName,
 
-                                                            role:
-                                                                member.role,
+                                                        role:
+                                                            member.role,
 
-                                                            email:
-                                                                member.email,
+                                                        email:
+                                                            member.email,
 
-                                                            phone:
-                                                                member.phone,
+                                                        phone:
+                                                            member.phone,
 
-                                                            skills:
-                                                                member.skills,
+                                                        skills:
+                                                            member.skills,
 
-                                                            experience:
-                                                                member.experience,
+                                                        experience:
+                                                            member.experience,
 
-                                                            availability:
-                                                                member.availability
-                                                        });
+                                                        availability:
+                                                            member.availability
+                                                    });
 
-                                                        setOpenDrawer(true);
-                                                    }
-
-                                                    else if (
-                                                        key === "delete"
-                                                    ) {
-
-                                                        deleteEmployeeMutation.mutate(
-                                                            member.id
-                                                        );
-                                                    }
-                                                    else if (key === "toggle") {
-
-                                                        toggleEmployeeMutation.mutate(
-                                                            member.id
-                                                        );
-                                                    }
+                                                    setOpenDrawer(true);
                                                 }
-                                            }}
-                                        >
 
-                                            <Button
-                                                shape="circle"
-                                                icon={<MoreOutlined />}
-                                            />
+                                                else if (
+                                                    key === "delete"
+                                                ) {
 
-                                        </Dropdown>
-                                    </div>
+                                                    deleteEmployeeMutation.mutate(
+                                                        member.id
+                                                    );
+                                                }
+                                                else if (key === "toggle") {
 
+                                                    toggleEmployeeMutation.mutate(
+                                                        member.id
+                                                    );
+                                                }
+                                            }
+                                        }}
+                                    >
+                                        <Button
+                                            shape="circle"
+                                            icon={<MoreOutlined />}
+                                        />
+                                    </Dropdown>
                                 </div>
                             </div>
                         ))}
                     </div>
                 </Card>
             </div >
-            <div className='m-6 mt-0'>
+            <div className=' m-6 mt-0'>
                 <Card
                     className="rounded-2xl border font-[Outfit]"
                     bodyStyle={{ padding: 28 }}
                 >
-                    {/* HEADER */}
+
                     <div className="mb-6">
                         <h2 className="text-lg font-semibold">Today's Bookings</h2>
                         <p className="text-gray-500 text-sm">
@@ -1220,11 +1228,12 @@ const Dashboard = () => {
                         </p>
                     </div>
 
-                    {/* TABLE */}
+
                     <Table
                         columns={columns}
                         dataSource={dataSource}
-                        pagination={false}
+                        pagination={{ pageSize: 5 }}
+                        scroll={{ x: "max-content" }}
                     />
                 </Card>
             </div>

@@ -120,7 +120,7 @@ const MyBookings = () => {
                             label: "Past",
                             value: "past"
                         }
-                    ]} rootClassName=" rounded-lg bg-gray-100 w-[15%] font-[Outfit]  p-1 m-6 mt-0" />
+                    ]} rootClassName=" rounded-lg bg-gray-100 md:w-[40%]  font-[Outfit]  p-1 m-6 mt-0" />
 
 
             </div>
@@ -134,21 +134,38 @@ const MyBookings = () => {
                         >
 
                             <div className="flex items-start justify-between">
-                                <div className="flex items-center gap-4">
+                                <div className="grid  md:flex items-center gap-4">
+                                    <div className="md:hidden flex justify-between gap-3 ">
+                                        <Avatar
+                                            size={48}
+                                            src={b.salonImage || undefined}
+                                            className="overflow-hidden"
+                                        >
+                                            {b.salonName?.charAt(0)?.toUpperCase()}
+                                        </Avatar>
+                                        <div>
+                                            <h2 className="font-medium  md:font-semibold m-0">{b.salonName || "N/A"}</h2>
+
+                                            <div className="flex items-center gap-1 text-gray-500 text-sm">
+                                                <EnvironmentOutlined />
+                                                <span>{b.location || "N/A"}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <Avatar
                                         size={48}
                                         src={b.salonImage || undefined}
-                                        className="overflow-hidden"
+                                        className="overflow-hidden hidden md:block "
                                     >
                                         {b.salonName?.charAt(0)?.toUpperCase()}
                                     </Avatar>
 
 
 
-                                    <div>
-                                        <h2 className="font-semibold m-0">{b.salonName || "N/A"}</h2>
+                                    <div className="">
+                                        <h2 className="hidden md:block font-medium  md:font-semibold m-0">{b.salonName || "N/A"}</h2>
 
-                                        <div className="flex items-center gap-1 text-gray-500 text-sm">
+                                        <div className="hidden  md:flex items-center gap-1 text-gray-500 text-sm">
                                             <EnvironmentOutlined />
                                             <span>{b.location || "N/A"}</span>
                                         </div>
@@ -170,9 +187,16 @@ const MyBookings = () => {
                                             {b.status}
                                         </Tag>
                                     </div>
+                                    <div className="md:hidden  text-sm text-gray-500">
+                                        Booking ID:{" "}
+                                        <span className="font-medium text-gray-900">
+                                            {b.id?.slice(-6).toUpperCase()}
+
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <div className="text-sm text-gray-500">
+                                <div className="hidden md:block text-sm text-gray-500">
                                     Booking ID:{" "}
                                     <span className="font-medium text-gray-900">
                                         {b.id?.slice(-6).toUpperCase()}
@@ -182,7 +206,7 @@ const MyBookings = () => {
                             </div>
 
 
-                            <div className="bg-gray-50 rounded-xl p-5 mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="bg-gray-50 rounded-xl p-5 mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <Detail
                                     icon={<CalendarOutlined />}
                                     label="Date"
@@ -255,19 +279,35 @@ const MyBookings = () => {
                 <div className="m-6 mt-0 grid gap-6">
                     {pastBookings.map((b: any) => (
                         <Card
-                            key={b._id}
+                            key={b.id}
                             className="rounded-2xl border font-[Outfit]"
                             bodyStyle={{ padding: 28 }}
                         >
                             <div className="flex items-start justify-between">
-                                <div className="flex items-center gap-4">
+                                <div className=" grid  md:flex items-center gap-4">
+                                    <div className="md:hidden flex justify-between gap-3 ">
+                                        <Avatar
+                                            size={44}
+                                            className="bg-green-100"
+                                            icon={<CheckCircleFilled className="text-green-500" />}
+                                        />
+
+                                        <div>
+                                            <h2 className="font-medium  md:font-semibold m-0">{b.salonName || "N/A"}</h2>
+
+                                            <div className="flex items-center gap-1 text-gray-500 text-sm">
+                                                <EnvironmentOutlined />
+                                                <span>{b.location || "N/A"}</span>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <Avatar
                                         size={44}
-                                        className="bg-green-100"
+                                        className="bg-green-100 hidden md:block "
                                         icon={<CheckCircleFilled className="text-green-500" />}
                                     />
 
-                                    <div>
+                                    <div className="hidden md:block ">
                                         <h2 className="font-semibold m-0">
                                             {b.salonName}
                                         </h2>
@@ -281,17 +321,24 @@ const MyBookings = () => {
                                             Completed
                                         </Tag>
                                     </div>
+
+                                    <div className="md:hidden text-sm text-gray-500">
+                                        Booking ID:{" "}
+                                        <span className="font-medium text-gray-900">
+                                            {b.id?.slice(-6).toUpperCase()}
+                                        </span>
+                                    </div>
                                 </div>
 
-                                <div className="text-sm text-gray-500">
+                                <div className="hidden md:block text-sm text-gray-500">
                                     Booking ID:{" "}
                                     <span className="font-medium text-gray-900">
-                                        {b._id?.slice(-6).toUpperCase()}
+                                        {b.id?.slice(-6).toUpperCase()}
                                     </span>
                                 </div>
                             </div>
 
-                            <div className="bg-gray-50 rounded-xl p-5 mt-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <div className="bg-gray-50 rounded-xl p-5 mt-6 grid grid-cols-1 md:grid-cols-4 gap-4">
                                 <Detail
                                     label="Date"
                                     value={dayjs(b.date).format("DD MMM YYYY")}
@@ -319,14 +366,7 @@ const MyBookings = () => {
                                 </div>
                             </div>
 
-                            {/* <div className="flex gap-3 mt-6">
-                                <Button type="primary" className="rounded-full">
-                                    Book Again
-                                </Button>
-                                <Button className="rounded-full">
-                                    Leave Review
-                                </Button>
-                            </div> */}
+
                         </Card>
                     ))}
                 </div>

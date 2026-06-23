@@ -147,7 +147,7 @@ const AddEmployeeDrawer = ({
                             <b>
                                 {
                                     res.data.data
-                                        .loginEmail
+                                        .email
                                 }
                             </b>
 
@@ -158,7 +158,7 @@ const AddEmployeeDrawer = ({
                             <b>
                                 {
                                     res.data.data
-                                        .loginPassword
+                                        .password
                                 }
                             </b>
                         </div>

@@ -17,12 +17,12 @@ const Sidebar: React.FC = () => {
     const [loggeduser, setloggeduser] = useState('')
     const [email, setemail] = useState('')
     const [profileImage, setProfileImage] = useState("");
+    const dispatch = useAppDispatch();
     const [firstname, setfirstname] = useState('')
     const user = useAppSelector(
         (state) => state.auth.user
     );
     useEffect(() => {
-
         if (user) {
 
             setloggeduser(user.name || "");
@@ -41,23 +41,26 @@ const Sidebar: React.FC = () => {
 
     }, [user]);
     const handleLogout = () => {
-        const isConfirmed = confirm("Are you sure you want to logout?");
+        const confirmLogout = window.confirm(
+            "Are you sure you want to logout?"
+        );
 
-        if (isConfirmed) {
-            localStorage.removeItem('superadmin');
+        if (!confirmLogout) return;
 
-            navigate('/');
-            message.success("Logged out successfully");
-        }
+        dispatch(logout());
+
+        message.success("Logged out successfully");
+
+        navigate("/");
     };
     return (
-        <aside className="    fixed h-screen font-inter w-[20%] bg-gradient-to-b from-blue-700 to-blue-600 text-white md:flex flex-col justify-between px-5 py-6">
+        <aside className="fixed inset-y-0 left-0 w-[20%] bg-gradient-to-b from-blue-700 to-blue-600 text-white flex flex-col px-2 md:px-5 py-6">
 
 
             <div>
 
-                <div className="flex items-center  gap-3 mb-4">
-                    <div className="md:w-11 md:h-11 bg-white/20 rounded-sm md:rounded-xl flex items-center justify-center">
+                <div className="flex items-center justify-center md:justify-start gap-0 md:gap-3 mb-4">
+                    <div className="w-10 h-10 md:hidden lg:block md:w-11 md:h-11 bg-white/20 rounded-xl flex items-center justify-center">
                         <img src={logo} alt="" />
                     </div>
                     <div className="hidden md:block ">
@@ -68,7 +71,8 @@ const Sidebar: React.FC = () => {
                 <div>
                     <hr className="border-white/20 mb-6" />
                 </div>
-
+            </div>
+            <div className="flex-1">
 
                 <nav className="space-y-2">
                     <ul className="text-sm space-y-2 ">
@@ -77,7 +81,7 @@ const Sidebar: React.FC = () => {
                                 isActive
                                     ? "bg-white/30 rounded-lg"
                                     : ""
-                            }> <li className="flex gap-[7px] items-center justify-center md:justify-start  hover:bg-white/20 rounded-lg  px-4 py-3 md:px-3 md:py-2" >
+                            }> <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20" >
                                 <HomeOutlined className="text-white " />
 
                                 {/* <Camera color="red" size={4} /> */}
@@ -91,7 +95,7 @@ const Sidebar: React.FC = () => {
                                     ? "bg-white/30 rounded-lg"
                                     : ""
                             }>
-                            <li className="flex gap-[7px] items-center justify-center md:justify-start  hover:bg-white/20 rounded-lg  px-4 py-3 md:px-3 md:py-2">
+                            <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20">
                                 <ShopOutlined />
 
                                 <p className="hidden md:block font-semibold m-0 ">Salon</p>
@@ -103,7 +107,7 @@ const Sidebar: React.FC = () => {
                                     ? "bg-white/30 rounded-lg"
                                     : ""
                             }>
-                            <li className="flex gap-[7px] items-center justify-center md:justify-start  hover:bg-white/20 rounded-lg px-4 py-3 md:px-3 md:py-2">
+                            <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20">
                                 <TeamOutlined />
 
                                 <p className="hidden md:block font-semibold m-0 ">Users</p>
@@ -114,7 +118,7 @@ const Sidebar: React.FC = () => {
                                 isActive
                                     ? "bg-white/30 rounded-lg"
                                     : ""
-                            }>  <li className="flex gap-[7px] items-center justify-center md:justify-start  hover:bg-white/20 rounded-lg px-4 py-3 md:px-3 md:py-2">
+                            }>  <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20">
                                 <FileTextOutlined />
 
                                 <p className=" hidden md:block font-semibold m-0  ">Requests</p>
@@ -126,7 +130,7 @@ const Sidebar: React.FC = () => {
                                     ? "bg-white/30 rounded-lg"
                                     : ""
                             }>
-                            <li className="flex gap-[7px] items-center justify-center  md:justify-start   hover:bg-white/20 rounded-lg px-4 py-3 md:px-3 md:py-2">
+                            <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20">
                                 <SettingOutlined />
 
                                 <p className="hidden md:block font-semibold m-0 ">Settings</p>
@@ -138,22 +142,22 @@ const Sidebar: React.FC = () => {
             </div>
 
 
-            <div className="space-y-6">
+            <div className="mt-auto pt-6">
 
-                <div className="flex items-center gap-3 md:bg-white/10 rounded-xl mt-3  md:p-3">
-                    <div className=" w-12 h-10  md:w-10 md:h-10 bg-blue-500 rounded-full md:rounded-full flex items-center justify-center font-semibold">
+                <div className="flex items-center justify-center gap-3 md:bg-white/10 rounded-xl mt-3  md:p-3">
+                    <div className="   w-12 h-12 md:w-9 md:h-6     lg:w-10 lg:h-10 bg-blue-500 rounded-full  md:rounded-full flex items-center justify-center  font-semibold  ">
                         {
                             profileImage ? (
 
                                 <img
                                     src={profileImage}
                                     alt="profile"
-                                    className="w-10 h-10 rounded-full object-cover"
+                                    className="w-full h-full  object-cover rounded-full"
                                 />
 
                             ) : (
 
-                                <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-semibold">
+                                <div className="w-full h-full bg-blue-500 rounded-full flex items-center justify-center font-semibold">
                                     {firstname}
                                 </div>
                             )
@@ -161,14 +165,14 @@ const Sidebar: React.FC = () => {
                     </div>
                     <div className="hidden md:block ">
                         <p className="font-medium m-0">{loggeduser}</p>
-                        <p className="text-sm text-white/70 m-0">Super Admin</p>
+                        <p className="hidden lg:block text-sm text-white/70 m-0">Super Admin</p>
                     </div>
                 </div>
 
 
-                <button onClick={handleLogout} className=" w-full flex gap-[7px] justify-start   hover:bg-white/20 rounded-lg px-3 py-2">
+                <button onClick={handleLogout} className="bg-white/20 md:bg-transparent  mt-2 w-full flex gap-[7px] justify-center items-center md:justify-start   hover:bg-white/20 rounded-lg px-3 py-2">
                     <LogoutOutlined className="text-red-500" />
-                    <p className=" hidden md:block font-semibold m-0">Logout</p>
+                    <p className="hidden md:block font-semibold m-0">Logout</p>
                 </button>
 
             </div>

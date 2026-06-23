@@ -12,8 +12,8 @@ import { UserOutlined } from "@ant-design/icons";
 import axios from "axios";
 ;
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { getApiAuthSalondetailsSalonId } from "../api/generated/loginsignuphome";
 
 const { Title, Text } = Typography;
 
@@ -30,9 +30,7 @@ function SalonDetailscustomer() {
         queryFn: async () => {
 
             const res =
-                await axios.get(
-                    `https://localhost:7074/api/auth/salondetails/${id}`
-                );
+                await getApiAuthSalondetailsSalonId(id)
 
             return res.data;
         },
@@ -90,7 +88,7 @@ function SalonDetailscustomer() {
                         <h2 className="text-2xl font-semibold mb-4">
                             {data?.salon?.salonName}
                         </h2>
-                        <div className="bg-gray-50 rounded-xl p-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div className="hidden  bg-gray-50 rounded-xl p-6 mt-6 md:grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
                                 <p className="text-gray-500">Owner</p>
                                 <p className="font-medium"> {data?.salon?.ownerName}</p>
@@ -110,7 +108,24 @@ function SalonDetailscustomer() {
                         </div>
                     </div>
                 </div>
+                <div className="md:hidden bg-gray-50 rounded-xl p-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <p className="text-gray-500">Owner</p>
+                        <p className="font-medium"> {data?.salon?.ownerName}</p>
 
+                        <p className="text-gray-500 mt-4">Email</p>
+                        <p>{data?.salon?.email}</p>
+
+
+                    </div>
+
+                    <div>
+                        <p className="text-gray-500 ">Address</p>
+                        <p> {data?.salon?.salonAddress}</p>
+                        <p className="text-gray-500 mt-4">Phone</p>
+                        <p>{data?.salon?.phone}</p>
+                    </div>
+                </div>
                 <Divider />
 
                 {/* Gallery */}
@@ -121,7 +136,7 @@ function SalonDetailscustomer() {
                 <div className="">
                     {data?.galleryImages?.length > 0 ? (
 
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
                             {data.galleryImages.map(
                                 (img: string, index: number) => (
@@ -158,6 +173,7 @@ function SalonDetailscustomer() {
                 <Table
                     pagination={false}
                     dataSource={data?.employees || []}
+                    scroll={{ x: "max-content" }}
                     columns={[
                         {
                             title: "Name",
@@ -181,6 +197,7 @@ function SalonDetailscustomer() {
                 <Table
                     pagination={false}
                     dataSource={data?.salon?.services || []}
+                    scroll={{ x: "max-content" }}
                     columns={[
                         {
                             title: "Service Name",

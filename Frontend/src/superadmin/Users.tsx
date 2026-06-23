@@ -25,7 +25,7 @@ const InfoRow: React.FC<InfoRowProps> = ({ icon, text }) => {
         <div className="flex items-start gap-3 text-gray-700">
             <span className="text-gray-500 text-lg">{icon}</span>
 
-            <span className="break-words">
+            <span className="break-all  text-sm">
                 {text}
             </span>
         </div>
@@ -259,7 +259,7 @@ const Users = () => {
 
 
 
-                    <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 m-6 mt-0'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6'>
                         {filteredApprovedSalons.map((salon: any) => (
                             <Card className="rounded-2xl border   h-full " bodyStyle={{ padding: 24 }}>
 
@@ -274,9 +274,9 @@ const Users = () => {
                                     </Avatar>
 
                                     <div className="flex-1">
-                                        <div className="flex items-center gap-3">
-                                            <h2 className="text-lg font-semibold">{salon.ownerName}</h2>
-                                            <Tag color="blue" className="rounded-full">
+                                        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                            <h2 className="text-base md:text-lg font-semibold break-words">{salon.ownerName}</h2>
+                                            <Tag color="blue" className="w-fit rounded-full">
                                                 Admin
                                             </Tag>
                                         </div>
@@ -334,9 +334,9 @@ const Users = () => {
                                     </Avatar>
 
                                     <div className="flex-1">
-                                        <div className="flex items-center gap-3">
-                                            <h2 className="text-lg font-semibold">{salon.ownerName}</h2>
-                                            <Tag color="blue" className="rounded-full">
+                                        <div className="flex flex-col sm:flex-row sm:items-center gap-2">
+                                            <h2 className="text-base md:text-lg font-semibold break-words">{salon.ownerName}</h2>
+                                            <Tag color="blue" className="w-fit rounded-full">
                                                 Admin
                                             </Tag>
                                         </div>
@@ -393,28 +393,28 @@ const Users = () => {
                     </div>
 
 
-                    <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-6 m-6 mt-0'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6'>
                         {filteredUsers.map((user: any) => (
                             <Card
                                 className="rounded-2xl border"
                                 bodyStyle={{ padding: 24 }}
                             >
 
-                                <div className="flex items-start gap-4">
+                                <div className="flex flex-col sm:flex-row items-start gap-4">
                                     <Avatar
                                         size={56}
                                         src={user.profileImage || undefined}
-                                        className="bg-green-100 text-green-600 font-semibold"
+                                        className="bg-green-100 text-green-600 font-semibold shrink-0"
                                     >
                                         {user.initials}
                                     </Avatar>
 
-                                    <div className="flex-1">
-                                        <h2 className="text-lg font-semibold m-0">
+                                    <div className="flex-1 min-w-0">
+                                        <h2 className="text-base md:text-lg font-semibold m-0 break-words">
                                             {user.name}
                                         </h2>
 
-                                        <Tag color="green" className="rounded-full mt-1">
+                                        <Tag color="green" className="rounded-full mt-1 w-fit">
                                             Active
                                         </Tag>
                                     </div>
@@ -422,21 +422,27 @@ const Users = () => {
 
 
                                 <div className="mt-5 space-y-3 text-gray-700">
-                                    <div className="flex items-center gap-3">
-                                        <MailOutlined className="text-gray-500" />
-                                        <span>{user.email}</span>
+
+                                    <div className="flex items-start gap-3 min-w-0">
+                                        <MailOutlined className="text-gray-500 mt-1 shrink-0" />
+                                        <span className="break-all text-sm min-w-0">
+                                            {user.email}
+                                        </span>
                                     </div>
 
-                                    <div className="flex items-center gap-3">
-                                        <PhoneOutlined className="text-gray-500" />
-                                        <span>{user.mobileNumber}</span>
+                                    <div className="flex items-start gap-3 min-w-0">
+                                        <PhoneOutlined className="text-gray-500 mt-1 shrink-0" />
+                                        <span className="break-all text-sm min-w-0">
+                                            {user.mobileNumber}
+                                        </span>
                                     </div>
+
                                 </div>
 
                                 <Divider className="my-5" />
 
 
-                                <div className="flex justify-between">
+                                <div className="flex flex-col sm:flex-row gap-4 sm:justify-between">
                                     <div>
                                         <p className="text-gray-500 text-sm m-0">
                                             Total Bookings
@@ -446,23 +452,21 @@ const Users = () => {
                                         </h3>
                                     </div>
 
-                                    <div className="text-right">
+                                    <div className="sm:text-right">
                                         <p className="text-gray-500 text-sm m-0">
                                             Last Booking
                                         </p>
-                                        <h3 className="font-medium font-[outfit] m-0">
-                                            {
-                                                user.lastBooking
-                                                    ? new Date(user.lastBooking).toLocaleDateString(
-                                                        "en-GB",
-                                                        {
-                                                            day: "2-digit",
-                                                            month: "long",
-                                                            year: "numeric",
-                                                        }
-                                                    )
-                                                    : "~"
-                                            }
+                                        <h3 className="font-medium font-[outfit] m-0 break-words">
+                                            {user.lastBooking
+                                                ? new Date(user.lastBooking).toLocaleDateString(
+                                                    "en-GB",
+                                                    {
+                                                        day: "2-digit",
+                                                        month: "long",
+                                                        year: "numeric",
+                                                    }
+                                                )
+                                                : "~"}
                                         </h3>
                                     </div>
                                 </div>

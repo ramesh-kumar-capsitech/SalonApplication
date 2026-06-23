@@ -24,10 +24,16 @@ public class EmployeeController : ControllerBase
         [FromBody] Employee employee
     )
     {
-        var result =
-    _employeeService
-        .AddEmployee(employee);
-
+        var result = _employeeService.AddEmployee(employee);
+        if (result is string &&
+     result.ToString() == "Email already exists")
+        {
+            return BadRequest(new
+            {
+                success = false,
+                message = "Email already exists"
+            });
+        }
         return Ok(new
         {
             success = true,
@@ -151,7 +157,7 @@ public class EmployeeController : ControllerBase
                     {
                     new Claim(
                         ClaimTypes.Email,
-                        employee.LoginEmail!
+                        employee.Email!
                     ),
 
                     new Claim(

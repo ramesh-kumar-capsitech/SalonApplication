@@ -2,63 +2,67 @@
 
 public class EmployeeService
 {
-    private readonly
-        IMongoCollection<Employee>
-            _employees;
+    private readonly IMongoCollection<ApplySalon> _salonrequests;
+    private readonly IMongoCollection<Employee> _employees;
+    private readonly IMongoCollection<RegisterUsers> _users;
+    private readonly IMongoCollection<Admin> _salons;
+    private readonly IMongoCollection<BookAppointment> _bookings;
+
 
     public EmployeeService()
     {
         var client =
-            new MongoClient(
-                "mongodb://localhost:27017"
-            );
+             new MongoClient(
+                 "mongodb://localhost:27017"
+             );
 
         var db =
-            client.GetDatabase("authdb");
+            client.GetDatabase(
+                "authdb"
+            );
+
+        _salonrequests =
+            db.GetCollection<ApplySalon>(
+                "salonrequests"
+            );
 
         _employees =
             db.GetCollection<Employee>(
                 "employees"
             );
+
+        _bookings =
+            db.GetCollection<BookAppointment>(
+                "bookings"
+            );
+        _users = db.GetCollection<RegisterUsers>("users");
+        _salons = db.GetCollection<Admin>("admins");
     }
 
 
-    public object AddEmployee(
-    Employee employee
-)
+    public object AddEmployee(Employee employee)
     {
-        var random = new Random();
+        bool emailExists =
+            _employees.Find(x => x.Email == employee.Email).Any()
+            || _users.Find(x => x.Email == employee.Email).Any()
+            || _salonrequests.Find(x => x.Email == employee.Email).Any()
+            || _salons.Find(x => x.Email == employee.Email).Any();
 
-        int randomNumber =
-            random.Next(1000, 9999);
+        if (emailExists)
+        {
+            return "Email already exists";
+        }
 
-        string employeeName =
-            employee.FullName!
-                .Replace(" ", "")
-                .ToLower();
-
-        string loginEmail =
-            $"{employeeName}@capsiqueueemp.com";
-
-        string loginPassword =
-            $"capsi{randomNumber}";
-
-        employee.LoginEmail =
-            loginEmail;
-
-        employee.LoginPassword =
-            loginPassword;
+        employee.Password = "WelcomeBMS";
+        employee.Status = "active";
 
         _employees.InsertOne(employee);
 
         return new
         {
-            message =
-                "Employee added successfully",
-
-            loginEmail,
-
-            loginPassword
+            message = "Employee added successfully",
+            email = employee.Email,
+            password = "WelcomeBMS"
         };
     }
 
@@ -210,11 +214,11 @@ public class EmployeeService
             _employees
             .Find(x =>
 
-                x.LoginEmail ==
-                    model.LoginEmail &&
+                x.Email ==
+                    model.Email &&
 
-                x.LoginPassword ==
-                    model.LoginPassword &&
+                x.Password ==
+                    model.Password &&
 
                 x.Status == "active"
 
@@ -286,7 +290,7 @@ public class EmployeeService
             return "Employee not found";
         }
 
-        if (employee.LoginPassword != model.CurrentPassword)
+        if (employee.Password != model.CurrentPassword)
         {
             return "Current password is incorrect";
         }
@@ -299,7 +303,7 @@ public class EmployeeService
         var update =
             Builders<Employee>.Update
             .Set(
-                x => x.LoginPassword,
+                x => x.Password,
                 model.NewPassword
             );
 

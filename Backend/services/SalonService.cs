@@ -6,7 +6,8 @@ public class SalonService
 {
     private readonly IMongoCollection<ApplySalon> _salonrequests;
     private readonly IMongoCollection<Employee> _employees;
-
+    private readonly IMongoCollection<RegisterUsers> _users;
+    private readonly IMongoCollection<Admin> _salons;
     private readonly IMongoCollection<BookAppointment> _bookings;
 
     public SalonService()
@@ -35,14 +36,15 @@ public class SalonService
             db.GetCollection<BookAppointment>(
                 "bookings"
             );
+        _users = db.GetCollection<RegisterUsers>("users");
+        _salons = db.GetCollection<Admin>("admins");
     }
     public SuperAdminDashboard
 GetDashboard()
     {
         return new SuperAdminDashboard
         {
-            TotalSalons =
-    (int)_salonrequests.CountDocuments(
+            TotalSalons = (int)_salonrequests.CountDocuments(
         x => x.Status == "approved"
     ),
 
@@ -74,12 +76,16 @@ GetDashboard()
     }
     public string ApplySalon(ApplySalon salon)
     {
-        var existing = _salonrequests
-            .Find(x => x.Email == salon.Email)
-            .FirstOrDefault();
+        var salonRequest = _salonrequests
+        .Find(x => x.Email == salon.Email)
+        .FirstOrDefault();
 
-        if (existing != null)
-            return "salon already exists";
+        var user = _users.Find(x => x.Email == salon.Email).FirstOrDefault();
+        var salonAdmin = _salons.Find(x => x.Email == salon.Email).FirstOrDefault();
+        if (salonRequest != null || user != null || salonAdmin != null)
+        {
+            return "Email already exists";
+        }
 
         _salonrequests.InsertOne(salon);
 
@@ -127,25 +133,12 @@ GetDashboard()
         if (salon == null)
             return "Salon not found";
 
-        var random = new Random();
 
-        int randomNumber = random.Next(1000, 9999);
 
-        string salonName = salon.SalonName!
-            .Replace(" ", "")
-            .ToLower();
-
-        string loginEmail =
-            $"{salonName}@capsiqueue.com";
-
-        string loginPassword =
-            $"capsi{randomNumber}";
 
         var update = Builders<ApplySalon>.Update
       .Set(x => x.Status, "approved")
-      .Set(x => x.IsActive, "active")
-      .Set(x => x.LoginEmail, loginEmail)
-      .Set(x => x.LoginPassword, loginPassword);
+      .Set(x => x.IsActive, "active");
 
         _salonrequests.UpdateOne(
             x => x.Id == id,
@@ -200,14 +193,12 @@ GetDashboard()
     {
         var existingSalon =
             _salonrequests
-            .Find(x =>
-                x.LoginEmail ==
-                    salon.LoginEmail &&
+            .Find(x => x.Email == salon.Email &&
+                x.Password ==
+                    salon.Password
 
-                x.LoginPassword ==
-                    salon.LoginPassword &&
 
-                x.Status == "approved"
+
             )
             .FirstOrDefault();
 
@@ -381,7 +372,7 @@ GetDashboard()
 
 
         if (
-            salon.LoginPassword !=
+            salon.Password !=
             model.CurrentPassword
         )
         {
@@ -403,7 +394,7 @@ GetDashboard()
         var update =
             Builders<ApplySalon>.Update
                 .Set(
-                    x => x.LoginPassword,
+                    x => x.Password,
                     model.NewPassword
                 );
 
@@ -481,64 +472,37 @@ GetSalonDetails(string salonId)
                 ?? new List<string>()
         };
     }
-    public object CreateSalonByAdmin(
-    ApplySalon model
-)
+    public object CreateSalonByAdmin(ApplySalon model)
     {
-        var existing =
-            _salonrequests
-            .Find(x =>
-                x.Email == model.Email
-            )
-            .FirstOrDefault();
+        bool emailExists =
+            _salonrequests.Find(x => x.Email == model.Email).Any()
+            || _users.Find(x => x.Email == model.Email).Any()
+            || _employees.Find(x => x.Email == model.Email).Any()
+            || _salons.Find(x => x.Email == model.Email).Any();
 
-        if (existing != null)
+        if (emailExists)
         {
-            return "Salon already exists";
+            return "Email already exists";
         }
-
-        var random = new Random();
-
-        int randomNumber =
-            random.Next(1000, 9999);
-
-        string salonName =
-            model.SalonName!
-            .Replace(" ", "")
-            .ToLower();
-
-        string loginEmail =
-            $"{salonName}@capsiqueue.com";
-
-        string loginPassword =
-            $"capsi{randomNumber}";
 
         model.Status = "approved";
         model.IsActive = "active";
 
-        model.LoginEmail =
-            loginEmail;
 
-        model.LoginPassword =
-            loginPassword;
+        model.Email = model.Email;
 
-        model.CreatedAt =
-            DateTime.UtcNow;
 
-        _salonrequests.InsertOne(
-            model
-        );
+        model.Password = "WelcomeBMS";
+
+        model.CreatedAt = DateTime.UtcNow;
+
+        _salonrequests.InsertOne(model);
 
         return new
         {
-            Message =
-                "Salon Created Successfully",
-
-            LoginEmail =
-                loginEmail,
-
-            LoginPassword =
-                loginPassword
+            Message = "Salon Created Successfully",
+            Email = model.Email,
+            Password = "WelcomeBMS"
         };
     }
     public bool UpdateSalon(

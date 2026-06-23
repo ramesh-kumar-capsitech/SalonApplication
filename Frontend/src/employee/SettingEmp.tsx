@@ -29,7 +29,7 @@ const SettingEmp = () => {
 
     const [passwordForm] = Form.useForm();
 
-    const [tab, settab] = useState<"profile" | "password">("profile");
+    const [tab, setTab] = useState<"profile" | "password">("profile");
 
 
 
@@ -225,300 +225,390 @@ const SettingEmp = () => {
         };
     return (
         <div>
-            <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3   ">
-                <div className='pt-3'>
+
+
+
+            <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3">
+
+                <div className="pt-3">
+
                     <h1 className="text-lg leading-[0.8] m-0 font-semibold text-gray-900">
                         Setting
                     </h1>
+
                     <p className="text-gray-500 text-sm mt-0">
                         Manage your Profile
                     </p>
+
                 </div>
 
-
             </div>
+
             <hr />
-            <div className='m-6 mb-0 '>
+
+
+
+            <div className="m-6 ">
+
                 <Segmented
+
                     value={tab}
-                    onChange={(val) => settab(val as "profile" | "password")}
+
+                    onChange={(val) => setTab(val as "profile" | "password")}
+
                     options={[
+
                         {
-                            label: 'Profile',
-                            value: 'profile',
+                            label: "Profile",
+                            value: "profile",
                         },
+
                         {
-                            label: 'Password',
-                            value: 'password',
+                            label: "Password",
+                            value: "password",
                         },
                     ]}
-                    rootClassName=" rounded-lg bg-gray-100 w-[16%] font-[Outfit]  p-1 m-6 mt-0"
+
+                    className="rounded-lg bg-gray-100  sm:w-64 md:w-40 font-[Outfit] p-1"
                 />
+
             </div>
-            {tab === "profile" && (
-
-                <div className='font-[outfit] m-6 mt-0'>
-                    <Card className="rounded-2xl border font-[outfit]" bodyStyle={{ padding: 32 }}>
 
 
-                        <div className="flex items-start gap-6 mb-8  ">
-                            <Avatar
-                                size={72}
-                                src={profileImage}
-                                className="bg-blue-100 text-blue-600 font-semibold"
-                            >
-                                {
-                                    !profileImage
-                                    &&
-                                    initials
-                                }
-                            </Avatar>
 
-                            <div>
-                                <h2 className="text-lg font-semibold">Profile Picture</h2>
-                                <p className="text-gray-500 mb-3">
-                                    Upload a new profile picture or update your avatar
-                                </p>
+            {
+                tab === "profile"
+                &&
+                (
+                    <div className="font-[Outfit] m-6 mt-0">
 
-                                <div className="flex items-center gap-4">
-                                    <Upload
-
-                                        showUploadList={false}
-
-                                        beforeUpload={(file) => {
-
-                                            uploadImage(file);
-
-                                            return false;
-                                        }}
-                                    >
-                                        <Button icon={<UploadOutlined />}>
-                                            Upload Photo
-                                        </Button>
-                                    </Upload>
+                        <Card
+                            className="rounded-2xl border"
+                            bodyStyle={{
+                                padding: 16
+                            }}
+                        >
 
 
-                                    {
-                                        profileImage
-                                        &&
-                                        (
+
+                            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-8">
+
+                                <Avatar
+                                    size={72}
+                                    src={profileImage}
+                                    className="bg-blue-100 text-blue-600 font-semibold"
+                                >
+                                    {!profileImage && initials}
+                                </Avatar>
+
+                                <div>
+
+                                    <h2 className="text-lg font-semibold">
+                                        Profile Picture
+                                    </h2>
+
+                                    <p className="text-gray-500 mb-3">
+                                        Upload a new profile picture
+                                    </p>
+
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+
+                                        <Upload
+
+                                            showUploadList={false}
+
+                                            beforeUpload={(file) => {
+                                                uploadImage(file);
+                                                return false;
+                                            }}
+                                        >
+
                                             <Button
-
-                                                type="link"
-
-                                                danger
-
-                                                onClick={() => setProfileImage("")}
+                                                icon={
+                                                    <UploadOutlined />
+                                                }
                                             >
-                                                Remove
+                                                Upload Photo
                                             </Button>
-                                        )
-                                    }
-                                </div>
-                            </div>
-                        </div>
 
+                                        </Upload>
 
-                        <Form
-                            layout="vertical"
-                            form={profileForm}
-                            onFinish={handleProfileUpdate}
-                        >
-                            <Form.Item
-                                label={<span className="font-[Outfit] ">Full Name </span>}
-                                name="fullName"
-                            >
-                                <Input
-                                    prefix={<UserOutlined />}
-                                    size="large"
-                                    className="rounded-lg"
-                                />
-                            </Form.Item>
+                                        {
+                                            profileImage
+                                            &&
+                                            (
+                                                <Button
 
-                            <Form.Item
-                                label={<span className="font-[Outfit] ">Email Address</span>}
-                                name="email"
-                            >
-                                <Input
-                                    prefix={<MailOutlined />}
-                                    size="large"
-                                    className="rounded-lg font-[outfit] "
-                                />
-                            </Form.Item>
+                                                    type="link"
 
-                            <Form.Item
-                                label={<span className="font-[Outfit] ">Phone Number </span>}
-                                name="phone"
-                                rootClassName=' '
-                            >
-                                <Input
-                                    prefix={<PhoneOutlined />}
-                                    size="large"
-                                    className="rounded-lg font-[outfit] "
-                                />
-                            </Form.Item>
+                                                    danger
 
-
-                            <div className="flex gap-4 mt-6">
-                                <Button
-                                    type="primary"
-                                    htmlType="submit"
-
-                                    size="large"
-
-                                    loading={updateProfileMutation.isPending}
-
-                                    className="rounded-full px-8"
-                                >
-                                    Save Changes
-                                </Button>
-
-                                <Button
-                                    size="large"
-                                    className="rounded-full px-8"
-                                >
-                                    Cancel
-                                </Button>
-                            </div>
-                        </Form>
-                    </Card>
-                </div>
-            )}
-            {tab === "password" && (
-                <div className='m-6 mt-0'>  <Card
-                    className="rounded-2xl border font-[Outfit]"
-                    bodyStyle={{ padding: 28 }}
-                >
-                    {/* HEADER */}
-                    <div className="mb-6">
-                        <h2 className="text-lg font-semibold">Change Password</h2>
-                        <p className="text-gray-500 text-sm">
-                            Update your password to keep your account secure
-                        </p>
-                    </div>
-
-
-
-                    <Form
-                        layout="vertical"
-                        form={passwordForm}
-                        onFinish={
-                            handlePasswordChange
-                        }
-                    >
-
-                        <Form.Item
-
-                            label={<span className="font-[Outfit] ">Current Password</span>}
-
-                            name="currentPassword"
-
-                            rules={[
-                                {
-                                    required: true,
-                                    message:
-                                        "Enter current password"
-                                }
-                            ]}
-                        >
-
-                            <Input.Password
-                                prefix={<LockOutlined />}
-                                size="large"
-                            />
-
-                        </Form.Item>
-
-                        <Form.Item
-
-                            label={<span className="font-[Outfit] ">New Password </span>}
-
-                            name="newPassword"
-
-                            rules={[
-                                {
-                                    required: true,
-                                    message:
-                                        "Enter new password"
-                                }
-                            ]}
-                        >
-
-                            <Input.Password
-                                prefix={<LockOutlined />}
-                                size="large"
-                            />
-
-                        </Form.Item>
-
-                        <Form.Item
-
-                            label={<span className="font-[Outfit] ">Confirm Password </span>}
-
-                            name="confirmPassword"
-
-                            dependencies={[
-                                "newPassword"
-                            ]}
-
-                            rules={[
-
-                                {
-                                    required: true,
-                                    message:
-                                        "Confirm password"
-                                },
-
-                                ({ getFieldValue }) => ({
-
-                                    validator(_, value) {
-
-                                        if (
-                                            !value
-                                            ||
-                                            getFieldValue(
-                                                "newPassword"
-                                            ) === value
-                                        ) {
-
-                                            return Promise.resolve();
+                                                    onClick={() => setProfileImage("")}
+                                                >
+                                                    Remove
+                                                </Button>
+                                            )
                                         }
 
-                                        return Promise.reject(
-                                            "Passwords do not match"
-                                        );
-                                    }
-                                })
-                            ]}
-                        >
+                                    </div>
 
-                            <Input.Password
-                                prefix={<LockOutlined />}
-                                size="large"
-                            />
+                                </div>
 
-                        </Form.Item>
+                            </div>
 
-                        <Button
 
-                            type="primary"
 
-                            htmlType="submit"
+                            <Form
 
-                            loading={
-                                changePasswordMutation.isPending
-                            }
+                                layout="vertical"
 
-                            className="rounded-full px-6"
-                        >
-                            Update Password
-                        </Button>
+                                form={profileForm}
 
-                    </Form>
-                </Card>
-                </div>
-            )
+                                onFinish={handleProfileUpdate}
+                            >
+
+                                <Form.Item
+
+                                    name="fullName"
+
+                                    label={<span className="font-[Outfit] ">Full Name</span>}
+
+                                    rules={[
+
+                                        {
+                                            required: true,
+                                            message: "Name is required"
+                                        },
+
+                                        {
+                                            min: 3,
+                                            message: "Minimum 3 characters required"
+                                        }
+                                    ]}
+                                >
+
+                                    <Input
+                                        prefix={<UserOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <Form.Item
+
+                                    name="email"
+
+                                    label={<span className="font-[Outfit] ">Email </span>}
+
+                                    rules={[
+
+                                        {
+                                            required: true,
+                                            message: "Email is required"
+                                        },
+
+                                        {
+                                            type: "email",
+                                            message: "Enter valid email"
+                                        }
+                                    ]}
+                                >
+
+                                    <Input
+                                        prefix={<MailOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <Form.Item
+
+                                    name="phone"
+                                    label={<span className="font-[Outfit] ">Phone Number</span>}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Phone is required"
+                                        },
+                                        {
+                                            pattern:
+                                                /^[0-9]{10}$/,
+
+                                            message:
+                                                "Enter valid 10 digit number"
+                                        }
+                                    ]}
+                                >
+
+                                    <Input
+                                        prefix={<PhoneOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <div className="flex gap-4 mt-6">
+
+                                    <Button
+
+                                        type="primary"
+
+                                        htmlType="submit"
+
+                                        size="large"
+
+                                        loading={updateProfileMutation.isPending}
+
+                                        className="rounded-full w-full sm:w-auto px-8"
+                                    >
+                                        Save Changes
+                                    </Button>
+
+                                </div>
+
+                            </Form>
+
+                        </Card>
+
+                    </div>
+                )
             }
+
+
+
+            {
+                tab === "password"
+                &&
+                (
+                    <div className="m-6 mt-0">
+
+                        <Card
+                            className="rounded-2xl border"
+                            bodyStyle={{
+                                padding: 28
+                            }}
+                        >
+
+                            <div className="mb-6">
+
+                                <h2 className="text-lg font-semibold">
+                                    Change Password
+                                </h2>
+
+                                <p className="text-gray-500 text-sm">
+                                    Update your password
+                                </p>
+
+                            </div>
+
+                            <Form
+                                layout="vertical"
+                                form={passwordForm}
+                                onFinish={
+                                    handlePasswordChange
+                                }
+                            >
+
+                                <Form.Item
+
+                                    label={<span className="font-[Outfit] ">Current Password</span>}
+                                    name="currentPassword"
+
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Enter current password"
+                                        }
+                                    ]}
+                                >
+
+                                    <Input.Password
+                                        prefix={<LockOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <Form.Item
+
+                                    label={<span className="font-[Outfit] ">New Password</span>}
+
+                                    name="newPassword"
+
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Enter new password"
+                                        }
+                                    ]}
+                                >
+
+                                    <Input.Password
+                                        prefix={<LockOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <Form.Item
+
+                                    label={<span className="font-[Outfit] ">Confirm Password</span>}
+
+                                    name="confirmPassword"
+
+                                    dependencies={["newPassword"]}
+
+                                    rules={[
+
+                                        {
+                                            required: true,
+                                            message: "Confirm password"
+                                        },
+
+                                        ({ getFieldValue }) => ({
+
+                                            validator(_, value) {
+
+                                                if (!value || getFieldValue("newPassword") === value) {
+
+                                                    return Promise.resolve();
+                                                }
+
+                                                return Promise.reject("Passwords do not match");
+                                            }
+                                        })
+                                    ]}
+                                >
+
+                                    <Input.Password
+                                        prefix={<LockOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <Button
+
+                                    type="primary"
+
+                                    htmlType="submit"
+
+                                    loading={changePasswordMutation.isPending}
+
+                                    className="rounded-full w-full sm:w-auto px-6"
+                                >
+                                    Update Password
+                                </Button>
+
+                            </Form>
+
+                        </Card>
+
+                    </div>
+                )
+            }
+
         </div >
     )
 }
