@@ -169,67 +169,45 @@ const Users = () => {
             <hr />
             <div className='m-6 grid lg:flex gap-6 '>
                 <div className="lg:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
-
-
                     <div className="flex items-start justify-between">
-
                         <div className="w-12 h-12 rounded-xl bg-blue-100 flex items-center justify-center">
                             <TeamOutlined className='text-blue-500' />
                         </div>
-
-
                     </div>
-
-
                     <div className="">
                         <p className="text-gray-500 m-0">Active Salon Admin</p>
                         <h2 className="text-2xl font-semibold text-gray-900 m-0  ">
                             {approvedsalons.length}
                         </h2>
                     </div>
-
                 </div>
                 <div className="lg:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
-
-
                     <div className="flex items-start justify-between">
-
                         <div className="w-12 h-12 rounded-xl bg-green-100 flex items-center justify-center">
                             <UserOutlined className='text-green-500' />
                         </div>
-
-
                     </div>
-
-
                     <div className="">
                         <p className="text-gray-500 m-0">Customers</p>
                         <h2 className="text-2xl font-semibold text-gray-900 m-0  ">
                             {users.length}
                         </h2>
                     </div>
-
                 </div>
                 <div className="lg:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
 
 
                     <div className="flex items-start justify-between">
-
                         <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center">
                             <UserOutlined className='text-orange-500' />
                         </div>
-
-
                     </div>
-
-
                     <div className="">
                         <p className="text-gray-500 m-0">Total Users</p>
                         <h2 className="text-2xl font-semibold text-gray-900 m-0  ">
                             {filteredApprovedSalons.length + filteredUsers.length + filteredDeactiveSalons.length}
                         </h2>
                     </div>
-
                 </div>
             </div>
             <div>
@@ -259,7 +237,7 @@ const Users = () => {
 
 
 
-                    <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 md:gap-6 p-4 md:p-6'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-2 gap-4 md:gap-6 p-4 md:p-6'>
                         {filteredApprovedSalons.map((salon: any) => (
                             <Card className="rounded-2xl border   h-full " bodyStyle={{ padding: 24 }}>
 

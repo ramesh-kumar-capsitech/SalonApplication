@@ -9,8 +9,6 @@ import {
     Spin,
 } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import axios from "axios";
-;
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { getApiAuthSalondetailsSalonId } from "../api/generated/loginsignuphome";
@@ -75,7 +73,7 @@ function SalonDetailscustomer() {
 
                 <Divider />
 
-                {/* Profile Section */}
+
                 <div className="flex gap-6 items-start">
                     <Avatar
                         size={100}
@@ -128,7 +126,7 @@ function SalonDetailscustomer() {
                 </div>
                 <Divider />
 
-                {/* Gallery */}
+
                 <Title level={4} className="font-[Outfit]">
                     Gallery
                 </Title>
@@ -165,7 +163,7 @@ function SalonDetailscustomer() {
 
                 <Divider />
 
-                {/* Staff */}
+
                 <Title level={4} className="font-[Outfit]">
                     Staff Members
                 </Title>
@@ -189,7 +187,7 @@ function SalonDetailscustomer() {
 
                 <Divider />
 
-                {/* Services */}
+
                 <Title level={4} className="font-[Outfit]">
                     Services
                 </Title>

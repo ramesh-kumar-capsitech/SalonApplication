@@ -33,11 +33,11 @@ const TotalBooking = () => {
         status: item.status,
     }));
     const completedCount = appointments.filter(
-        (a) => a.status === "completed"
+        (a) => a.status === "Completed"
     ).length;
 
     const inProgressCount = appointments.filter(
-        (a) => a.status === "in progress"
+        (a) => a.status === "In Progress"
     ).length;
 
     const upcomingCount = appointments.filter(
@@ -210,15 +210,15 @@ const TotalBooking = () => {
                                         </div>
                                     </div>
 
-                                    {/* Right Section */}
+
                                     <div className="self-start sm:self-auto">
                                         <Tag
                                             color={
-                                                appt.status === "completed"
+                                                appt.status === "Completed"
                                                     ? "green"
-                                                    : appt.status === "confirmed"
+                                                    : appt.status === "Confirmed"
                                                         ? "blue"
-                                                        : appt.status === "rejected"
+                                                        : appt.status === "Rejected"
                                                             ? "red"
                                                             : "gold"
                                             }
@@ -236,14 +236,14 @@ const TotalBooking = () => {
                                         <Button
                                             type="primary"
                                             className="flex-1 rounded-full bg-green-500"
-                                            onClick={() => updateStatus(appt.key, "confirmed")}
+                                            onClick={() => updateStatus(appt.key, "Confirmed")}
                                         >
                                             Accept
                                         </Button>
                                         <Button
                                             danger
                                             className="flex-1 rounded-full"
-                                            onClick={() => updateStatus(appt.key, "rejected")}
+                                            onClick={() => updateStatus(appt.key, "Rejected")}
                                         >
                                             Reject
                                         </Button>
@@ -251,14 +251,14 @@ const TotalBooking = () => {
                                 )}
 
 
-                                {appt.status === "confirmed" && (
+                                {appt.status === "Confirmed" && (
                                     <div className="flex flex-col sm:flex-row gap-3 mt-4">
                                         <Button
                                             type="primary"
                                             icon={<PlayCircleOutlined />}
                                             className="w-full sm:flex-1 rounded-full"
                                             onClick={() =>
-                                                updateStatus(appt.key, "in progress")
+                                                updateStatus(appt.key, "In Progress")
                                             }
                                         >
                                             Start Service
@@ -277,13 +277,13 @@ const TotalBooking = () => {
                                 )}
 
 
-                                {appt.status === "in progress" && (
+                                {appt.status === "In Progress" && (
                                     <div className="mt-4">
                                         <Button
                                             type="primary"
                                             icon={<CheckCircleOutlined />}
                                             className="w-full rounded-full bg-green-500"
-                                            onClick={() => updateStatus(appt.key, "completed")}
+                                            onClick={() => updateStatus(appt.key, "Completed")}
                                         >
                                             Completed
                                         </Button>
@@ -293,7 +293,7 @@ const TotalBooking = () => {
 
                                 {/* {appt.status === "Completed" && (
                                     <div className="mt-4 text-green-600 text-sm">
-                                        ✅ Service Completed
+                                         Service Completed
                                     </div>
                                 )} */}
                             </div>

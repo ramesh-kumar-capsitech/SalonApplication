@@ -39,11 +39,11 @@ const myshedule = () => {
         status: item.status,
     }));
     const completedCount = appointments.filter(
-        (a) => a.status === "completed"
+        (a) => a.status === "Completed"
     ).length;
 
     const inProgressCount = appointments.filter(
-        (a) => a.status === "in progress"
+        (a) => a.status === "In Progress"
     ).length;
 
     const upcomingCount = appointments.filter(
@@ -118,25 +118,14 @@ const myshedule = () => {
             <hr />
             <div className='m-6 grid md:flex gap-6 '>
                 <div className="md:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
-
-
-
-
-
                     <div className="">
                         <p className="text-gray-500 m-0">Completed Today</p>
                         <h2 className="text-2xl font-semibold text-blue-700 m-0  ">
                             {completedCount}
                         </h2>
                     </div>
-
                 </div>
                 <div className="md:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
-
-
-
-
-
                     <div className="">
                         <p className="text-gray-500 m-0">In Progress</p>
                         <h2 className="text-2xl font-semibold text-green-500 m-0  ">
@@ -146,16 +135,12 @@ const myshedule = () => {
 
                 </div>
                 <div className="md:w-1/3 bg-white rounded-2xl border border-gray-200 p-6 flex justify-start gap-5 ">
-
-
-
                     <div className="">
                         <p className="text-gray-500 m-0">Upcoming</p>
                         <h2 className="text-2xl font-semibold text-orange-500 m-0  ">
                             {upcomingCount}
                         </h2>
                     </div>
-
                 </div>
             </div>
             <div>
@@ -213,15 +198,15 @@ const myshedule = () => {
                                         </div>
                                     </div>
 
-                                    {/* Right Section */}
+
                                     <div className="self-start sm:self-auto">
                                         <Tag
                                             color={
-                                                appt.status === "completed"
+                                                appt.status === "Completed"
                                                     ? "green"
-                                                    : appt.status === "confirmed"
+                                                    : appt.status === "Confirmed"
                                                         ? "blue"
-                                                        : appt.status === "rejected"
+                                                        : appt.status === "Rejected"
                                                             ? "red"
                                                             : "gold"
                                             }
@@ -239,14 +224,14 @@ const myshedule = () => {
                                         <Button
                                             type="primary"
                                             className="flex-1 rounded-full bg-green-500"
-                                            onClick={() => updateStatus(appt.key, "confirmed")}
+                                            onClick={() => updateStatus(appt.key, "Confirmed")}
                                         >
                                             Accept
                                         </Button>
                                         <Button
                                             danger
                                             className="flex-1 rounded-full"
-                                            onClick={() => updateStatus(appt.key, "rejected")}
+                                            onClick={() => updateStatus(appt.key, "Rejected")}
                                         >
                                             Reject
                                         </Button>
@@ -254,14 +239,14 @@ const myshedule = () => {
                                 )}
 
 
-                                {appt.status === "confirmed" && (
+                                {appt.status === "Confirmed" && (
                                     <div className="flex flex-col sm:flex-row gap-3 mt-4">
                                         <Button
                                             type="primary"
                                             icon={<PlayCircleOutlined />}
                                             className="w-full sm:flex-1 rounded-full"
                                             onClick={() =>
-                                                updateStatus(appt.key, "in progress")
+                                                updateStatus(appt.key, "In Progress")
                                             }
                                         >
                                             Start Service
@@ -280,13 +265,13 @@ const myshedule = () => {
                                 )}
 
 
-                                {appt.status === "in progress" && (
+                                {appt.status === "In Progress" && (
                                     <div className="mt-4">
                                         <Button
                                             type="primary"
                                             icon={<CheckCircleOutlined />}
                                             className="w-full rounded-full bg-green-500"
-                                            onClick={() => updateStatus(appt.key, "completed")}
+                                            onClick={() => updateStatus(appt.key, "Completed")}
                                         >
                                             Completed
                                         </Button>

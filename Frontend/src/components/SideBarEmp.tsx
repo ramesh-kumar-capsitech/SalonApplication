@@ -110,7 +110,7 @@ const Sidebar: React.FC = () => {
 
             <div className="mt-auto pt-6">
 
-                <div className="flex items-center gap-3 md:bg-white/10 rounded-xl mt-3  md:p-3">
+                <div className="flex items-center justify-center gap-3 md:bg-white/10 rounded-xl mt-3  md:p-3">
                     <div className=" w-12 h-12 md:w-10 md:h-8  lg:w-10 lg:h-10 bg-blue-500 rounded-full md:rounded-full flex items-center justify-center font-semibold">
                         {
                             profileImage ? (
