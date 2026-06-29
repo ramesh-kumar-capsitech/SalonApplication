@@ -1,7 +1,7 @@
 import { DeleteOutlined, DollarOutlined, EditOutlined, FileAddOutlined, MoreOutlined, ScheduleOutlined, ScissorOutlined, TeamOutlined, WalletOutlined } from '@ant-design/icons'
 import React, { useEffect } from 'react';
 import { useState } from 'react';
-import { Avatar, Tag, Table, Dropdown, message, Button, Drawer, Form } from "antd";
+import { Avatar, Tag, Table, Dropdown, message, Button, Drawer, Form, Empty } from "antd";
 import { Modal, Input, Select, DatePicker, TimePicker } from "antd";
 import { Card, Switch } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
@@ -113,8 +113,13 @@ const Dashboard = () => {
         enabled: !!salon
     })
 
+    const today = dayjs().format("YYYY-MM-DD");
+    const todayBookings = bookings.filter(
+        (b: any) =>
+            dayjs(b.date).format("YYYY-MM-DD") === today
+    );
 
-    const dataSource = bookings.map((item: any, index) => ({
+    const dataSource = todayBookings.map((item: any, index) => ({
         key: item.id || index,
         id: item.id?.slice(-6).toUpperCase(),
         customer: item.customerName?.charAt(0).toUpperCase() +
@@ -1222,19 +1227,28 @@ const Dashboard = () => {
                 >
 
                     <div className="mb-6">
-                        <h2 className="text-lg font-semibold">Today's Bookings</h2>
+                        <h2 className="text-lg font-semibold">Today's  Bookings</h2>
                         <p className="text-gray-500 text-sm">
                             Manage today's appointments
                         </p>
                     </div>
 
 
-                    <Table
-                        columns={columns}
-                        dataSource={dataSource}
-                        pagination={{ pageSize: 5 }}
-                        scroll={{ x: "max-content" }}
-                    />
+                    {
+                        dataSource.length === 0 ? (
+                            <Empty
+                                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                description={<span className='font-[outfit]'>No today bookings found</span>}
+                            />
+                        ) : (
+                            <Table
+                                columns={columns}
+                                dataSource={dataSource}
+                                pagination={{ pageSize: 5 }}
+                                scroll={{ x: "max-content" }}
+                            />
+                        )
+                    }
                 </Card>
             </div>
         </div >

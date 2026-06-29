@@ -5,9 +5,9 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface SalonLogin {
+export interface CancelBookingModel {
   /** @nullable */
-  email?: string | null;
+  bookingId?: string | null;
   /** @nullable */
-  password?: string | null;
+  reason?: string | null;
 }

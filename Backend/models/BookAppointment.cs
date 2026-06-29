@@ -29,7 +29,12 @@ public class BookAppointment
 
     public string Status { get; set; } = "pending";
 
-    public List<BookedService>? Services { get; set; }
+    public string? CancelReason { get; set; }
+
+    public DateTime? CancelledAt { get; set; }
+
+    public List<BookedService>? Services
+    { get; set; }
 
     public DateTime CreatedAt { get; set; }
         = DateTime.UtcNow;
@@ -67,4 +72,9 @@ public class SalonBookingRequest
     public decimal TotalPrice { get; set; }
 
     public List<BookedService>? Services { get; set; }
+}
+public class CancelBookingModel
+{
+    public string BookingId { get; set; }
+    public string Reason { get; set; }
 }

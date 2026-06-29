@@ -31,6 +31,10 @@ export interface BookAppointment {
   /** @nullable */
   status?: string | null;
   /** @nullable */
+  cancelReason?: string | null;
+  /** @nullable */
+  cancelledAt?: string | null;
+  /** @nullable */
   services?: BookedService[] | null;
   createdAt?: string;
   /** @nullable */

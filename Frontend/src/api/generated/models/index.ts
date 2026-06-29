@@ -11,6 +11,7 @@ export * from './adminProfileUpdate';
 export * from './applySalon';
 export * from './bookAppointment';
 export * from './bookedService';
+export * from './cancelBookingModel';
 export * from './changeAdminPasswordModel';
 export * from './changePasswordModel';
 export * from './changecustomerPasswordModel';

@@ -161,4 +161,12 @@ GetEmployeeBookings(
 
         return Ok(result);
     }
+    [HttpPut("cancelbooking")]
+    public async Task<IActionResult> CancelBooking(
+    [FromBody] CancelBookingModel model)
+    {
+        var result = await _bookingService.CancelBooking(model);
+
+        return Ok(result);
+    }
 }

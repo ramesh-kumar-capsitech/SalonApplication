@@ -36,6 +36,7 @@ import type {
   AdminProfileUpdate,
   ApplySalon,
   BookAppointment,
+  CancelBookingModel,
   ChangeAdminPasswordModel,
   ChangePasswordModel,
   ChangecustomerPasswordModel,
@@ -2647,6 +2648,62 @@ export function useGetApiAuthCustomerbookingstats<TData = Awaited<ReturnType<typ
 
 
 
+export const putApiAuthCancelbooking = (
+    cancelBookingModel: CancelBookingModel, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.default.put(
+      `/api/auth/cancelbooking`,
+      cancelBookingModel,options
+    );
+  }
+
+
+
+export const getPutApiAuthCancelbookingMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiAuthCancelbooking>>, TError,{data: CancelBookingModel}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof putApiAuthCancelbooking>>, TError,{data: CancelBookingModel}, TContext> => {
+
+const mutationKey = ['putApiAuthCancelbooking'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiAuthCancelbooking>>, {data: CancelBookingModel}> = (props) => {
+          const {data} = props ?? {};
+
+          return  putApiAuthCancelbooking(data,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutApiAuthCancelbookingMutationResult = NonNullable<Awaited<ReturnType<typeof putApiAuthCancelbooking>>>
+    export type PutApiAuthCancelbookingMutationBody = CancelBookingModel
+    export type PutApiAuthCancelbookingMutationError = AxiosError<unknown>
+
+    export const usePutApiAuthCancelbooking = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiAuthCancelbooking>>, TError,{data: CancelBookingModel}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof putApiAuthCancelbooking>>,
+        TError,
+        {data: CancelBookingModel},
+        TContext
+      > => {
+
+      const mutationOptions = getPutApiAuthCancelbookingMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
 export const postApiAuthAddemployee = (
     employee: Employee, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<void>> => {

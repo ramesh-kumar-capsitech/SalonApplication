@@ -7,7 +7,7 @@
 
 export interface EmployeeLoginRequest {
   /** @nullable */
-  loginEmail?: string | null;
+  email?: string | null;
   /** @nullable */
-  loginPassword?: string | null;
+  password?: string | null;
 }

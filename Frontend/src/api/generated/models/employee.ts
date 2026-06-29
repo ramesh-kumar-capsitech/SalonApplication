@@ -22,13 +22,11 @@ export interface Employee {
   skills?: string[] | null;
   experience?: number;
   /** @nullable */
+  password?: string | null;
+  /** @nullable */
   availability?: string | null;
   /** @nullable */
   status?: string | null;
-  /** @nullable */
-  loginEmail?: string | null;
-  /** @nullable */
-  loginPassword?: string | null;
   createdAt?: string;
   /** @nullable */
   profileImage?: string | null;

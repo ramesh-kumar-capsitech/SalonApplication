@@ -1,11 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Card, Dropdown, message, Table, Tag } from 'antd';
+import { Card, Dropdown, Empty, message, Segmented, Table, Tag } from 'antd';
 import axios from 'axios';
 import { getApiAuthGetbookingsalonSalonId, putApiAuthUpdatebookingstatusId } from '../api/generated/loginsignuphome';
+import { useState } from 'react';
 
 
 
 const AllBooking = () => {
+    const [tab, settab] = useState<"pending" | "confirmed" | "completed" | "reject" | "cancel">("pending")
     const columns = [
         {
             title: "Booking ID",
@@ -42,26 +44,23 @@ const AllBooking = () => {
             title: "Status",
             dataIndex: "status",
             key: "status",
-            render: (status: any) => {
-                const s = status?.toLowerCase();
+            render: (status: string) => {
+                const colors: Record<string, string> = {
+                    pending: "orange",
+                    confirmed: "blue",
+                    completed: "green",
+                    rejected: "red",
+                    cancelled: "red",
+                    "in progress": "gold",
+                };
 
                 return (
                     <Tag
+                        color={colors[status?.trim().toLowerCase()] || "default"}
                         className="rounded-full px-3"
-                        color={
-                            s === "confirmed"
-                                ? "blue"
-                                : s === "rejected"
-                                    ? "red"
-                                    : s === "completed"
-                                        ? "green"
-                                        : s === "in progress"
-                                            ? "gold"
-                                            : "default"
-                        }
                     >
                         {status}
-                    </Tag >
+                    </Tag>
                 );
             },
         },
@@ -88,6 +87,21 @@ const AllBooking = () => {
             ),
         },
     ];
+    const cancelReasonColumn = {
+        title: "Cancel Reason",
+        dataIndex: "cancelReason",
+        key: "cancelReason",
+        render: (reason: string) => (
+            <span className="text-red-500 font-medium">
+                {reason || "No reason"}
+            </span>
+        ),
+    };
+    const finalColumns =
+        tab === "cancel"
+            ? [...columns, cancelReasonColumn]
+            : columns;
+
     const authData = JSON.parse(localStorage.getItem("persist:auth")!);
     const user = JSON.parse(authData.user);
     const salon = user.salonId;
@@ -100,22 +114,65 @@ const AllBooking = () => {
         },
         enabled: !!salon
     })
+    const pendingBookings = bookings.filter(
+        (b: any) => b.status?.toLowerCase() === "pending"
+    );
 
-    const dataSource = bookings.map((item: any, index) => ({
-        key: item.id || index,
-        id: item.id?.slice(-6).toUpperCase(),
-        customer: item.customerName?.charAt(0).toUpperCase() +
-            item.customerName?.slice(1),
-        service: item.services?.map(s => s.name).join(", "),
-        time: item.time,
-        date: new Date(item.date).toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        }),
-        staff: item.staffName,
-        status: item.status,
-    }));
+    const confirmedBookings = bookings.filter(
+        (b: any) => b.status?.toLowerCase() === "confirmed"
+    );
+
+    const completedBookings = bookings.filter(
+        (b: any) => b.status?.toLowerCase() === "completed"
+    );
+
+    const rejectedBookings = bookings.filter(
+        (b: any) => b.status?.toLowerCase() === "rejected"
+    );
+
+    const cancelledBookings = bookings.filter(
+        (b: any) => b.status?.toLowerCase() === "cancelled"
+    );
+    const getDataSource = (list: any[]) =>
+        list.map((item: any, index: number) => ({
+            key: item.id || index,
+            id: item.id?.slice(-6).toUpperCase(),
+            customer:
+                item.customerName?.charAt(0).toUpperCase() +
+                item.customerName?.slice(1),
+            service: item.services?.map((s: any) => s.name).join(", "),
+            time: item.time,
+            date: new Date(item.date).toLocaleDateString(),
+            staff: item.staffName,
+            status: item.status,
+            cancelReason: item.cancelReason,
+        }));
+    let tableData = [];
+
+    switch (tab) {
+        case "pending":
+            tableData = getDataSource(pendingBookings);
+            break;
+
+        case "confirmed":
+            tableData = getDataSource(confirmedBookings);
+            break;
+
+        case "completed":
+            tableData = getDataSource(completedBookings);
+            break;
+
+        case "reject":
+            tableData = getDataSource(rejectedBookings);
+            break;
+
+        case "cancel":
+            tableData = getDataSource(cancelledBookings);
+            break;
+
+        default:
+            tableData = [];
+    }
     const queryClient = useQueryClient()
     const useStatusMutation = useMutation({
         mutationFn: async ({
@@ -173,26 +230,67 @@ const AllBooking = () => {
             </div>
 
             <hr />
+            <div className="m-6 md:m-6 ">
+                <Segmented
+                    block
+                    value={tab}
+                    onChange={(val) =>
+                        settab(val as "pending" | "confirmed" | "completed" | "reject" | "cancel")
+                    }
+                    options={[
+                        {
+                            label: `Pending`,
+                            value: "pending",
+                        },
+                        {
+                            label: `Confirmed`,
+                            value: "confirmed",
+                        },
+                        {
+                            label: `Completed`,
+                            value: "completed",
+                        },
+                        {
+                            label: `Reject`,
+                            value: "reject",
+                        },
+                        {
+                            label: `Cancel`,
+                            value: "cancel",
+                        }
+
+                    ]}
+                    className="w-full md:w-[40%] rounded-lg bg-gray-100 p-1 font-[Outfit]"
+                />
+            </div>
             <div className=' m-6 '>
                 <Card
                     className="rounded-2xl border font-[Outfit]"
                     bodyStyle={{ padding: 28 }}
                 >
-                    {/* HEADER */}
+
                     <div className="mb-6">
-                        <h2 className="text-lg font-semibold">All Bookings</h2>
+                        <h2 className="text-lg font-semibold">All {tab.charAt(0).toUpperCase() + tab.slice(1)} Bookings</h2>
                         <p className="text-gray-500 text-sm">
-                            Manage today's appointments
+                            Manage appointments
                         </p>
                     </div>
 
-                    {/* TABLE */}
-                    <Table
-                        columns={columns}
-                        dataSource={dataSource}
-                        pagination={{ pageSize: 5 }}
-                        scroll={{ x: "max-content" }}
-                    />
+                    {
+                        tableData.length === 0 ? (
+                            <Empty
+                                description={<span className='font-[outfit] '>No {tab.charAt(0).toUpperCase() + tab.slice(1)} bookings found</span>}
+                            />
+                        ) : (
+                            <Table
+                                columns={finalColumns}
+                                dataSource={tableData}
+                                pagination={{ pageSize: 5 }}
+                                scroll={{ x: "max-content" }}
+                                pagination={{ pageSize: 5 }}
+                            />
+                        )
+                    }
                 </Card>
             </div>
 

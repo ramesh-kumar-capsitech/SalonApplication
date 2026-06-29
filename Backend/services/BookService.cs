@@ -208,4 +208,35 @@ GetEmployeeBookings(
 
         return result;
     }
+    public async Task<object> CancelBooking(CancelBookingModel model)
+    {
+        var booking = await _bookings
+            .Find(x => x.Id == model.BookingId)
+            .FirstOrDefaultAsync();
+
+        if (booking == null)
+        {
+            return new
+            {
+                success = false,
+                message = "Booking not found"
+            };
+        }
+
+        var update = Builders<BookAppointment>.Update
+            .Set(x => x.Status, "Cancelled")
+            .Set(x => x.CancelReason, model.Reason)
+            .Set(x => x.CancelledAt, DateTime.UtcNow);
+
+        await _bookings.UpdateOneAsync(
+            x => x.Id == model.BookingId,
+            update
+        );
+
+        return new
+        {
+            success = true,
+            message = "Booking cancelled successfully"
+        };
+    }
 }

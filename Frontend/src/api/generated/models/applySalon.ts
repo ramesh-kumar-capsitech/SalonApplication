@@ -20,6 +20,8 @@ export interface ApplySalon {
   /** @nullable */
   email?: string | null;
   /** @nullable */
+  password?: string | null;
+  /** @nullable */
   joinedYear?: string | null;
   /** @nullable */
   totalStaff?: string | null;
@@ -31,10 +33,6 @@ export interface ApplySalon {
   galleryImages?: string[] | null;
   /** @nullable */
   status?: string | null;
-  /** @nullable */
-  loginEmail?: string | null;
-  /** @nullable */
-  loginPassword?: string | null;
   /** @nullable */
   rejectReason?: string | null;
   /** @nullable */
