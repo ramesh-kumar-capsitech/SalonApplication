@@ -44,6 +44,11 @@ const Dashboard = () => {
             key: "time",
         },
         {
+            title: "Staff Name",
+            dataIndex: "staff",
+            key: "staff",
+        },
+        {
             title: "Date",
             dataIndex: "date",
             key: " date",
@@ -126,11 +131,9 @@ const Dashboard = () => {
             item.customerName?.slice(1),
         service: item.services?.map(s => s.name).join(", "),
         time: item.time,
-        date: new Date(item.date).toLocaleDateString(undefined, {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-        }),
+        date: dayjs(item.date).format("DD MMM YYYY"),
+        staff: item.staffName,
+
         status: item.status,
     }));
     const queryClient = useQueryClient()
@@ -1244,7 +1247,7 @@ const Dashboard = () => {
                             <Table
                                 columns={columns}
                                 dataSource={dataSource}
-                                pagination={{ pageSize: 5 }}
+                                pagination={{ pageSize: 5, className: "font-[Outfit]" }}
                                 scroll={{ x: "max-content" }}
                             />
                         )

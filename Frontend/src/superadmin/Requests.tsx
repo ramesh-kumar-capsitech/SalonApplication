@@ -279,9 +279,11 @@ const Requests = () => {
 
                                         </div>
 
-                                        <p className="text-gray-500 mt-1 leading-3">
-                                            <p> Owner: <span className="font-medium leading-[0.8] m-0">{salon.ownerName}</span></p>
-                                            <p>   {salon.email}</p>
+                                        <p className="text-gray-500 py-1 leading-3">
+                                            <p className='mt-1'> Owner:
+                                                <span className="font-medium leading-[0.8] m-0">{salon.ownerName}</span>
+                                            </p>
+                                            <p className='mt-2'> Email:  <span className="font-medium leading-[0.8] m-0">{salon.email}</span></p>
 
                                         </p>
                                     </div>
@@ -326,9 +328,12 @@ const Requests = () => {
                                             </div>
 
                                             <p className="text-gray-500 mt-1 leading-3">
-                                                <p> Owner: <span className="font-medium leading-[0.8] m-0">{salon.ownerName}</span></p>
-                                                <p>   {salon.email}</p>
-                                                <p className="font-sm text-red-500">   {salon.rejectReason}</p>
+                                                <p> Owner:
+                                                    <span className="font-medium leading-[0.8] m-0">{salon.ownerName}</span>
+                                                </p>
+                                                <p className='mt-2'> Email: <span className="font-medium leading-[0.8] m-0">{salon.email}</span></p>
+                                                <p className="font-sm mt-2 text-red-500">
+                                                    Reason:  <span className="font-medium leading-[0.8] m-0">{salon.rejectReason}</span></p>
                                             </p>
                                         </div>
 

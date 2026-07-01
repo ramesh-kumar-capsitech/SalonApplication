@@ -2,12 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo1.png'
 import { HomeOutlined, PictureOutlined, TeamOutlined, UnorderedListOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { Badge, message } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import { LogoutOutlined } from '@ant-design/icons';
 import { useAppDispatch } from "../redux/hooks";
 import { logout } from "../redux/authSlice";
 import { useAppSelector } from "../redux/hooks";
+import { useQuery } from "@tanstack/react-query";
+import { getApiAuthGetbookingsalonSalonId } from "../api/generated/loginsignuphome";
 const Sidebar: React.FC = () => {
     const dispatch = useAppDispatch();
     const [loggeduser, setloggeduser] = useState('')
@@ -18,6 +20,7 @@ const Sidebar: React.FC = () => {
     const user = useAppSelector(
         (state) => state.auth.user
     );
+    const salon = user.salonId
     useEffect(() => {
 
         if (user) {
@@ -62,6 +65,18 @@ const Sidebar: React.FC = () => {
     };
     console.log(user);
     console.log(user?.salonownername);
+    const { data: requests = [] } = useQuery({
+        queryKey: ["bookings", salon],
+        queryFn: async () => {
+            const res = await getApiAuthGetbookingsalonSalonId(salon);
+            return res.data;
+        },
+        enabled: !!salon
+    });
+
+    const pendingCount = requests.filter(
+        (r: any) => r.status?.toLowerCase() === "pending"
+    ).length;
     return (
         <aside className="fixed inset-y-0 left-0 w-[20%] bg-gradient-to-b from-blue-700 to-blue-600 text-white flex flex-col px-2 md:px-5 py-6">
 
@@ -99,9 +114,17 @@ const Sidebar: React.FC = () => {
                         </li>
                         </NavLink>
                         <NavLink to='/salonadmin/allbooking'> <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20" >
+                            <Badge count={pendingCount} size="small" className="md:hidden">
+                                <UnorderedListOutlined className=" text-white" />
+                            </Badge>
+                            <UnorderedListOutlined className="hidden md:block  text-white" />
+                            <p className=" hidden md:block font-semibold m-0  ">Bookings   </p>
+                            {pendingCount > 0 && (
+                                <span className="hidden  bg-red-500 text-white rounded-full h-4 min-w-4 px-1 md:flex items-center justify-center text-[10px]  ">
+                                    {pendingCount}
+                                </span>
+                            )}
 
-                            <UnorderedListOutlined className="text-white " />
-                            <p className="hidden md:block font-semibold m-0 "> Bookings</p>
                         </li>
                         </NavLink>
                         <NavLink to='/salonadmin/gallery'> <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20" >

@@ -6,9 +6,11 @@ import { ShopOutlined } from '@ant-design/icons';
 import { FileTextOutlined } from '@ant-design/icons';
 import { SettingOutlined } from '@ant-design/icons';
 import { LogoutOutlined } from '@ant-design/icons';
-import { message } from 'antd';
+import { Badge, message } from 'antd';
 import { logout } from "../redux/authSlice";
 import { useAppDispatch, useAppSelector } from "../redux/hooks";
+import { useQuery } from "@tanstack/react-query";
+import { getApiAuthGetallsalons } from "../api/generated/loginsignuphome";
 
 const Sidebar: React.FC = () => {
     // const dispatch = useAppDispatch();
@@ -53,6 +55,17 @@ const Sidebar: React.FC = () => {
 
         navigate("/");
     };
+    const { data: requests = [] } = useQuery({
+        queryKey: ["salons"],
+        queryFn: async () => {
+            const res = await getApiAuthGetallsalons();
+            return res.data;
+        }
+    });
+
+    const pendingCount = requests.filter(
+        (r: any) => r.status?.toLowerCase() === "pending"
+    ).length;
     return (
         <aside className="fixed inset-y-0 left-0 w-[20%] bg-gradient-to-b from-blue-700 to-blue-600 text-white flex flex-col px-2 md:px-5 py-6">
 
@@ -119,9 +132,16 @@ const Sidebar: React.FC = () => {
                                     ? "bg-white/30 rounded-lg"
                                     : ""
                             }>  <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20">
-                                <FileTextOutlined />
-
+                                <Badge count={pendingCount} size="small" className="md:hidden">
+                                    <FileTextOutlined className=" text-white" />
+                                </Badge>
+                                <FileTextOutlined className="hidden md:block  text-white" />
                                 <p className=" hidden md:block font-semibold m-0  ">Requests</p>
+                                {pendingCount > 0 && (
+                                    <span className="hidden  bg-red-500 text-white rounded-full h-4 min-w-4 px-1 md:flex items-center justify-center text-[10px]  ">
+                                        {pendingCount}
+                                    </span>
+                                )}
                             </li>
                         </NavLink>
                         <NavLink to="/superadmin/setting"

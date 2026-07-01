@@ -1,12 +1,65 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Card, Dropdown, Empty, message, Segmented, Table, Tag } from 'antd';
+import { Button, Card, DatePicker, Dropdown, Empty, message, Modal, Segmented, Table, Tag } from 'antd';
 import axios from 'axios';
 import { getApiAuthGetbookingsalonSalonId, putApiAuthUpdatebookingstatusId } from '../api/generated/loginsignuphome';
 import { useState } from 'react';
+import dayjs from 'dayjs';
 
 
 
 const AllBooking = () => {
+    const [dateFilter, setDateFilter] = useState("week");
+    const [selectedDate, setSelectedDate] = useState<any>(null);
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+    const filterByDate = (list: any[]) => {
+        const today = new Date();
+
+        return list.filter((item) => {
+            const bookingDate = new Date(item.date);
+
+            switch (dateFilter) {
+
+                case "today":
+                    return (
+                        bookingDate.toDateString() ===
+                        today.toDateString()
+                    );
+
+                case "week": {
+                    const start = new Date(today);
+                    start.setDate(today.getDate() - today.getDay());
+
+                    const end = new Date(start);
+                    end.setDate(start.getDate() + 6);
+
+                    return bookingDate >= start && bookingDate <= end;
+                }
+
+                case "month":
+                    return (
+                        bookingDate.getMonth() === today.getMonth() &&
+                        bookingDate.getFullYear() === today.getFullYear()
+                    );
+
+                case "year":
+                    return (
+                        bookingDate.getFullYear() ===
+                        today.getFullYear()
+                    );
+
+                case "custom":
+                    if (!selectedDate) return true;
+
+                    return (
+                        bookingDate.toDateString() ===
+                        new Date(selectedDate).toDateString()
+                    );
+
+                default:
+                    return true;
+            }
+        });
+    };
     const [tab, settab] = useState<"pending" | "confirmed" | "completed" | "reject" | "cancel">("pending")
     const columns = [
         {
@@ -39,6 +92,11 @@ const AllBooking = () => {
             title: "Date",
             dataIndex: "date",
             key: " date",
+        },
+        {
+            title: "Staff Name",
+            dataIndex: "staff",
+            key: "staff",
         },
         {
             title: "Status",
@@ -142,7 +200,8 @@ const AllBooking = () => {
                 item.customerName?.slice(1),
             service: item.services?.map((s: any) => s.name).join(", "),
             time: item.time,
-            date: new Date(item.date).toLocaleDateString(),
+            date: dayjs(item.date).format("DD MMM YYYY")
+            ,
             staff: item.staffName,
             status: item.status,
             cancelReason: item.cancelReason,
@@ -151,23 +210,30 @@ const AllBooking = () => {
 
     switch (tab) {
         case "pending":
-            tableData = getDataSource(pendingBookings);
+            tableData = getDataSource(filterByDate(pendingBookings));
             break;
 
         case "confirmed":
-            tableData = getDataSource(confirmedBookings);
+
+            tableData = getDataSource(filterByDate(confirmedBookings));
             break;
 
         case "completed":
-            tableData = getDataSource(completedBookings);
+
+            tableData = getDataSource(filterByDate(completedBookings));
+
             break;
 
         case "reject":
-            tableData = getDataSource(rejectedBookings);
+
+            tableData = getDataSource(filterByDate(rejectedBookings));
+
             break;
 
         case "cancel":
-            tableData = getDataSource(cancelledBookings);
+
+            tableData = getDataSource(filterByDate(cancelledBookings));
+
             break;
 
         default:
@@ -214,9 +280,34 @@ const AllBooking = () => {
         });
     }
 
-
     return (
         <div>
+            <Modal
+                title={<span className='font-[Outfit]'>Select Date</span>}
+                open={isFilterModalOpen}
+                onCancel={() => setIsFilterModalOpen(false)}
+                footer={[
+                    <Button key="cancel" onClick={() => setIsFilterModalOpen(false)}>
+                        Cancel
+                    </Button>,
+
+                    <Button
+                        key="apply"
+                        type="primary"
+                        onClick={() => {
+                            setDateFilter("custom");
+                            setIsFilterModalOpen(false);
+                        }}
+                    >
+                        Apply
+                    </Button>
+                ]}
+            >
+                <DatePicker
+                    className="w-full font-[Outfit]"
+                    onChange={(date) => setSelectedDate(date?.toDate() || null)}
+                />
+            </Modal>
             <div className="md:flex items-center justify-between  px-3 py-[13px]   ">
                 <div>
                     <h1 className="text-lg leading-[0.8] font-semibold text-gray-900">
@@ -226,6 +317,60 @@ const AllBooking = () => {
                         Customer booking date,name
                     </p>
                 </div>
+                <div className='  md:p-4'>
+                    <Dropdown
+                        menu={{
+                            items: [
+                                {
+                                    key: "today",
+                                    label: "Today",
+                                    disabled: dateFilter === "today",
+                                },
+                                {
+                                    key: "week",
+                                    label: "This Week",
+                                    disabled: dateFilter === "week",
+                                },
+                                {
+                                    key: "month",
+                                    label: "This Month",
+                                    disabled: dateFilter === "month",
+                                },
+                                {
+                                    key: "year",
+                                    label: "This Year",
+                                    disabled: dateFilter === "year",
+                                },
+                                {
+                                    key: "custom",
+                                    label: "Custom Date",
+                                    disabled: dateFilter === "custom",
+                                },
+                            ],
+                            onClick: ({ key }) => {
+                                if (key === "custom") {
+                                    setIsFilterModalOpen(true);
+                                } else {
+                                    setDateFilter(key);
+                                }
+                            }
+                        }}
+                    >
+                        <a className="text-blue-600 font-medium hover:underline">
+                            Filter:{" "}
+                            <span className="font-medium">
+                                {dateFilter === "today" && "Today"}
+                                {dateFilter === "week" && "This Week"}
+                                {dateFilter === "month" && "This Month"}
+                                {dateFilter === "year" && "This Year"}
+                                {dateFilter === "custom" && "Custom Date"}
+                            </span>
+                        </a>
+                    </Dropdown>
+
+
+                </div>
+
 
             </div>
 
@@ -260,7 +405,7 @@ const AllBooking = () => {
                         }
 
                     ]}
-                    className="w-full md:w-[40%] rounded-lg bg-gray-100 p-1 font-[Outfit]"
+                    className="w-full  rounded-lg bg-gray-100 p-1 font-[Outfit]"
                 />
             </div>
             <div className=' m-6 '>
@@ -285,16 +430,16 @@ const AllBooking = () => {
                             <Table
                                 columns={finalColumns}
                                 dataSource={tableData}
-                                pagination={{ pageSize: 5 }}
+                                pagination={{ pageSize: 5, className: "font-[Outfit]" }}
                                 scroll={{ x: "max-content" }}
-                                pagination={{ pageSize: 5 }}
+
                             />
                         )
                     }
                 </Card>
             </div>
 
-        </div>
+        </div >
     )
 }
 

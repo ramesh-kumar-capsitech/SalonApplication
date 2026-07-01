@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { DatePicker, Dropdown, Empty, Spin } from "antd";
+import { DatePicker, Dropdown, Empty, Input, Spin } from "antd";
 import dayjs from "dayjs";
 import {
     Card,
@@ -42,9 +42,13 @@ const BookAppointment = () => {
     );
     // const [salons, setsalons] = useState<any[]>([]);
     // const [services, setServices] = useState<any[]>([]);
+    const [searchTerm, setSearchTerm] = useState("");
+    const handleSearch = (value: string) => {
+        setSearchTerm(value.toLowerCase());
 
+    };
     const {
-        data: salons = [],
+        data: salonss = [],
         isLoading,
         error
     } = useQuery({
@@ -54,12 +58,24 @@ const BookAppointment = () => {
 
             const res = await getApiAuthGetallsalons()
 
-            return res.data.filter(
-                (salon: any) =>
-                    salon.status === "approved" &&
-                    salon.isActive === "active"
-            );
+            return res.data
         }
+    });
+    const salons = salonss.filter((salon: any) => {
+        const matchesSearch =
+            !searchTerm ||
+            salon.salonName?.toLowerCase().includes(searchTerm) ||
+            salon.ownerName?.toLowerCase().includes(searchTerm) ||
+            salon.salonAddress?.toLowerCase().includes(searchTerm) ||
+            salon.city?.toLowerCase().includes(searchTerm) ||
+            salon.email?.toLowerCase().includes(searchTerm) ||
+            salon.phone?.toString().includes(searchTerm);
+
+        return (
+            salon.status === "approved" &&
+            salon.isActive === "active" &&
+            matchesSearch
+        );
     });
     const { data: services = [], isLoading: servicesLoading, error: servicesError } = useQuery({
         queryKey: [
@@ -283,7 +299,7 @@ const BookAppointment = () => {
 
                     <Steps
                         current={step}
-                        className="mb-10"
+                        className="mb-6"
                         items={[
                             { title: "Salon" },
                             { title: "Services" },
@@ -304,40 +320,48 @@ const BookAppointment = () => {
                             ) : error ? (
                                 <Empty description="Failed to load salons" />
                             ) : (
-                                <div className="grid md:grid-cols-3 gap-6">
-                                    {salons.map((salon) => (
-                                        <Card
-                                            key={salon.id}
-                                            onClick={() => setSelectedSalon(salon)}
-                                            className={`cursor-pointer rounded-xl text-center
+                                <div>
+                                    <div>
+                                        <Input placeholder="Search salons by name,owner, or location" className='w-[40%] font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100  mb-6 '
+                                            onChange={(e) => handleSearch(e.target.value)}
+                                            allowClear />
+                                    </div>
+                                    <div className="grid md:grid-cols-3 gap-6">
+
+                                        {salons.map((salon) => (
+                                            <Card
+                                                key={salon.id}
+                                                onClick={() => setSelectedSalon(salon)}
+                                                className={`cursor-pointer rounded-xl text-center
     ${selectedSalon?.id === salon.id
-                                                    ? "border-blue-500 ring-2 ring-blue-200"
-                                                    : ""
-                                                }`}
-                                        ><div className="">
+                                                        ? "border-blue-500 ring-2 ring-blue-200"
+                                                        : ""
+                                                    }`}
+                                            ><div className="">
 
-                                                <div>
-                                                    <h3 className="text-lg font-semibold">{salon.salonName}</h3>
-                                                    <p className="text-gray-500">{salon.city}</p>
-                                                    {/* <p className="mt-2">⭐ {salon.rating || 4.5}</p> */}
+                                                    <div>
+                                                        <h3 className="text-lg font-semibold">{salon.salonName}</h3>
+                                                        <p className="text-gray-500">{salon.city}</p>
+                                                        {/* <p className="mt-2">⭐ {salon.rating || 4.5}</p> */}
 
 
+                                                    </div>
+                                                    <Button
+                                                        type="primary"
+                                                        icon={<EyeOutlined />}
+                                                        className="w-full mt-6 rounded-full h-8 text-sm"
+                                                        onClick={() =>
+                                                            navigate(
+                                                                `/customer/salon-details/${salon.id}`
+                                                            )
+                                                        }
+                                                    >
+                                                        View Details
+                                                    </Button>
                                                 </div>
-                                                <Button
-                                                    type="primary"
-                                                    icon={<EyeOutlined />}
-                                                    className="w-full mt-6 rounded-full h-8 text-sm"
-                                                    onClick={() =>
-                                                        navigate(
-                                                            `/customer/salon-details/${salon.id}`
-                                                        )
-                                                    }
-                                                >
-                                                    View Details
-                                                </Button>
-                                            </div>
-                                        </Card>
-                                    ))}
+                                            </Card>
+                                        ))}
+                                    </div>
                                 </div>
                             )}
 
