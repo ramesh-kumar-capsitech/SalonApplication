@@ -801,7 +801,7 @@ const Dashboard = () => {
                     >
                         <DatePicker
 
-                            className="w-full"
+                            className="w-full font-[Outfit] "
 
                             value={selectedDate}
 
@@ -822,8 +822,7 @@ const Dashboard = () => {
 
                             {timeSlots.map((slot) => {
 
-                                const isBooked =
-                                    bookedSlots.includes(slot);
+                                const isBooked = bookedSlots.includes(slot);
 
                                 return (
 

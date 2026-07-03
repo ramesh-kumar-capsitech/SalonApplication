@@ -35,6 +35,8 @@ import Gallery from './salonadmin/Gallery'
 import SalonDetails from './superadmin/SalonDetails'
 import Settingcustomer from './customer/Settingcustomer'
 import SalonDetailscustomer from './customer/SalonDetailscustomer'
+import Invoice from './components/Invoice'
+import Test from './components/test'
 function App() {
   return (
     <Routes>
@@ -45,6 +47,8 @@ function App() {
       <Route path="/salonstatus" element={<SalonStatus />} />
       <Route path="/applicationcheckform" element={<ApplicationCheck />} />
       <Route path="/salonstatuscheck" element={<Saloncheck />} />
+      <Route path="/invoice" element={<Invoice />} />
+      <Route path="/test" element={<Test />} />
       <Route path="/applicationcheck" element={<ApplicationStatus />} />
       <Route path="/superadmin" element={<ProtectedRoutes>
         <Layout />

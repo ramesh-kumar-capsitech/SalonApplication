@@ -39,6 +39,12 @@ public class BookAppointment
     public DateTime CreatedAt { get; set; }
         = DateTime.UtcNow;
     public string? SalonImage { get; set; }
+    public string? CustomerEmail { get; set; }
+    public string? SalonEmail { get; set; }
+    public string? SalonMobile { get; set; }
+    public string? CustomerMobile { get; set; }
+
+
 
 }
 public class UpdateBookingStatusRequest

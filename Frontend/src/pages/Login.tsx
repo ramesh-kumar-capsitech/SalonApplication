@@ -117,6 +117,7 @@ const Login = () => {
                             _id: result.data.user.id,
                             name: result.data.user.name,
                             email: result.data.user.email,
+                            mobile: result.data.user.mobileNumber,
                             profileImage: result.data.user.profileImage,
                             role: "customer",
                         },

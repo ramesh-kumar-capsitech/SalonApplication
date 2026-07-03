@@ -90,3 +90,66 @@ span {
     font-family: "Outfit", sans-serif !important;
     font-weight: 600;
 }
+
+#invoice {
+    width: 794px;
+    background: white;
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#invoice * {
+    box-sizing: border-box;
+}
+
+
+#invoice .shadow,
+#invoice .shadow-sm,
+#invoice .shadow-md,
+#invoice .shadow-lg,
+#invoice .shadow-xl,
+#invoice .shadow-2xl {
+    box-shadow: none !important;
+}
+
+
+#invoice .rounded-full {
+    border-radius: 8px !important;
+}
+
+#invoice .rounded-xl {
+    border-radius: 10px !important;
+}
+
+#invoice .rounded-2xl {
+    border-radius: 12px !important;
+}
+
+
+#invoice .rotate-\[-8deg\] {
+    transform: none !important;
+}
+
+#invoice img {
+    max-width: 100%;
+    display: block;
+}
+
+
+#invoice table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#invoice th,
+#invoice td {
+    border: 1px solid #e5e7eb;
+    padding: 10px;
+}
+
+
+#invoice table,
+#invoice .card,
+#invoice .section {
+    page-break-inside: avoid;
+}

@@ -21,7 +21,7 @@ import {
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getApiAuthGetallsalons, getApiAuthGetsalonservicesSalonId, getApiAuthGetsalonstaffSalonId, postApiAuthBookappointment } from "../api/generated/loginsignuphome";
+import { getApiAuthGetallsalons, getApiAuthGetbookedslotsStaffIdDate, getApiAuthGetsalonservicesSalonId, getApiAuthGetsalonstaffSalonId, postApiAuthBookappointment } from "../api/generated/loginsignuphome";
 
 const { Title, Text } = Typography;
 
@@ -77,7 +77,7 @@ const BookAppointment = () => {
             matchesSearch
         );
     });
-    const { data: services = [], isLoading: servicesLoading, error: servicesError } = useQuery({
+    const { data: servicess = [], isLoading: servicesLoading, error: servicesError } = useQuery({
         queryKey: [
             "services",
             selectedSalon?.id
@@ -91,6 +91,18 @@ const BookAppointment = () => {
         },
 
         enabled: !!selectedSalon
+    });
+    const services = servicess.filter((salon: any) => {
+        const matchesSearch =
+            !searchTerm ||
+            salon.serviceName?.toLowerCase().includes(searchTerm) ||
+            salon.duration?.toString().includes(searchTerm) ||
+            salon.price?.toString().includes(searchTerm);
+
+        return (
+
+            matchesSearch
+        );
     });
     const generateTimeSlots = () => {
         const slots = [];
@@ -127,7 +139,7 @@ const BookAppointment = () => {
 
     const [selectedStaff, setSelectedStaff] = useState<any>(null);
 
-    const { data: staffList = [], isLoading: staffLoading, error: staffError } = useQuery({
+    const { data: staffListt = [], isLoading: staffLoading, error: staffError } = useQuery({
         queryKey: [
             "staffList",
             selectedSalon?.id
@@ -142,7 +154,15 @@ const BookAppointment = () => {
 
         enabled: !!selectedSalon
     });
+    const staffList = staffListt.filter((salon: any) => {
+        const matchesSearch =
+            !searchTerm ||
+            salon.fullName?.toLowerCase().includes(searchTerm) ||
+            salon.role?.toLowerCase().includes(searchTerm) ||
+            salon.skills?.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
 
+        return (matchesSearch);
+    });
     const createBookingMutation =
         useMutation({
 
@@ -188,7 +208,16 @@ const BookAppointment = () => {
 
                     salonImage:
                         selectedSalon?.profileImage,
+                    salonEmail:
+                        selectedSalon?.email,
+                    salonMobile:
+                        selectedSalon?.phone,
 
+                    customerEmail:
+                        user.email,
+
+                    customerMobile:
+                        user.mobile,
                     staffId:
                         selectedStaff?.id,
 
@@ -278,6 +307,25 @@ const BookAppointment = () => {
             );
         }
     }, [staffError]);
+    const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+    const getBookedSlots = async () => {
+        try {
+            if (!selectedStaff || !date) return;
+
+            const res =
+                await getApiAuthGetbookedslotsStaffIdDate(
+                    selectedStaff.id,
+                    dayjs(date).format("YYYY-MM-DD")
+                );
+
+            setBookedSlots(res.data);
+        } catch (err) {
+            console.log(err);
+        }
+    };
+    useEffect(() => {
+        getBookedSlots();
+    }, [selectedStaff, date]);
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[13px]   ">
@@ -381,7 +429,11 @@ const BookAppointment = () => {
                     {step === 1 && (
                         <>
                             <h2 className="text-xl font-semibold mb-6">Select Services</h2>
-
+                            <div>
+                                <Input placeholder="Search services by name , time , price " className='w-[40%] font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100  mb-6 '
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                    allowClear />
+                            </div>
                             <div className="space-y-4">
                                 {
                                     servicesLoading ? (
@@ -389,6 +441,7 @@ const BookAppointment = () => {
                                             <Spin size="large" />
                                         </div>
                                     ) : (
+
                                         services.map((service, index) => (
                                             <Card key={index}>
                                                 <Checkbox
@@ -410,6 +463,7 @@ const BookAppointment = () => {
 
                                                 </Checkbox>
                                             </Card>
+
                                         ))
                                     )
                                 }
@@ -431,7 +485,11 @@ const BookAppointment = () => {
                     {step === 2 && (
                         <>
                             <h2 className="text-xl font-semibold mb-6">Choose Staff</h2>
-
+                            <div>
+                                <Input placeholder="Search staff by name, role, or skills" className='w-[40%] font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100  mb-6 '
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                    allowClear />
+                            </div>
                             <div className="grid md:grid-cols-3 gap-6">
                                 {
                                     staffLoading ? (
@@ -480,7 +538,7 @@ const BookAppointment = () => {
                         <>
                             <h2 className="text-xl font-semibold mb-6">Select Date & Time</h2>
 
-                            {/* Date Picker */}
+
                             <div className="mb-6">
                                 <DatePicker
                                     value={date}
@@ -488,21 +546,26 @@ const BookAppointment = () => {
                                     disabledDate={(current) =>
                                         current && current < dayjs().startOf("day")
                                     }
+                                    className="w-[40%] font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100"
                                 />
                             </div>
 
-                            {/* Time Slots */}
+
                             <div className="flex flex-wrap gap-3 mb-6">
-                                {timeSlots.map((slot) => (
-                                    <Button
-                                        key={slot}
-                                        disabled={isPastTime(slot)}
-                                        type={time === slot ? "primary" : "default"}
-                                        onClick={() => setTime(slot)}
-                                    >
-                                        {slot}
-                                    </Button>
-                                ))}
+                                {timeSlots.map((slot) => {
+                                    const isBooked = bookedSlots.includes(slot);
+
+                                    return (
+                                        <Button
+                                            key={slot}
+                                            disabled={isPastTime(slot) || isBooked}
+                                            type={time === slot ? "primary" : "default"}
+                                            onClick={() => setTime(slot)}
+                                        >
+                                            {isBooked ? `${slot} (Booked)` : slot}
+                                        </Button>
+                                    );
+                                })}
                             </div>
                             <div className="flex justify-between">  <Button onClick={() => setStep(2)}>Back</Button>
                                 <Button
@@ -514,7 +577,8 @@ const BookAppointment = () => {
                                     onClick={() => createBookingMutation.mutate()}
                                 >
                                     Confirm Booking
-                                </Button></div>
+                                </Button>
+                            </div>
 
                         </>
                     )}
@@ -543,7 +607,7 @@ const BookAppointment = () => {
                             </div>
 
                         </>
-                        // <div><p>fghjkl;</p></div>
+
                     )}
                 </div>
             </div>

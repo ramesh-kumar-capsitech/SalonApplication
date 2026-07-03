@@ -6,6 +6,7 @@ import {
     CalendarOutlined,
     ClockCircleOutlined,
     DollarOutlined,
+    PrinterOutlined,
 } from "@ant-design/icons";
 import { useState } from "react";
 interface DetailProps {
@@ -28,6 +29,9 @@ import TextArea from "antd/es/input/TextArea";
 import {
     putApiAuthCancelbooking,
 } from "../api/generated/loginsignuphome";
+import { useLocation, useNavigate } from "react-router-dom";
+import Invoice from "../components/Invoice";
+import { downloadInvoice } from "../utills/downloadInvoice";
 const Detail: React.FC<DetailProps> = ({
     icon,
     label,
@@ -46,7 +50,11 @@ const Detail: React.FC<DetailProps> = ({
         </div>
     );
 };
+// const Invoice = () => {
+//     const { state: booking } = useLocation();
 
+//     return <Invoice booking={booking} />;
+// };
 const MyBookings = () => {
     const [tab, settab] = useState<"upcoming" | "past">("upcoming")
     // const [bookings, setBookings] = useState([]);
@@ -134,7 +142,7 @@ const MyBookings = () => {
             reason: finalReason
         });
     };
-
+    const navigate = useNavigate();
     return (
         <div>
             <Modal
@@ -516,7 +524,26 @@ const MyBookings = () => {
                                             </div>
                                         </div>
 
+                                        {/* <Button
+                                            type="primary"
+                                            onClick={() =>
+                                                navigate("/invoice", {
+                                                    state: b,
+                                                })
+                                            }
+                                        >
+                                            View Invoice
+                                        </Button> */}
+                                        <div className="mt-3">
 
+                                            <Button
+                                                type="primary"
+                                                icon={<span><PrinterOutlined /></span>}
+                                                onClick={() => downloadInvoice(b)}
+                                            >
+                                                Download Invoice
+                                            </Button>
+                                        </div>
                                     </Card>
                                 ))}
 
