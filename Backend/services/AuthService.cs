@@ -10,7 +10,7 @@ public class AuthService
 
     public AuthService()
     {
-        var client = new MongoClient("mongodb://localhost:27017");
+        var client = new MongoClient("mongodb+srv://omnitrixb7_db_user:EBb2Zpf5s6GEANAG@cluster0.wbrnhwn.mongodb.net/authdb");
 
         var db = client.GetDatabase("authdb");
         _salonrequests = db.GetCollection<ApplySalon>("salonrequests");
