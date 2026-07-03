@@ -9,7 +9,7 @@ public class BookingService
     {
         var client =
             new MongoClient(
-                "mongodb+srv://omnitrixb7_db_user:EBb2Zpf5s6GEANAG@cluster0.wbrnhwn.mongodb.net/authdb"
+                "mongodb://localhost:27017"
             );
 
         var db =
@@ -173,7 +173,7 @@ GetEmployeeBookings(
     public List<object> GetCustomerBookingStats()
     {
         var users =
-            new MongoClient("mongodb+srv://omnitrixb7_db_user:EBb2Zpf5s6GEANAG@cluster0.wbrnhwn.mongodb.net/authdb")
+            new MongoClient("mongodb://localhost:27017")
             .GetDatabase("authdb")
             .GetCollection<RegisterUsers>("users")
             .Find(_ => true)

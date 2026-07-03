@@ -13,7 +13,7 @@ public class EmployeeService
     {
         var client =
              new MongoClient(
-                 "mongodb+srv://omnitrixb7_db_user:EBb2Zpf5s6GEANAG@cluster0.wbrnhwn.mongodb.net/authdb"
+                 "mongodb://localhost:27017"
              );
 
         var db =
@@ -75,7 +75,7 @@ public class EmployeeService
             .ToList();
 
         var bookingCollection =
-            new MongoClient("mongodb+srv://omnitrixb7_db_user:EBb2Zpf5s6GEANAG@cluster0.wbrnhwn.mongodb.net/authdb")
+            new MongoClient("mongodb://localhost:27017")
             .GetDatabase("authdb")
             .GetCollection<BookAppointment>("bookings");
 
