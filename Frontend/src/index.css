@@ -153,3 +153,21 @@ span {
 #invoice .section {
     page-break-inside: avoid;
 }
+
+.ant-btn,
+.ant-card,
+.ant-typography,
+.ant-tag,
+.ant-input,
+.ant-select,
+.ant-picker,
+.ant-modal,
+.ant-table,
+.ant-menu,
+.ant-dropdown,
+.ant-form,
+.ant-pagination,
+.ant-tabs,
+.ant-tooltip {
+    font-family: "Outfit", sans-serif !important;
+}

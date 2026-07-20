@@ -281,7 +281,7 @@ const MyBookings = () => {
                                                         className="overflow-hidden"
                                                     >
                                                         {b.salonName?.charAt(0)?.toUpperCase()}
-                                                    </Avatar>
+                                                    </Avatar>z
                                                     <div>
                                                         <h2 className="font-medium  md:font-semibold m-0">{b.salonName || "N/A"}</h2>
 
@@ -387,9 +387,9 @@ const MyBookings = () => {
 
                                         <div className="md:flex items-center justify-between mt-6" >
                                             <div className=" grid md:flex gap-3">
-                                                <Button className="rounded-full">
+                                                {/* <Button className="rounded-full">
                                                     Reschedule
-                                                </Button>
+                                                </Button> */}
                                                 <Button
                                                     danger
                                                     icon={<span>✕</span>}
@@ -625,7 +625,7 @@ const MyBookings = () => {
 
                                         </div>
 
-                                        {/* Details */}
+
 
                                         <div className="bg-gray-50 rounded-xl p-5 mt-6
         grid grid-cols-2 lg:grid-cols-5 gap-5">

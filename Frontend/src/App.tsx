@@ -37,6 +37,7 @@ import Settingcustomer from './customer/Settingcustomer'
 import SalonDetailscustomer from './customer/SalonDetailscustomer'
 import Invoice from './components/Invoice'
 import Test from './components/test'
+import Schedule from './salonadmin/Schedule'
 function App() {
   return (
     <Routes>
@@ -75,6 +76,7 @@ function App() {
         <Route path='settingsalon' element={<SettingSalon />} />
         <Route path='staffsalon' element={<StaffSalon />} />
         <Route path='gallery' element={<Gallery />} />
+        <Route path='emp-schedule/:id' element={<Schedule />} />
       </Route>
       <Route path='/employee' element={
         <ProtectedRoutes>

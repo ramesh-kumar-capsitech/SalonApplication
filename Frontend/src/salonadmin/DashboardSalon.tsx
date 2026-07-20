@@ -640,14 +640,12 @@ const Dashboard = () => {
         },
 
         onSuccess: () => {
-
             queryClient.invalidateQueries({
                 queryKey: [
                     "bookings",
                     salon
                 ]
             });
-
             message.success(
                 "Booking Created"
             );

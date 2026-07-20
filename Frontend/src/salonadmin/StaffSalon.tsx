@@ -23,6 +23,7 @@ interface InfoRowProps {
 import AddEmployeeDrawer from "../components/AddEmployeeDrawer";
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getApiAuthGetemployeesSalonId, putApiAuthToggleemployeeId } from '../api/generated/loginsignuphome';
+import { useNavigate } from 'react-router-dom';
 
 const InfoRow: React.FC<InfoRowProps> = ({ icon, text }) => {
     return (
@@ -130,7 +131,7 @@ const StaffSalon = () => {
                 );
             }
         });
-
+    const navigate = useNavigate()
     return (
 
         <div>
@@ -379,6 +380,13 @@ const StaffSalon = () => {
 
                                 <Button
                                     className="w-full mt-5 rounded-full"
+                                    onClick={() =>
+                                        navigate(
+                                            `/salonadmin/emp-schedule/${appreq.id}`, {
+                                            state: appreq
+                                        }
+                                        )
+                                    }
                                 >
                                     View Schedule
                                 </Button>

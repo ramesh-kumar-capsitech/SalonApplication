@@ -194,7 +194,6 @@ GetEmployeeBookings(
                     Email = user.Email,
                     MobileNumber = user.MobileNumber,
                     ProfileImage = user.ProfileImage,
-
                     TotalBookings = bookings.Count,
 
                     LastBooking =
