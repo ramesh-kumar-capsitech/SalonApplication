@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.SignalR;
 using System.Text;
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,12 +41,12 @@ builder.Services.AddCors(options =>
         policy =>
         {
             policy.WithOrigins("http://localhost:5173")
-                  .AllowAnyHeader()
-                  .AllowAnyMethod();
-        }); 
+                  .AllowAnyHeader().AllowAnyMethod().AllowCredentials();
+        });
 });
+builder.Services.AddSignalR();
 var app = builder.Build();
-if(app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
@@ -56,4 +57,6 @@ app.UseCors("AllowReact");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
+
+app.MapHub<LiveQueueHub>("/livequeuehub");
 app.Run();

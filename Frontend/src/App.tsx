@@ -38,6 +38,7 @@ import SalonDetailscustomer from './customer/SalonDetailscustomer'
 import Invoice from './components/Invoice'
 import Test from './components/test'
 import Schedule from './salonadmin/Schedule'
+import LiveQueue from './components/LiveQueue'
 function App() {
   return (
     <Routes>
@@ -51,6 +52,7 @@ function App() {
       <Route path="/invoice" element={<Invoice />} />
       <Route path="/test" element={<Test />} />
       <Route path="/applicationcheck" element={<ApplicationStatus />} />
+      <Route path="/live-queue/:salonId" element={<LiveQueue />} />
       <Route path="/superadmin" element={<ProtectedRoutes>
         <Layout />
       </ProtectedRoutes>}>

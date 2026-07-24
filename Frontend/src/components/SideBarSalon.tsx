@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo1.png'
-import { HomeOutlined, PictureOutlined, TeamOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { HomeOutlined, OrderedListOutlined, PictureOutlined, ScheduleOutlined, TeamOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { Badge, message } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import { LogoutOutlined } from '@ant-design/icons';
@@ -140,6 +140,13 @@ const Sidebar: React.FC = () => {
                                 <p className="hidden md:block font-semibold m-0 ">Settings</p>
                             </li>
                         </NavLink>
+                        <li
+                            onClick={() => window.open(`/live-queue/${salon}`, "_blank")}
+                            className="flex items-center justify-center md:justify-start gap-2 px-2 md:px-3 py-2 rounded-lg hover:bg-white/20 cursor-pointer"
+                        >
+                            <OrderedListOutlined />
+                            <p className="hidden md:block font-semibold m-0">Live Queue</p>
+                        </li>
 
                     </ul>
                 </nav>

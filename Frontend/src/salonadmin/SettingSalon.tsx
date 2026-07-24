@@ -40,12 +40,8 @@ const SettingSalon = () => {
         setProfileImage]
         = useState("");
 
-    const [initials,
-        setInitials]
-        = useState("");
-    const authData = JSON.parse(
-        localStorage.getItem("persist:auth")!
-    );
+    const [initials, setInitials] = useState("");
+    const authData = JSON.parse(localStorage.getItem("persist:auth")!);
 
     const user = JSON.parse(authData.user);
 

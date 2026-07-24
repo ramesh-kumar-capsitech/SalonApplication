@@ -10,14 +10,14 @@ import {
 } from "@ant-design/icons";
 import { useLocation } from "react-router-dom";
 
-interface InvoiceProps {
-    booking: any;
-}
+// interface InvoiceProps {
+//     booking: any;
+// }
 
 // { booking }: InvoiceProps
 
-const Invoice = ({ booking }: InvoiceProps) => {
-    // const { state: booking } = useLocation();
+const Invoice = () => {
+    const { state: booking } = useLocation();
 
 
     const subtotal = booking.totalPrice;
@@ -32,7 +32,7 @@ const Invoice = ({ booking }: InvoiceProps) => {
     return (
         <div
             id="invoice"
-            className="bg-[#f5f7fb]   flex justify-center"
+            className="bg-[#f5f7fb] m-auto mt-2 mb-2  flex justify-center"
             style={{
                 width: "794px",
                 background: "#f5f7fb"

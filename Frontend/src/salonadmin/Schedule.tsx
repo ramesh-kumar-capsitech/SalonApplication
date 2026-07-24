@@ -17,90 +17,25 @@ import {
     CheckCircleFilled,
     ClockCircleFilled,
 } from "@ant-design/icons";
-import { data, useLocation, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getApiAuthGetbookingsUserId, getApiAuthGetemployeebookingsEmployeeId } from "../api/generated/loginsignuphome";
+import { getApiAuthGetemployeebookingsEmployeeId } from "../api/generated/loginsignuphome";
 import dayjs from "dayjs";
+import { Dropdown, Modal } from "antd";
+
+
 
 const { Title, Text } = Typography;
 
-interface ScheduleItem {
-    id: number;
-    time: string;
-    customer?: string;
-    service?: string;
-    duration?: string;
-    status: "Confirmed" | "Completed" | "Upcoming" | "Available" | "Break";
-}
 
-
-const employee: any = location.state;
-const scheduleData: ScheduleItem[] = [
-    {
-        id: 1,
-        time: "09:00 AM",
-        customer: "Suresh Bishnoi",
-        service: "Hair Cutting",
-        duration: "45 mins",
-        status: "Confirmed",
-    },
-    {
-        id: 2,
-        time: "10:00 AM",
-        customer: "Rahul Kumar",
-        service: "Hair Spa",
-        duration: "1 Hour",
-        status: "Completed",
-    },
-    {
-        id: 3,
-        time: "11:00 AM",
-        status: "Available",
-    },
-    {
-        id: 4,
-        time: "12:00 PM",
-        customer: "Mohit Sharma",
-        service: "Beard Trim",
-        duration: "30 mins",
-        status: "Upcoming",
-    },
-    {
-        id: 5,
-        time: "01:00 PM",
-        status: "Break",
-    },
-    {
-        id: 6,
-        time: "02:00 PM",
-        customer: "Amit",
-        service: "Hair Color",
-        duration: "2 Hours",
-        status: "Confirmed",
-    },
-];
-
-const summary = {
-    completed: 8,
-    upcoming: 2,
-    available: 5,
-    inprogress: 2,
-    working: "10 AM - 8 PM",
-};
-
-const weekDays = [
-    "Mon",
-    "Tue",
-    "Wed",
-    "Thu",
-    "Fri",
-    "Sat",
-    "Sun",
-];
 
 const Schedule = () => {
+    const [dateFilter, setDateFilter] = useState("week");
+    const [selectedDate, setSelectedDate] = useState<any>(null);
+    const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
     const { id } = useParams();
     const location = useLocation();
+    const navigate = useNavigate()
     const appreq: any = location.state;
     console.log("Employee Id =>", id);
     const { data: bookings = [], isLoading, error } = useQuery({
@@ -171,11 +106,78 @@ const Schedule = () => {
             </div>
         );
     }
+    const filterByDate = (list: any[]) => {
+        const today = new Date();
+
+        return list.filter((item) => {
+            const bookingDate = new Date(item.date);
+
+            switch (dateFilter) {
+                case "today":
+                    return bookingDate.toDateString() === today.toDateString();
+
+                case "week": {
+                    const start = new Date(today);
+                    start.setDate(today.getDate() - today.getDay());
+
+                    const end = new Date(start);
+                    end.setDate(start.getDate() + 6);
+
+                    return bookingDate >= start && bookingDate <= end;
+                }
+
+                case "month":
+                    return (
+                        bookingDate.getMonth() === today.getMonth() &&
+                        bookingDate.getFullYear() === today.getFullYear()
+                    );
+
+                case "year":
+                    return bookingDate.getFullYear() === today.getFullYear();
+
+                case "custom":
+                    if (!selectedDate) return true;
+
+                    return (
+                        bookingDate.toDateString() ===
+                        new Date(selectedDate).toDateString()
+                    );
+
+                default:
+                    return true;
+            }
+        });
+    };
+
     return (
         <div className="p-4 lg:p-8 bg-[#f7f8fc] min-h-screen">
 
 
-
+            <Modal
+                title="Select Date"
+                open={isFilterModalOpen}
+                onCancel={() => setIsFilterModalOpen(false)}
+                footer={[
+                    <Button key="cancel" onClick={() => setIsFilterModalOpen(false)}>
+                        Cancel
+                    </Button>,
+                    <Button
+                        key="apply"
+                        type="primary"
+                        onClick={() => {
+                            setDateFilter("custom");
+                            setIsFilterModalOpen(false);
+                        }}
+                    >
+                        Apply
+                    </Button>,
+                ]}
+            >
+                <DatePicker
+                    className="w-full"
+                    onChange={(date) => setSelectedDate(date?.toDate() || null)}
+                />
+            </Modal>
             <div className="flex items-center justify-between flex-wrap gap-4">
 
                 <div className="flex items-center gap-3">
@@ -183,6 +185,13 @@ const Schedule = () => {
                     <Button
                         shape="circle"
                         icon={<ArrowLeftOutlined />}
+                        onClick={() =>
+                            navigate(
+                                `/salonadmin/staffsalon`, {
+                                state: appreq
+                            }
+                            )
+                        }
                     />
 
                     <div>
@@ -198,8 +207,55 @@ const Schedule = () => {
                     </div>
 
                 </div>
-
-                <DatePicker />
+                <Dropdown
+                    menu={{
+                        items: [
+                            {
+                                key: "today",
+                                label: "Today",
+                                disabled: dateFilter === "today",
+                            },
+                            {
+                                key: "week",
+                                label: "This Week",
+                                disabled: dateFilter === "week",
+                            },
+                            {
+                                key: "month",
+                                label: "This Month",
+                                disabled: dateFilter === "month",
+                            },
+                            {
+                                key: "year",
+                                label: "This Year",
+                                disabled: dateFilter === "year",
+                            },
+                            {
+                                key: "custom",
+                                label: "Custom Date",
+                                disabled: dateFilter === "custom",
+                            },
+                        ],
+                        onClick: ({ key }) => {
+                            if (key === "custom") {
+                                setIsFilterModalOpen(true);
+                            } else {
+                                setDateFilter(key);
+                            }
+                        }
+                    }}
+                >
+                    <a className="text-blue-600 font-medium hover:underline">
+                        Filter:{" "}
+                        <span className="font-medium">
+                            {dateFilter === "today" && "Today"}
+                            {dateFilter === "week" && "This Week"}
+                            {dateFilter === "month" && "This Month"}
+                            {dateFilter === "year" && "This Year"}
+                            {dateFilter === "custom" && "Custom Date"}
+                        </span>
+                    </a>
+                </Dropdown>
 
             </div>
 
@@ -298,7 +354,7 @@ const Schedule = () => {
                         <Card size="small" className="text-center">
 
                             <h2 className="text-2xl font-semibold text-blue-500 m-0  ">
-                                {summary.inprogress}
+                                ~
                             </h2>
 
                             <Text>Today Booking</Text>
@@ -319,7 +375,7 @@ const Schedule = () => {
 
             <div className="mt-6 space-y-4">
 
-                {appointments.map((item) => (
+                {filterByDate(appointments).map((item) => (
 
                     <Card
                         key={item.id}

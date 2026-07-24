@@ -524,7 +524,8 @@ const MyBookings = () => {
                                             </div>
                                         </div>
 
-                                        {/* <Button
+                                        <Button
+                                            className="mt-3"
                                             type="primary"
                                             onClick={() =>
                                                 navigate("/invoice", {
@@ -533,16 +534,16 @@ const MyBookings = () => {
                                             }
                                         >
                                             View Invoice
-                                        </Button> */}
+                                        </Button>
                                         <div className="mt-3">
 
-                                            <Button
+                                            {/* <Button
                                                 type="primary"
                                                 icon={<span><PrinterOutlined /></span>}
                                                 onClick={() => downloadInvoice(b)}
                                             >
                                                 Download Invoice
-                                            </Button>
+                                            </Button> */}
                                         </div>
                                     </Card>
                                 ))}

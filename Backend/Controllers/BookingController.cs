@@ -1,20 +1,21 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-
+using Microsoft.AspNetCore.SignalR;
 [ApiController]
 [Route("api/auth")]
 public class BookingController
     : ControllerBase
 {
-    private readonly BookingService
-        _bookingService;
+    private readonly BookingService _bookingService;
+    private readonly IHubContext<LiveQueueHub> _hubContext;
 
-    public BookingController()
+    public BookingController(IHubContext<LiveQueueHub> hubContext)
     {
         _bookingService = new BookingService();
+        _hubContext = hubContext;
     }
 
     [HttpPost("bookappointment")]
-    public IActionResult BookAppointment(
+    public async Task<IActionResult> BookAppointment(
         [FromBody]
         BookAppointment booking
     )
@@ -38,7 +39,7 @@ public class BookingController
                 }
             );
         }
-
+        await _hubContext.Clients.All.SendAsync("QueueUpdated");
         return Ok(
             new
             {
@@ -71,7 +72,7 @@ public class BookingController
         return Ok(bookings);
     }
     [HttpPut("updatebookingstatus/{id}")]
-    public IActionResult UpdateBookingStatus(
+    public async Task<IActionResult> UpdateBookingStatus(
     string id,
     [FromBody] UpdateBookingStatusRequest request
 )
@@ -90,7 +91,7 @@ public class BookingController
                 message = "Booking not found"
             });
         }
-
+        await _hubContext.Clients.All.SendAsync("QueueUpdated");
         return Ok(new
         {
             success = true,
@@ -127,7 +128,7 @@ GetEmployeeBookings(
         return Ok(slots);
     }
     [HttpPost("createsalonbooking")]
-    public IActionResult CreateSalonBooking(
+    public async Task<IActionResult> CreateSalonBooking(
     [FromBody] SalonBookingRequest model
 )
     {
@@ -145,7 +146,7 @@ GetEmployeeBookings(
                 message = result
             });
         }
-
+        await _hubContext.Clients.All.SendAsync("QueueUpdated");
         return Ok(new
         {
             success = true,
@@ -166,6 +167,7 @@ GetEmployeeBookings(
     [FromBody] CancelBookingModel model)
     {
         var result = await _bookingService.CancelBooking(model);
+        await _hubContext.Clients.All.SendAsync("QueueUpdated");
 
         return Ok(result);
     }
