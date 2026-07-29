@@ -281,7 +281,7 @@ const MyBookings = () => {
                                                         className="overflow-hidden"
                                                     >
                                                         {b.salonName?.charAt(0)?.toUpperCase()}
-                                                    </Avatar>z
+                                                    </Avatar>
                                                     <div>
                                                         <h2 className="font-medium  md:font-semibold m-0">{b.salonName || "N/A"}</h2>
 

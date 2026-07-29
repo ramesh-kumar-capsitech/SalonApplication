@@ -66,7 +66,7 @@ const LiveQueue = () => {
             });
 
         connection.on("QueueUpdated", () => {
-            console.log("🔥 QueueUpdated Received");
+            console.log(" QueueUpdated Received");
 
             queryClient.invalidateQueries({
                 queryKey: ["liveBookings", salonId],

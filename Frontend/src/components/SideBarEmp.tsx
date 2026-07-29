@@ -63,7 +63,7 @@ const Sidebar: React.FC = () => {
             <div>
 
                 <div className="flex items-center justify-center md:justify-start gap-0 md:gap-3 mb-4">
-                    <div className="md:hidden lg:block w-10 h-10 md:w-11 md:h-11 bg-white/20 rounded-xl flex items-center justify-center">
+                    <div className="md:hidden lg:block w-10 h-10 md:w-11 md:h-11 bg-white rounded-xl flex items-center justify-center">
                         <img src={logo} alt="" />
                     </div>
                     <div className="hidden md:block ">
