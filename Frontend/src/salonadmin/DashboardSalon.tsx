@@ -493,6 +493,7 @@ const Dashboard = () => {
             }
         });
     const [open, setOpen] = useState(false);
+
     const [selectedDate, setSelectedDate] =
         useState(null);
 
@@ -500,15 +501,26 @@ const Dashboard = () => {
         useState("");
     const generateTimeSlots = () => {
         const slots = [];
-        for (let i = 9; i <= 20; i++) {
-            const hour = i > 12 ? i - 12 : i;
-            const ampm = i >= 12 ? "PM" : "AM";
 
-            slots.push(`${hour}:00 ${ampm}`);
+        for (let hour = 9; hour <= 20; hour++) {
+            for (let minute = 0; minute < 60; minute += 15) {
+
+
+                if (hour === 20 && minute > 0) break;
+
+                const displayHour =
+                    hour > 12 ? hour - 12 : hour === 0 ? 12 : hour;
+
+                const ampm = hour >= 12 ? "PM" : "AM";
+
+                const formattedMinute = minute.toString().padStart(2, "0");
+
+                slots.push(`${displayHour}:${formattedMinute} ${ampm}`);
+            }
         }
+
         return slots;
     };
-
     const timeSlots = generateTimeSlots();
     const isPastTime = (slot) => {
         if (!selectedDate)
@@ -576,11 +588,9 @@ const Dashboard = () => {
 
         mutationFn: async (values: any) => {
 
-            const selectedService =
-                serviceList.find(
-                    s =>
-                        s.serviceId ===
-                        values.serviceId
+            const selectedServices =
+                serviceList.filter(s =>
+                    values.serviceIds.includes(s.serviceId)
                 );
 
             const selectedStaff =
@@ -618,21 +628,15 @@ const Dashboard = () => {
                         time:
                             selectedTime,
 
-                        totalPrice:
-                            selectedService?.price || 0,
-
-                        services: [
-                            {
-                                name:
-                                    selectedService?.serviceName,
-
-                                price:
-                                    selectedService?.price,
-
-                                duration:
-                                    selectedService?.duration
-                            }
-                        ]
+                        totalPrice: selectedServices.reduce(
+                            (sum, s) => sum + s.price,
+                            0
+                        ),
+                        services: selectedServices.map(s => ({
+                            name: s.serviceName,
+                            price: s.price,
+                            duration: s.duration
+                        }))
                     }
                 );
 
@@ -751,14 +755,15 @@ const Dashboard = () => {
                     <Form.Item
                         label={<span className="font-[Outfit] ">Service</span>}
 
-                        name="serviceId"
+                        name="serviceIds"
                         rules={[{ required: true }]}
                     >
                         <Select
+                            mode="multiple"
                             onChange={(value) => {
 
                                 bookingForm.setFieldValue(
-                                    "serviceId",
+                                    "serviceIds",
                                     value
                                 );
                             }}
@@ -766,7 +771,7 @@ const Dashboard = () => {
                             options={serviceList.map(
                                 s => ({
                                     value: s.serviceId,
-                                    label: s.serviceName
+                                    label: s.serviceName + "    " + "₹" + s.price + " - " + s.duration + "(min)"
                                 })
                             )}
                         />
@@ -813,46 +818,27 @@ const Dashboard = () => {
                     <div className="mt-4 mb-4">
 
                         <label className="font-medium">
-                            Select Time
+                            Available Slot
                         </label>
 
-                        <div className="flex flex-wrap gap-3">
+                        <div className="flex flex-wrap gap-3 mt-3">
 
-                            {timeSlots.map((slot) => {
-
-                                const isBooked = bookedSlots.includes(slot);
-
-                                return (
-
+                            {timeSlots
+                                .filter(
+                                    (slot) =>
+                                        !bookedSlots.includes(slot) &&
+                                        !isPastTime(slot)
+                                )
+                                .map((slot) => (
                                     <Button
-
                                         key={slot}
-
-                                        disabled={
-                                            isPastTime(slot) ||
-                                            isBooked
-                                        }
-
-                                        type={
-                                            selectedTime === slot
-                                                ? "primary"
-                                                : "default"
-                                        }
-
-                                        onClick={() =>
-                                            setSelectedTime(slot)
-                                        }
+                                        type={selectedTime === slot ? "primary" : "default"}
+                                        onClick={() => setSelectedTime(slot)}
                                     >
-
-                                        {
-                                            isBooked
-                                                ? `${slot} (Booked)`
-                                                : slot
-                                        }
-
+                                        {slot}
                                     </Button>
-                                );
-                            })}
+                                ))}
+
                         </div>
                     </div>
                     {/* <Form.Item

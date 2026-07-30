@@ -106,12 +106,26 @@ const BookAppointment = () => {
     });
     const generateTimeSlots = () => {
         const slots = [];
-        for (let i = 9; i <= 20; i++) {
-            const hour = i > 12 ? i - 12 : i;
-            const ampm = i >= 12 ? "PM" : "AM";
 
-            slots.push(`${hour}:00 ${ampm}`);
+        for (let hour = 9; hour <= 20; hour++) {
+            for (let minute = 0; minute < 60; minute += 15) {
+
+                if (hour === 20 && minute > 0) break;
+
+                const displayHour =
+                    hour > 12 ? hour - 12 : hour;
+
+                const ampm =
+                    hour >= 12 ? "PM" : "AM";
+
+                slots.push(
+                    `${displayHour}:${minute
+                        .toString()
+                        .padStart(2, "0")} ${ampm}`
+                );
+            }
         }
+
         return slots;
     };
 
@@ -536,8 +550,9 @@ const BookAppointment = () => {
                     )}
                     {step === 3 && (
                         <>
-                            <h2 className="text-xl font-semibold mb-6">Select Date & Time</h2>
-
+                            <h2 className="text-xl font-semibold mb-6">
+                                Select Date & Time
+                            </h2>
 
                             <div className="mb-6">
                                 <DatePicker
@@ -546,40 +561,42 @@ const BookAppointment = () => {
                                     disabledDate={(current) =>
                                         current && current < dayjs().startOf("day")
                                     }
-                                    className="w-[40%] font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100"
+                                    className="w-[40%] font-[Outfit]"
                                 />
                             </div>
 
-
                             <div className="flex flex-wrap gap-3 mb-6">
-                                {timeSlots.map((slot) => {
-                                    const isBooked = bookedSlots.includes(slot);
-
-                                    return (
+                                {timeSlots
+                                    .filter(
+                                        (slot) =>
+                                            !bookedSlots.includes(slot) &&
+                                            !isPastTime(slot)
+                                    )
+                                    .map((slot) => (
                                         <Button
                                             key={slot}
-                                            disabled={isPastTime(slot) || isBooked}
                                             type={time === slot ? "primary" : "default"}
                                             onClick={() => setTime(slot)}
                                         >
-                                            {isBooked ? `${slot} (Booked)` : slot}
+                                            {slot}
                                         </Button>
-                                    );
-                                })}
+                                    ))}
                             </div>
-                            <div className="flex justify-between">  <Button onClick={() => setStep(2)}>Back</Button>
+
+                            <div className="flex justify-between">
+                                <Button onClick={() => setStep(2)}>
+                                    Back
+                                </Button>
+
                                 <Button
                                     type="primary"
                                     disabled={!date || !time}
-                                    loading={
-                                        createBookingMutation.isPending
-                                    }
+                                    loading={createBookingMutation.isPending}
                                     onClick={() => createBookingMutation.mutate()}
                                 >
                                     Confirm Booking
                                 </Button>
                             </div>
-
                         </>
                     )}
 

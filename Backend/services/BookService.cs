@@ -100,25 +100,34 @@ GetEmployeeBookings(
             )
             .ToList();
     }
-    public List<string> GetBookedSlots(
-    string staffId,
-    string date
-)
+    public List<string> GetBookedSlots(string staffId, string date)
     {
-        return _bookings
-            .Find(x =>
+        var bookings = _bookings.Find(x =>
+            x.StaffId == staffId &&
+            x.Date == date &&
+            x.Status != "Rejected"
+        ).ToList();
 
-                x.StaffId == staffId &&
+        List<string> bookedSlots = new List<string>();
 
-                x.Date == date &&
+        foreach (var booking in bookings)
+        {
 
-                x.Status != "Rejected"
-            )
-            .ToList()
+            int totalDuration = booking.Services.Sum(s => s.Duration);
 
-            .Select(x => x.Time)
 
-            .ToList();
+            DateTime startTime = DateTime.Parse(booking.Time);
+
+
+            for (int i = 0; i < totalDuration; i += 15)
+            {
+                bookedSlots.Add(
+                    startTime.AddMinutes(i).ToString("h:mm tt")
+                );
+            }
+        }
+
+        return bookedSlots.Distinct().ToList();
     }
     public string CreateSalonBooking(
     SalonBookingRequest model
