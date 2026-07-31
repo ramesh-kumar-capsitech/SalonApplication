@@ -48,6 +48,9 @@ public class ApplySalon
     public string? NewPassword { get; set; }
 
     public string? ConfirmPassword { get; set; }
+    public List<string> WeeklyOffDays { get; set; } = new();
+
+    public List<SpecialHoliday> SpecialHolidays { get; set; } = new();
 }
 public class AddGalleryImageRequest
 {
@@ -72,4 +75,18 @@ public class DeleteGalleryImageModel
 {
     public string SalonId { get; set; }
     public string ImageUrl { get; set; }
+}
+public class SpecialHoliday
+{
+    public DateTime Date { get; set; }
+
+    public string Reason { get; set; } = string.Empty;
+}
+public class BusinessSettingsRequest
+{
+    public string SalonId { get; set; } = string.Empty;
+
+    public List<string> WeeklyOffDays { get; set; } = new();
+
+    public List<SpecialHoliday> SpecialHolidays { get; set; } = new();
 }

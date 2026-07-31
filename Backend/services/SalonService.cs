@@ -548,4 +548,35 @@ GetSalonDetails(string salonId)
 
         return result.ModifiedCount > 0;
     }
+    public string UpdateBusinessSettings(BusinessSettingsRequest model)
+    {
+        var update = Builders<ApplySalon>.Update
+            .Set(x => x.WeeklyOffDays, model.WeeklyOffDays)
+            .Set(x => x.SpecialHolidays, model.SpecialHolidays);
+
+        var result = _salonrequests.UpdateOne(
+            x => x.Id == model.SalonId,
+            update);
+
+        if (result.ModifiedCount == 0)
+            return "Salon not found";
+
+        return "Business settings updated successfully";
+    }
+    public BusinessSettingsRequest GetBusinessSettings(string salonId)
+    {
+        var salon = _salonrequests
+            .Find(x => x.Id == salonId)
+            .FirstOrDefault();
+
+        if (salon == null)
+            return null;
+
+        return new BusinessSettingsRequest
+        {
+            SalonId = salon.Id,
+            WeeklyOffDays = salon.WeeklyOffDays,
+            SpecialHolidays = salon.SpecialHolidays
+        };
+    }
 }

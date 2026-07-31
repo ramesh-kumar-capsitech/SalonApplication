@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0
  */
 import type { SalonServiceModel } from './salonServiceModel';
+import type { SpecialHoliday } from './specialHoliday';
 
 export interface ApplySalon {
   /** @nullable */
@@ -51,4 +52,8 @@ export interface ApplySalon {
   newPassword?: string | null;
   /** @nullable */
   confirmPassword?: string | null;
+  /** @nullable */
+  weeklyOffDays?: string[] | null;
+  /** @nullable */
+  specialHolidays?: SpecialHoliday[] | null;
 }

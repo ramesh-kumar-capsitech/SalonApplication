@@ -36,6 +36,7 @@ import type {
   AdminProfileUpdate,
   ApplySalon,
   BookAppointment,
+  BusinessSettingsRequest,
   CancelBookingModel,
   ChangeAdminPasswordModel,
   ChangePasswordModel,
@@ -1404,6 +1405,146 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
+export const putApiAuthUpdatebusinesssettings = (
+    businessSettingsRequest: BusinessSettingsRequest, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.default.put(
+      `/api/auth/updatebusinesssettings`,
+      businessSettingsRequest,options
+    );
+  }
+
+
+
+export const getPutApiAuthUpdatebusinesssettingsMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiAuthUpdatebusinesssettings>>, TError,{data: BusinessSettingsRequest}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof putApiAuthUpdatebusinesssettings>>, TError,{data: BusinessSettingsRequest}, TContext> => {
+
+const mutationKey = ['putApiAuthUpdatebusinesssettings'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiAuthUpdatebusinesssettings>>, {data: BusinessSettingsRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  putApiAuthUpdatebusinesssettings(data,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutApiAuthUpdatebusinesssettingsMutationResult = NonNullable<Awaited<ReturnType<typeof putApiAuthUpdatebusinesssettings>>>
+    export type PutApiAuthUpdatebusinesssettingsMutationBody = BusinessSettingsRequest
+    export type PutApiAuthUpdatebusinesssettingsMutationError = AxiosError<unknown>
+
+    export const usePutApiAuthUpdatebusinesssettings = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiAuthUpdatebusinesssettings>>, TError,{data: BusinessSettingsRequest}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof putApiAuthUpdatebusinesssettings>>,
+        TError,
+        {data: BusinessSettingsRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getPutApiAuthUpdatebusinesssettingsMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+export const getApiAuthGetbusinesssettingsSalonId = (
+    salonId: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.default.get(
+      `/api/auth/getbusinesssettings/${salonId}`,options
+    );
+  }
+
+
+
+
+export const getGetApiAuthGetbusinesssettingsSalonIdQueryKey = (salonId?: string,) => {
+    return [
+    `/api/auth/getbusinesssettings/${salonId}`
+    ] as const;
+    }
+
+    
+export const getGetApiAuthGetbusinesssettingsSalonIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>, TError = AxiosError<unknown>>(salonId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiAuthGetbusinesssettingsSalonIdQueryKey(salonId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>> = ({ signal }) => getApiAuthGetbusinesssettingsSalonId(salonId, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(salonId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiAuthGetbusinesssettingsSalonIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>>
+export type GetApiAuthGetbusinesssettingsSalonIdQueryError = AxiosError<unknown>
+
+
+export function useGetApiAuthGetbusinesssettingsSalonId<TData = Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>, TError = AxiosError<unknown>>(
+ salonId: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGetbusinesssettingsSalonId<TData = Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>, TError = AxiosError<unknown>>(
+ salonId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGetbusinesssettingsSalonId<TData = Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>, TError = AxiosError<unknown>>(
+ salonId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiAuthGetbusinesssettingsSalonId<TData = Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>, TError = AxiosError<unknown>>(
+ salonId: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetbusinesssettingsSalonId>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiAuthGetbusinesssettingsSalonIdQueryOptions(salonId,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 export const postApiAuthSignup = (
     registerUsers: RegisterUsers, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<void>> => {

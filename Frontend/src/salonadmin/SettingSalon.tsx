@@ -1,6 +1,6 @@
 import { message, Segmented } from "antd";
 import React, { useEffect, useState } from "react";
-
+import BusinessSettingsModal from "../components/BusinessSettingsModal";
 import {
     Card,
     Avatar,
@@ -222,11 +222,14 @@ const SettingSalon = () => {
                 values
             );
         };
-
+    const [businessSettingOpen, setBusinessSettingOpen] = useState(false);
     return (
 
         <div>
-
+            <BusinessSettingsModal
+                open={businessSettingOpen}
+                onClose={() => setBusinessSettingOpen(false)}
+            />
 
 
             <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3">
@@ -242,6 +245,12 @@ const SettingSalon = () => {
                     </p>
 
                 </div>
+                <Button
+                    type="primary"
+                    onClick={() => setBusinessSettingOpen(true)}
+                >
+                    Business Settings
+                </Button>
 
             </div>
 

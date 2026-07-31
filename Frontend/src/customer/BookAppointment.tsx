@@ -21,7 +21,7 @@ import {
 import axios from "axios";
 import { Navigate, useNavigate } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getApiAuthGetallsalons, getApiAuthGetbookedslotsStaffIdDate, getApiAuthGetsalonservicesSalonId, getApiAuthGetsalonstaffSalonId, postApiAuthBookappointment } from "../api/generated/loginsignuphome";
+import { getApiAuthGetallsalons, getApiAuthGetbookedslotsStaffIdDate, getApiAuthGetbusinesssettingsSalonId, getApiAuthGetsalonservicesSalonId, getApiAuthGetsalonstaffSalonId, postApiAuthBookappointment } from "../api/generated/loginsignuphome";
 
 const { Title, Text } = Typography;
 
@@ -340,6 +340,38 @@ const BookAppointment = () => {
     useEffect(() => {
         getBookedSlots();
     }, [selectedStaff, date]);
+    const { data: businessSettings } = useQuery({
+        queryKey: ["business-settings", selectedSalon?.id],
+        queryFn: () => getApiAuthGetbusinesssettingsSalonId(selectedSalon!.id),
+    });
+    const disabledDate = (current: Dayjs) => {
+        if (!current) return false;
+
+
+        if (current.isBefore(dayjs().startOf("day"))) {
+            return true;
+        }
+
+
+        if (
+            businessSettings?.data?.weeklyOffDays?.includes(
+                current.format("dddd")
+            )
+        ) {
+            return true;
+        }
+
+
+        if (
+            businessSettings?.data?.specialHolidays?.some((holiday) =>
+                dayjs(holiday.date).isSame(current, "day")
+            )
+        ) {
+            return true;
+        }
+
+        return false;
+    };
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[13px]   ">
@@ -558,9 +590,7 @@ const BookAppointment = () => {
                                 <DatePicker
                                     value={date}
                                     onChange={(d) => setDate(d)}
-                                    disabledDate={(current) =>
-                                        current && current < dayjs().startOf("day")
-                                    }
+                                    disabledDate={disabledDate}
                                     className="w-[40%] font-[Outfit]"
                                 />
                             </div>

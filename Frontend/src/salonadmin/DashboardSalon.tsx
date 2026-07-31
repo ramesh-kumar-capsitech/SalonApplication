@@ -11,7 +11,7 @@ import AddEmployeeDrawer from "../components/AddEmployeeDrawer";
 import dayjs from 'dayjs';
 import { FaRupeeSign } from 'react-icons/fa';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { deleteApiAuthDeleteemployeeId, deleteApiAuthDeleteserviceSalonIdServiceId, getApiAuthGetbookedslotsStaffIdDate, getApiAuthGetbookingsalonSalonId, getApiAuthGetemployeesSalonId, getApiAuthGetsalonservicesSalonId, postApiAuthAddemployee, postApiAuthAddservice, postApiAuthCreatesalonbooking, putApiAuthEditemployeeId, putApiAuthEditserviceSalonIdServiceId, putApiAuthToggleemployeeId, putApiAuthUpdatebookingstatusId } from '../api/generated/loginsignuphome';
+import { deleteApiAuthDeleteemployeeId, deleteApiAuthDeleteserviceSalonIdServiceId, getApiAuthGetbookedslotsStaffIdDate, getApiAuthGetbookingsalonSalonId, getApiAuthGetbusinesssettingsSalonId, getApiAuthGetemployeesSalonId, getApiAuthGetsalonservicesSalonId, postApiAuthAddemployee, postApiAuthAddservice, postApiAuthCreatesalonbooking, putApiAuthEditemployeeId, putApiAuthEditserviceSalonIdServiceId, putApiAuthToggleemployeeId, putApiAuthUpdatebookingstatusId } from '../api/generated/loginsignuphome';
 
 
 const Dashboard = () => {
@@ -673,6 +673,33 @@ const Dashboard = () => {
             );
         }
     });
+    const { data: businessSettings } = useQuery({
+        queryKey: ["business-settings", salon],
+        queryFn: () => getApiAuthGetbusinesssettingsSalonId(salon),
+    });
+    const disabledDate = (current: Dayjs) => {
+        if (!current || !businessSettings?.data) return false;
+
+        const settings = businessSettings.data;
+
+
+        if (
+            settings.weeklyOffDays?.includes(current.format("dddd"))
+        ) {
+            return true;
+        }
+
+
+        if (
+            settings.specialHolidays?.some((holiday) =>
+                dayjs(holiday.date).isSame(current, "day")
+            )
+        ) {
+            return true;
+        }
+
+        return false;
+    };
     return (
         <div>
             <AddEmployeeDrawer
@@ -806,6 +833,7 @@ const Dashboard = () => {
 
                             className="w-full font-[Outfit] "
 
+                            disabledDate={disabledDate}
                             value={selectedDate}
 
                             onChange={(d) => {

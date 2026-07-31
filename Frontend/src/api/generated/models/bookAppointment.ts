@@ -39,4 +39,12 @@ export interface BookAppointment {
   createdAt?: string;
   /** @nullable */
   salonImage?: string | null;
+  /** @nullable */
+  customerEmail?: string | null;
+  /** @nullable */
+  salonEmail?: string | null;
+  /** @nullable */
+  salonMobile?: string | null;
+  /** @nullable */
+  customerMobile?: string | null;
 }

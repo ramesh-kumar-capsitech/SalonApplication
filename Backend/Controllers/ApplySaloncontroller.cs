@@ -451,4 +451,19 @@ UpdateSalonProfile(
             message = "Image deleted successfully"
         });
     }
+    [HttpPut("updatebusinesssettings")]
+    public IActionResult UpdateBusinessSettings(
+        BusinessSettingsRequest model)
+    {
+        var result = _salonService.UpdateBusinessSettings(model);
+
+        return Ok(result);
+    }
+    [HttpGet("getbusinesssettings/{salonId}")]
+    public IActionResult GetBusinessSettings(string salonId)
+    {
+        return Ok(
+            _salonService.GetBusinessSettings(salonId)
+        );
+    }
 }

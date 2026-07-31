@@ -4,6 +4,7 @@ public class BookingService
 {
     private readonly IMongoCollection<BookAppointment>
         _bookings;
+    private readonly IMongoCollection<ApplySalon> _salons;
 
     public BookingService()
     {
@@ -21,12 +22,22 @@ public class BookingService
             db.GetCollection<BookAppointment>(
                 "bookings"
             );
+        _salons = db.GetCollection<ApplySalon>("salonrequests");
     }
 
     public string BookAppointment(
         BookAppointment booking
     )
     {
+        var holiday = CheckBusinessSettings(
+            booking.SalonId,
+            booking.Date
+        );
+
+        if (holiday != null)
+        {
+            return holiday;
+        }
         var existingBooking =
             _bookings.Find(x =>
 
@@ -133,6 +144,15 @@ GetEmployeeBookings(
     SalonBookingRequest model
 )
     {
+        var holiday = CheckBusinessSettings(
+    model.SalonId,
+    model.Date
+);
+
+        if (holiday != null)
+        {
+            return holiday;
+        }
         var existingBooking =
             _bookings.Find(x =>
 
@@ -246,5 +266,33 @@ GetEmployeeBookings(
             success = true,
             message = "Booking cancelled successfully"
         };
+    }
+    private string? CheckBusinessSettings(string salonId, string date)
+    {
+        var salon = _salons
+            .Find(x => x.Id == salonId)
+            .FirstOrDefault();
+
+        if (salon == null)
+            return null;
+
+        DateTime bookingDate = DateTime.Parse(date);
+
+
+        if (salon.WeeklyOffDays.Any(x =>
+            x.Equals(bookingDate.DayOfWeek.ToString(),
+            StringComparison.OrdinalIgnoreCase)))
+        {
+            return $"Salon is closed on {bookingDate.DayOfWeek}.";
+        }
+
+
+        if (salon.SpecialHolidays.Any(x =>
+            x.Date.Date == bookingDate.Date))
+        {
+            return "Salon is closed on this date.";
+        }
+
+        return null;
     }
 }
