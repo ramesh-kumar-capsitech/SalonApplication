@@ -384,23 +384,23 @@ const AllBooking = () => {
                     }
                     options={[
                         {
-                            label: `Pending`,
+                            label: `Pending (${filterByDate(pendingBookings).length})`,
                             value: "pending",
                         },
                         {
-                            label: `Confirmed`,
+                            label: `Confirmed (${filterByDate(confirmedBookings).length})`,
                             value: "confirmed",
                         },
                         {
-                            label: `Completed`,
+                            label: `Completed (${filterByDate(completedBookings).length})`,
                             value: "completed",
                         },
                         {
-                            label: `Reject`,
+                            label: `Reject (${filterByDate(rejectedBookings).length})`,
                             value: "reject",
                         },
                         {
-                            label: `Cancel`,
+                            label: `Cancel `,
                             value: "cancel",
                         }
 

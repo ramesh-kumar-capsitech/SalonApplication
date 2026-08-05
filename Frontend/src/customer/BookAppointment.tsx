@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { DatePicker, Dropdown, Empty, Input, Spin } from "antd";
-import dayjs from "dayjs";
+import dayjs, { Dayjs } from "dayjs";
 import {
     Card,
     Button,
@@ -522,7 +522,7 @@ const BookAppointment = () => {
                                     disabled={selectedServices.length === 0}
                                     onClick={() => setStep(2)}
                                 >
-                                    Continue to Date & Time
+                                    Continue to Staff
                                 </Button>
                             </div>
                         </>

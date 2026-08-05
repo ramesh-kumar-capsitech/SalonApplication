@@ -186,8 +186,10 @@ const TotalBooking = () => {
                                     <div className="grid  md:flex gap-3 min-w-0">
 
                                         <div className="text-sm text-gray-500 w-16 sm:w-20 flex-shrink-0">
-                                            {appt.time}
+                                            <div>{appt.time}</div>
+                                            <div className='font-semibold text-black  '>{appt.date}</div>
                                         </div>
+
 
                                         <Avatar className="hidden md:block bg-blue-100 text-blue-600 flex-shrink-0">
                                             {appt.customer?.[0]}

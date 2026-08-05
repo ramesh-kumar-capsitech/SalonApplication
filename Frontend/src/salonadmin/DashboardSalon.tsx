@@ -5,11 +5,11 @@ import { Avatar, Tag, Table, Dropdown, message, Button, Drawer, Form, Empty } fr
 import { Modal, Input, Select, DatePicker, TimePicker } from "antd";
 import { Card, Switch } from "antd";
 import { ClockCircleOutlined } from "@ant-design/icons";
-import axios from 'axios';
+
 import { Link } from 'react-router-dom';
 import AddEmployeeDrawer from "../components/AddEmployeeDrawer";
-import dayjs from 'dayjs';
-import { FaRupeeSign } from 'react-icons/fa';
+import dayjs, { Dayjs } from 'dayjs';
+
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { deleteApiAuthDeleteemployeeId, deleteApiAuthDeleteserviceSalonIdServiceId, getApiAuthGetbookedslotsStaffIdDate, getApiAuthGetbookingsalonSalonId, getApiAuthGetbusinesssettingsSalonId, getApiAuthGetemployeesSalonId, getApiAuthGetsalonservicesSalonId, postApiAuthAddemployee, postApiAuthAddservice, postApiAuthCreatesalonbooking, putApiAuthEditemployeeId, putApiAuthEditserviceSalonIdServiceId, putApiAuthToggleemployeeId, putApiAuthUpdatebookingstatusId } from '../api/generated/loginsignuphome';
 
@@ -679,6 +679,9 @@ const Dashboard = () => {
     });
     const disabledDate = (current: Dayjs) => {
         if (!current || !businessSettings?.data) return false;
+        if (current.isBefore(dayjs().startOf("day"), "day")) {
+            return true;
+        }
 
         const settings = businessSettings.data;
 

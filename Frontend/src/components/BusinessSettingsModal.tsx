@@ -194,15 +194,18 @@ const BusinessSettingsModal: React.FC<Props> = ({
                 <List
                     bordered
                     locale={{
-                        emptyText: "No Holidays Added",
+                        emptyText: (
+                            <span style={{ fontFamily: "Outfit" }}>
+                                No Holidays Added
+                            </span>
+                        ),
                     }}
                     dataSource={holidays}
                     renderItem={(item) => (
                         <List.Item
                             actions={[
                                 <Popconfirm
-                                    title="Delete Holiday?"
-                                    onConfirm={() =>
+                                    title={<span className="font-outfit">Delete Holiday?</span>} onConfirm={() =>
                                         removeHoliday(item.date)
                                     }
                                 >
@@ -226,10 +229,11 @@ const BusinessSettingsModal: React.FC<Props> = ({
                                 </Text>
                             </Space>
                         </List.Item>
-                    )}
+                    )
+                    }
                 />
-            </Card>
-        </Drawer>
+            </Card >
+        </Drawer >
     );
 };
 

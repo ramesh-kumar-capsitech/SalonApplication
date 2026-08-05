@@ -326,8 +326,6 @@ const StaffSalon = () => {
                                         </Dropdown>
                                     </div>
                                 </div>
-
-                                {/* INFO */}
                                 <div className="bg-gray-50 rounded-xl p-4 mt-5 space-y-3 text-sm" >
                                     <InfoRow
                                         icon={<MailOutlined />}
