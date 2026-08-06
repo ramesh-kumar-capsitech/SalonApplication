@@ -1,0 +1,173 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+body {
+    font-family: "Outfit", sans-serif;
+}
+
+.ant-table-cell {
+    font-family: "Outfit", sans-serif;
+}
+
+.ant-tag {
+    font-family: "Outfit", sans-serif;
+}
+
+h1,
+h2,
+p,
+input,
+span {
+    font-family: "Outfit", sans-serif;
+}
+
+
+
+.ant-input {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-form {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-steps {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-input {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-label {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-card {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-InputNumber {
+    font-family: "Outfit",
+        sans-serif;
+}
+
+.ant-select {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.ant-select-selector {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.ant-form-item-explain-error {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.ant-form-item-extra {
+    font-family: 'Outfit', sans-serif !important;
+}
+
+.ant-input,
+.ant-input::placeholder,
+.ant-select-selector,
+.ant-select-selection-placeholder,
+.ant-select-item,
+.ant-btn,
+.ant-drawer-title {
+    font-family: "Outfit", sans-serif !important;
+}
+
+.ant-pagination-item a {
+    font-family: "Outfit", sans-serif !important;
+    font-weight: 600;
+}
+
+#invoice {
+    width: 794px;
+    background: white;
+    color: #000;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+#invoice * {
+    box-sizing: border-box;
+}
+
+
+#invoice .shadow,
+#invoice .shadow-sm,
+#invoice .shadow-md,
+#invoice .shadow-lg,
+#invoice .shadow-xl,
+#invoice .shadow-2xl {
+    box-shadow: none !important;
+}
+
+
+#invoice .rounded-full {
+    border-radius: 8px !important;
+}
+
+#invoice .rounded-xl {
+    border-radius: 10px !important;
+}
+
+#invoice .rounded-2xl {
+    border-radius: 12px !important;
+}
+
+
+#invoice .rotate-\[-8deg\] {
+    transform: none !important;
+}
+
+#invoice img {
+    max-width: 100%;
+    display: block;
+}
+
+
+#invoice table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+#invoice th,
+#invoice td {
+    border: 1px solid #e5e7eb;
+    padding: 10px;
+}
+
+
+#invoice table,
+#invoice .card,
+#invoice .section {
+    page-break-inside: avoid;
+}
+
+.ant-btn,
+.ant-card,
+.ant-typography,
+.ant-tag,
+.ant-input,
+.ant-select,
+.ant-picker,
+.ant-modal,
+.ant-table,
+.ant-menu,
+.ant-dropdown,
+.ant-form,
+.ant-pagination,
+.ant-tabs,
+.ant-tooltip {
+    font-family: "Outfit", sans-serif !important;
+}

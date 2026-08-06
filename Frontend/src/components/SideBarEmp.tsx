@@ -1,0 +1,150 @@
+import React, { useEffect, useState } from "react";
+import { Link, NavLink, useNavigate } from 'react-router-dom';
+import logo from '../assets/images/logo1.png'
+import { ScheduleFilled, ScheduleTwoTone, UnorderedListOutlined } from '@ant-design/icons';
+
+import { SettingOutlined } from '@ant-design/icons';
+import { LogoutOutlined } from '@ant-design/icons';
+import { message } from "antd";
+import { useAppDispatch } from "../redux/hooks";
+import { logout } from "../redux/authSlice";
+import { useAppSelector } from "../redux/hooks";
+const Sidebar: React.FC = () => {
+    const dispatch = useAppDispatch();
+    const [loggeduser, setloggeduser] = useState('')
+    const [firstname, setfirstname] = useState('')
+    const [email, setemail] = useState('')
+    const [profileImage, setProfileImage] = useState("");
+    const navigate = useNavigate()
+    const user = useAppSelector(
+        (state) => state.auth.user
+    );
+    useEffect(() => {
+
+        if (user) {
+
+            setloggeduser(user.fullName || "");
+            setemail(user.email || "");
+            setProfileImage(user.profileImage || "");
+
+            const initials = user.fullName
+                ? user.fullName
+                    .split(" ")
+                    .map((w: string) => w[0])
+                    .join("")
+                    .toUpperCase()
+                : "";
+
+            setfirstname(initials);
+        }
+
+    }, [user]);
+
+
+    const handleLogout = () => {
+
+        const confirmLogout = window.confirm(
+            "Are you sure you want to logout?"
+        );
+
+        if (!confirmLogout) return;
+
+        dispatch(logout());
+
+        message.success("Logged out successfully");
+
+        navigate("/");
+    };
+
+    return (
+        <aside className="fixed inset-y-0 left-0 w-[20%] bg-gradient-to-b from-blue-700 to-blue-600 text-white flex flex-col px-2 md:px-5 py-6">
+
+
+            <div>
+
+                <div className="flex items-center justify-center md:justify-start gap-0 md:gap-3 mb-4">
+                    <div className="md:hidden lg:block w-10 h-10 md:w-11 md:h-11 bg-white rounded-xl flex items-center justify-center">
+                        <img src={logo} alt="" />
+                    </div>
+                    <div className="hidden md:block ">
+                        <h1 className="text-lg  m-0 leading-[0.8]  ">BookMySalon</h1>
+                        <span className="  text-sm text-white/70">Premium Booking</span>
+                    </div>
+                </div>
+                <div>
+                    <hr className="border-white/20 mb-6" />
+                </div>
+            </div>
+            <div className="flex-1">
+
+                <nav className="space-y-2">
+                    <ul className="text-sm space-y-2 ">
+
+
+
+                        <NavLink to='/employee/myshedule'> <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20 " >
+
+                            <UnorderedListOutlined className="text-white " />
+
+                            <p className="hidden md:block font-semibold m-0 "> My Schedule</p>
+                        </li>
+                        </NavLink>
+                        <NavLink to='/employee/totalbooking'> <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20" >
+                            <ScheduleFilled className="text-white " />
+                            <p className="hidden md:block font-semibold m-0 "> Total Booking</p>
+                        </li>
+                        </NavLink>
+
+                        <NavLink to='/employee/settingemp'>
+                            <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20">
+                                <SettingOutlined />
+
+                                <p className="hidden md:block font-semibold m-0 ">Settings</p>
+                            </li>
+                        </NavLink>
+
+                    </ul>
+                </nav>
+            </div>
+
+
+            <div className="mt-auto pt-6">
+
+                <div className="flex items-center justify-center gap-3 md:bg-white/10 rounded-xl mt-3  md:p-3">
+                    <div className=" w-12 h-12 md:w-10 md:h-8  lg:w-10 lg:h-10 bg-blue-500 rounded-full md:rounded-full flex items-center justify-center font-semibold">
+                        {
+                            profileImage ? (
+
+                                <img
+                                    src={profileImage}
+                                    alt="profile"
+                                    className="w-full h-full rounded-full object-cover"
+                                />
+
+                            ) : (
+
+                                <div className="w-full h-full    bg-blue-500 rounded-full flex items-center justify-center font-semibold">
+                                    {firstname}
+                                </div>
+                            )
+                        }
+                    </div>
+                    <div className="hidden md:block ">
+                        <p className="font-medium m-0">{loggeduser}</p>
+                        <p className="md:hidden text-sm text-white/70 m-0">Super Admin</p>
+                    </div>
+                </div>
+
+
+                <button onClick={handleLogout} className="bg-white/20 md:bg-transparent  mt-2 w-full flex gap-[7px] justify-center items-center md:justify-start   hover:bg-white/20 rounded-lg px-3 py-2">
+                    <LogoutOutlined className="text-red-500" />
+                    <p className="hidden md:block font-semibold m-0">Logout</p>
+                </button>
+
+            </div>
+
+        </aside >
+    );
+};
+
+export default Sidebar;

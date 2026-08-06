@@ -1,0 +1,86 @@
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+public class BookAppointment
+{
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string? Id { get; set; }
+
+    public string? SalonId { get; set; }
+
+    public string? SalonName { get; set; }
+
+    public string? StaffId { get; set; }
+
+    public string? StaffName { get; set; }
+
+    public string? UserId { get; set; }
+
+    public string? CustomerName { get; set; }
+
+    public string? Location { get; set; }
+
+    public string? Date { get; set; }
+
+    public string? Time { get; set; }
+
+    public decimal TotalPrice { get; set; }
+
+    public string Status { get; set; } = "Pending";
+
+    public string? CancelReason { get; set; }
+
+    public DateTime? CancelledAt { get; set; }
+
+    public List<BookedService>? Services
+    { get; set; }
+
+    public DateTime CreatedAt { get; set; }
+        = DateTime.UtcNow;
+    public string? SalonImage { get; set; }
+    public string? CustomerEmail { get; set; }
+    public string? SalonEmail { get; set; }
+    public string? SalonMobile { get; set; }
+    public string? CustomerMobile { get; set; }
+
+
+
+}
+public class UpdateBookingStatusRequest
+{
+    public string Status { get; set; }
+}
+public class BookedService
+{
+    public string? Name { get; set; }
+
+    public decimal Price { get; set; }
+
+    public int Duration { get; set; }
+}
+public class SalonBookingRequest
+{
+    public string? SalonId { get; set; }
+
+    public string? SalonName { get; set; }
+
+    public string? StaffId { get; set; }
+
+    public string? StaffName { get; set; }
+
+    public string? CustomerName { get; set; }
+
+    public string? Date { get; set; }
+
+    public string? Time { get; set; }
+
+    public decimal TotalPrice { get; set; }
+
+    public List<BookedService>? Services { get; set; }
+}
+public class CancelBookingModel
+{
+    public string BookingId { get; set; }
+    public string Reason { get; set; }
+}

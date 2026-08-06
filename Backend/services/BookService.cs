@@ -1,0 +1,298 @@
+﻿using MongoDB.Driver;
+
+public class BookingService
+{
+    private readonly IMongoCollection<BookAppointment>
+        _bookings;
+    private readonly IMongoCollection<ApplySalon> _salons;
+
+    public BookingService()
+    {
+        var client =
+            new MongoClient(
+                "mongodb://localhost:27017"
+            );
+
+        var db =
+            client.GetDatabase(
+                "authdb"
+            );
+
+        _bookings =
+            db.GetCollection<BookAppointment>(
+                "bookings"
+            );
+        _salons = db.GetCollection<ApplySalon>("salonrequests");
+    }
+
+    public string BookAppointment(
+        BookAppointment booking
+    )
+    {
+        var holiday = CheckBusinessSettings(
+            booking.SalonId,
+            booking.Date
+        );
+
+        if (holiday != null)
+        {
+            return holiday;
+        }
+        var existingBooking =
+            _bookings.Find(x =>
+
+                x.SalonId == booking.SalonId &&
+
+                x.StaffId == booking.StaffId &&
+
+                x.Date == booking.Date &&
+
+                x.Time == booking.Time
+
+            ).FirstOrDefault();
+
+        if (existingBooking != null)
+        {
+            return "Slot already booked";
+        }
+
+        _bookings.InsertOne(booking);
+
+        return "Booking Created Successfully";
+    }
+    public List<BookAppointment>
+GetBookings(string userId)
+    {
+        return _bookings
+            .Find(x => x.UserId == userId)
+            .SortByDescending(x => x.CreatedAt)
+            .ToList();
+    }
+    public List<BookAppointment>
+    GetBookingsSalon(string salonId)
+    {
+        return _bookings
+                    .Find(x => x.SalonId == salonId)
+                    .SortByDescending(x => x.CreatedAt)
+                    .ToList();
+    }
+    public bool UpdateBookingStatus(
+    string id,
+    string status
+)
+    {
+        var update =
+            Builders<BookAppointment>
+                .Update
+                .Set(
+                    x => x.Status,
+                    status
+                );
+
+        var result =
+            _bookings.UpdateOne(
+                x => x.Id == id,
+                update
+            );
+
+        return result.ModifiedCount > 0;
+    }
+    public List<BookAppointment>
+GetEmployeeBookings(
+    string employeeId
+)
+    {
+        return _bookings
+            .Find(x =>
+                x.StaffId == employeeId
+            )
+            .SortByDescending(
+                x => x.CreatedAt
+            )
+            .ToList();
+    }
+    public List<string> GetBookedSlots(string staffId, string date)
+    {
+        var bookings = _bookings.Find(x =>
+            x.StaffId == staffId &&
+            x.Date == date &&
+            x.Status != "Rejected" && x.Status != "Cancelled"
+        ).ToList();
+
+        List<string> bookedSlots = new List<string>();
+
+        foreach (var booking in bookings)
+        {
+
+            int totalDuration = booking.Services.Sum(s => s.Duration);
+
+
+            DateTime startTime = DateTime.Parse(booking.Time);
+
+
+            for (int i = 0; i < totalDuration; i += 15)
+            {
+                bookedSlots.Add(
+                    startTime.AddMinutes(i).ToString("h:mm tt")
+                );
+            }
+        }
+
+        return bookedSlots.Distinct().ToList();
+    }
+    public string CreateSalonBooking(
+    SalonBookingRequest model
+)
+    {
+        var holiday = CheckBusinessSettings(
+    model.SalonId,
+    model.Date
+);
+
+        if (holiday != null)
+        {
+            return holiday;
+        }
+        var existingBooking =
+            _bookings.Find(x =>
+
+                x.StaffId == model.StaffId &&
+
+                x.Date == model.Date &&
+
+                x.Time == model.Time &&
+
+                x.Status != "Rejected"
+
+            ).FirstOrDefault();
+
+        if (existingBooking != null)
+        {
+            return "Slot already booked";
+        }
+
+        var booking =
+            new BookAppointment
+            {
+                SalonId = model.SalonId,
+
+                SalonName = model.SalonName,
+
+                StaffId = model.StaffId,
+
+                StaffName = model.StaffName,
+
+                CustomerName = model.CustomerName,
+
+                Date = model.Date,
+
+                Time = model.Time,
+
+                TotalPrice = model.TotalPrice,
+
+                Services = model.Services,
+
+                Status = "confirmed"
+            };
+
+        _bookings.InsertOne(booking);
+
+        return "Booking Created";
+    }
+    public List<object> GetCustomerBookingStats()
+    {
+        var users =
+            new MongoClient("mongodb://localhost:27017")
+            .GetDatabase("authdb")
+            .GetCollection<RegisterUsers>("users")
+            .Find(_ => true)
+            .ToList();
+
+        var result =
+            users.Select(user =>
+            {
+                var bookings =
+                    _bookings.Find(x =>
+                        x.UserId == user.Id
+                    ).ToList();
+
+                return new
+                {
+                    Id = user.Id,
+                    Name = user.Name,
+                    Email = user.Email,
+                    MobileNumber = user.MobileNumber,
+                    ProfileImage = user.ProfileImage,
+                    TotalBookings = bookings.Count,
+
+                    LastBooking =
+                        bookings
+                        .OrderByDescending(x => x.CreatedAt)
+                        .FirstOrDefault()
+                        ?.CreatedAt
+                };
+            })
+            .ToList<object>();
+
+        return result;
+    }
+    public async Task<object> CancelBooking(CancelBookingModel model)
+    {
+        var booking = await _bookings
+            .Find(x => x.Id == model.BookingId)
+            .FirstOrDefaultAsync();
+
+        if (booking == null)
+        {
+            return new
+            {
+                success = false,
+                message = "Booking not found"
+            };
+        }
+
+        var update = Builders<BookAppointment>.Update
+            .Set(x => x.Status, "Cancelled")
+            .Set(x => x.CancelReason, model.Reason)
+            .Set(x => x.CancelledAt, DateTime.UtcNow);
+
+        await _bookings.UpdateOneAsync(
+            x => x.Id == model.BookingId,
+            update
+        );
+
+        return new
+        {
+            success = true,
+            message = "Booking cancelled successfully"
+        };
+    }
+    private string? CheckBusinessSettings(string salonId, string date)
+    {
+        var salon = _salons
+            .Find(x => x.Id == salonId)
+            .FirstOrDefault();
+
+        if (salon == null)
+            return null;
+
+        DateTime bookingDate = DateTime.Parse(date);
+
+
+        if (salon.WeeklyOffDays.Any(x =>
+            x.Equals(bookingDate.DayOfWeek.ToString(),
+            StringComparison.OrdinalIgnoreCase)))
+        {
+            return $"Salon is closed on {bookingDate.DayOfWeek}.";
+        }
+
+
+        if (salon.SpecialHolidays.Any(x =>
+            x.Date.Date == bookingDate.Date))
+        {
+            return "Salon is closed on this date.";
+        }
+
+        return null;
+    }
+}

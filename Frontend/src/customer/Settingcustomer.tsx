@@ -1,0 +1,621 @@
+import { message, Segmented } from "antd";
+import React, { useEffect, useState } from "react";
+
+import {
+    Card,
+    Avatar,
+    Button,
+    Form,
+    Input,
+    Upload,
+} from "antd";
+
+import {
+    UserOutlined,
+    MailOutlined,
+    PhoneOutlined,
+    UploadOutlined,
+    LockOutlined,
+} from "@ant-design/icons";
+
+import axios from "axios";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getApiAuthGetcustomerprofileId, putApiAuthChangecustomerpasswordId, putApiAuthUpdatecustomerprofileId } from "../api/generated/loginsignuphome";
+
+const Settingcustomer = () => {
+
+    const [form] = Form.useForm();
+    const [profileForm] = Form.useForm();
+
+    const [passwordForm] = Form.useForm();
+
+    const [tab, setTab] =
+        useState<"profile" | "password">(
+            "profile"
+        );
+
+
+
+    const [profileImage,
+        setProfileImage]
+        = useState("");
+
+    const [initials,
+        setInitials]
+        = useState("");
+    const authData = JSON.parse(
+        localStorage.getItem("persist:auth")!
+    );
+
+    const user = JSON.parse(authData.user);
+
+    const userId = user._id;
+
+    const { data: profileData } = useQuery({
+        queryKey: ["adminProfile", userId],
+
+        queryFn: async () => {
+            const res = await getApiAuthGetcustomerprofileId(userId)
+
+            return res.data.data;
+
+
+        },
+
+
+
+
+    });
+    useEffect(() => {
+        if (profileData) {
+            profileForm.setFieldsValue({
+                fullName: profileData.name,
+                email: profileData.email,
+                phone: profileData.mobileNumber,
+            });
+
+            setProfileImage(profileData.profileImage || "");
+
+            setInitials(
+                profileData.name
+                    ?.split(" ")
+                    ?.map((word) => word[0])
+                    ?.join("")
+                    ?.toUpperCase()
+            );
+        }
+    }, [profileData]);
+    const uploadImage =
+        async (file) => {
+
+            const data = new FormData();
+
+            data.append(
+                "file",
+                file
+            );
+
+            data.append(
+                "upload_preset",
+                "salonupload"
+            );
+
+            try {
+
+                const res =
+                    await axios.post(
+                        "https://api.cloudinary.com/v1_1/dmhp2b2dj/image/upload",
+                        data
+                    );
+
+                setProfileImage(
+                    res.data.secure_url
+                );
+
+                message.success(
+                    "Image uploaded"
+                );
+
+            } catch (err) {
+
+                console.log(err);
+
+                message.error(
+                    "Image upload failed"
+                );
+            }
+        };
+
+
+    const queryClient = useQueryClient();
+
+    const updateProfileMutation =
+        useMutation({
+            mutationFn: async (values: any) => {
+
+                const res =
+                    await putApiAuthUpdatecustomerprofileId(userId,
+                        {
+                            Name:
+                                values.fullName,
+
+                            Email:
+                                values.email,
+
+                            MobileNumber:
+                                values.phone,
+
+                            ProfileImage:
+                                profileImage,
+                        }
+                    );
+
+                return res.data;
+            },
+
+            onSuccess: () => {
+
+                message.success(
+                    "Profile updated successfully"
+                );
+
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        "adminProfile",
+                        userId,
+                    ],
+                });
+            },
+
+            onError: (
+                error: any
+            ) => {
+
+                message.error(
+                    error?.response?.data
+                        ?.message ||
+                    "Something went wrong"
+                );
+            },
+        });
+    const handleProfileUpdate = (values: any) => {
+
+        updateProfileMutation.mutate(
+            values
+        );
+    };
+
+    const changePasswordMutation =
+        useMutation({
+            mutationFn: async (
+                values: any
+            ) => {
+
+                const res =
+                    await putApiAuthChangecustomerpasswordId(userId,
+                        values
+                    );
+
+                return res.data;
+            },
+
+            onSuccess: () => {
+
+                message.success(
+                    "Password updated successfully"
+                );
+
+                passwordForm.resetFields();
+            },
+
+            onError: (
+                error: any
+            ) => {
+
+                message.error(
+                    error?.response?.data
+                        ?.message ||
+                    "Something went wrong"
+                );
+            },
+        });
+    const handlePasswordChange =
+        (values: any) => {
+
+            changePasswordMutation.mutate(
+                values
+            );
+        };
+
+    return (
+
+        <div>
+
+
+
+            <div className="flex items-center justify-between px-3 py-[11px] pb-[0px] mb-3">
+
+                <div className="pt-3">
+
+                    <h1 className="text-lg leading-[0.8] m-0 font-semibold text-gray-900">
+                        Setting
+                    </h1>
+
+                    <p className="text-gray-500 text-sm mt-0">
+                        Manage your Profile
+                    </p>
+
+                </div>
+
+            </div>
+
+            <hr />
+
+
+
+            <div className="m-6 ">
+
+                <Segmented
+
+                    value={tab}
+
+                    onChange={(val) => setTab(val as "profile" | "password")}
+
+                    options={[
+
+                        {
+                            label: "Profile",
+                            value: "profile",
+                        },
+
+                        {
+                            label: "Password",
+                            value: "password",
+                        },
+                    ]}
+
+                    className="rounded-lg bg-gray-100  sm:w-64 md:w-40 font-[Outfit] p-1"
+                />
+
+            </div>
+
+
+
+            {
+                tab === "profile"
+                &&
+                (
+                    <div className="font-[Outfit] m-6 mt-0">
+
+                        <Card
+                            className="rounded-2xl border"
+                            bodyStyle={{
+                                padding: 16
+                            }}
+                        >
+
+
+
+                            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6 mb-8">
+
+                                <Avatar
+                                    size={72}
+                                    src={profileImage}
+                                    className="bg-blue-100 text-blue-600 font-semibold"
+                                >
+                                    {!profileImage && initials}
+                                </Avatar>
+
+                                <div>
+
+                                    <h2 className="text-lg font-semibold">
+                                        Profile Picture
+                                    </h2>
+
+                                    <p className="text-gray-500 mb-3">
+                                        Upload a new profile picture
+                                    </p>
+
+                                    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
+
+                                        <Upload
+
+                                            showUploadList={false}
+
+                                            beforeUpload={(file) => {
+                                                uploadImage(file);
+                                                return false;
+                                            }}
+                                        >
+
+                                            <Button
+                                                icon={
+                                                    <UploadOutlined />
+                                                }
+                                            >
+                                                Upload Photo
+                                            </Button>
+
+                                        </Upload>
+
+                                        {
+                                            profileImage
+                                            &&
+                                            (
+                                                <Button
+
+                                                    type="link"
+
+                                                    danger
+
+                                                    onClick={() => setProfileImage("")}
+                                                >
+                                                    Remove
+                                                </Button>
+                                            )
+                                        }
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+
+
+                            <Form
+
+                                layout="vertical"
+
+                                form={profileForm}
+
+                                onFinish={handleProfileUpdate}
+                            >
+
+                                <Form.Item
+
+                                    name="fullName"
+
+                                    label={<span className="font-[Outfit] ">Full Name</span>}
+
+                                    rules={[
+
+                                        {
+                                            required: true,
+                                            message: "Name is required"
+                                        },
+
+                                        {
+                                            min: 3,
+                                            message: "Minimum 3 characters required"
+                                        }
+                                    ]}
+                                >
+
+                                    <Input
+                                        prefix={<UserOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <Form.Item
+
+                                    name="email"
+
+                                    label={<span className="font-[Outfit] ">Email </span>}
+
+                                    rules={[
+
+                                        {
+                                            required: true,
+                                            message: "Email is required"
+                                        },
+
+                                        {
+                                            type: "email",
+                                            message: "Enter valid email"
+                                        }
+                                    ]}
+                                >
+
+                                    <Input
+                                        prefix={<MailOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <Form.Item
+
+                                    name="phone"
+                                    label={<span className="font-[Outfit] ">Phone Number</span>}
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message:
+                                                "Phone is required"
+                                        },
+                                        {
+                                            pattern:
+                                                /^[0-9]{10}$/,
+
+                                            message:
+                                                "Enter valid 10 digit number"
+                                        }
+                                    ]}
+                                >
+
+                                    <Input
+                                        prefix={<PhoneOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <div className="flex gap-4 mt-6">
+
+                                    <Button
+
+                                        type="primary"
+
+                                        htmlType="submit"
+
+                                        size="large"
+
+                                        loading={updateProfileMutation.isPending}
+
+                                        className="rounded-full w-full sm:w-auto px-8"
+                                    >
+                                        Save Changes
+                                    </Button>
+
+                                </div>
+
+                            </Form>
+
+                        </Card>
+
+                    </div>
+                )
+            }
+
+
+
+            {
+                tab === "password"
+                &&
+                (
+                    <div className="m-6 mt-0">
+
+                        <Card
+                            className="rounded-2xl border"
+                            bodyStyle={{
+                                padding: 28
+                            }}
+                        >
+
+                            <div className="mb-6">
+
+                                <h2 className="text-lg font-semibold">
+                                    Change Password
+                                </h2>
+
+                                <p className="text-gray-500 text-sm">
+                                    Update your password
+                                </p>
+
+                            </div>
+
+                            <Form
+                                layout="vertical"
+                                form={passwordForm}
+                                onFinish={
+                                    handlePasswordChange
+                                }
+                            >
+
+                                <Form.Item
+
+                                    label={<span className="font-[Outfit] ">Current Password</span>}
+                                    name="currentPassword"
+
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Enter current password"
+                                        }
+                                    ]}
+                                >
+
+                                    <Input.Password
+                                        prefix={<LockOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <Form.Item
+
+                                    label={<span className="font-[Outfit] ">New Password</span>}
+
+                                    name="newPassword"
+
+                                    rules={[
+                                        {
+                                            required: true,
+                                            message: "Enter new password"
+                                        }
+                                    ]}
+                                >
+
+                                    <Input.Password
+                                        prefix={<LockOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <Form.Item
+
+                                    label={<span className="font-[Outfit] ">Confirm Password</span>}
+
+                                    name="confirmPassword"
+
+                                    dependencies={["newPassword"]}
+
+                                    rules={[
+
+                                        {
+                                            required: true,
+                                            message: "Confirm password"
+                                        },
+
+                                        ({ getFieldValue }) => ({
+
+                                            validator(_, value) {
+
+                                                if (!value || getFieldValue("newPassword") === value) {
+
+                                                    return Promise.resolve();
+                                                }
+
+                                                return Promise.reject("Passwords do not match");
+                                            }
+                                        })
+                                    ]}
+                                >
+
+                                    <Input.Password
+                                        prefix={<LockOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+
+                                <Button
+
+                                    type="primary"
+
+                                    htmlType="submit"
+
+                                    loading={changePasswordMutation.isPending}
+
+                                    className="rounded-full w-full sm:w-auto px-6"
+                                >
+                                    Update Password
+                                </Button>
+
+                            </Form>
+
+                        </Card>
+
+                    </div>
+                )
+            }
+
+        </div >
+    );
+};
+
+export default Settingcustomer;
