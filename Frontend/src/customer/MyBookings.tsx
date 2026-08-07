@@ -248,7 +248,7 @@ const rejectedBooking = bookings.filter(
                             label: "Rejected",
                             value: "rejected"
                         }
-                    ]} rootClassName=" rounded-lg bg-gray-100 lg:w-[22%] md:w-[40%]     font-[Outfit] m-6  " />
+                    ]} rootClassName="  rounded-lg bg-gray-100     font-[Outfit] m-6  " />
 
 
             </div>

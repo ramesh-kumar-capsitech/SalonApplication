@@ -17,6 +17,7 @@ import {
     UploadOutlined,
     LockOutlined,
     ShopOutlined,
+    BankOutlined,
 } from "@ant-design/icons";
 
 import axios from "axios";
@@ -144,6 +145,9 @@ const SettingSalon = () => {
                                 values.phone,
                             salonName:
                                 values.salonName,
+
+                                salonAddress:
+                                values.salonAddress,
 
                             ProfileImage:
                                 profileImage,
@@ -434,7 +438,10 @@ const SettingSalon = () => {
 
                                 </Form.Item>
 
-                                <Form.Item
+                                
+
+                               
+                                       <Form.Item
 
                                     name="email"
 

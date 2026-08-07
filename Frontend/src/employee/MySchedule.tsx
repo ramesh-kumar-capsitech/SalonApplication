@@ -194,7 +194,9 @@ const myshedule = () => {
                                                 <p className="text-green-600 text-xs mt-1">
                                                     Service completed successfully
                                                 </p>
-                                            )}
+                                            )
+                                            
+                                            }
                                         </div>
                                     </div>
 
@@ -202,11 +204,13 @@ const myshedule = () => {
                                     <div className="self-start sm:self-auto">
                                         <Tag
                                             color={
-                                                appt.status === "Completed"
+                                               appt.status?.toLowerCase() === "completed"
                                                     ? "green"
-                                                    : appt.status === "Confirmed"
+                                                    : appt.status?.toLowerCase() === "confirmed"
                                                         ? "blue"
-                                                        : appt.status === "Rejected"
+                                                        : appt.status?.toLowerCase() === "cancelled"
+                                                        ? "red"
+                                                        : appt.status?.toLowerCase() === "rejected"
                                                             ? "red"
                                                             : "gold"
                                             }
@@ -219,7 +223,7 @@ const myshedule = () => {
 
 
 
-                                {appt.status === "pending" && (
+                                {appt.status?.toLowerCase() === "pending" && (
                                     <div className=" grid  md:flex gap-4 mt-4">
                                         <Button
                                             type="primary"
@@ -239,7 +243,7 @@ const myshedule = () => {
                                 )}
 
 
-                                {appt.status === "Confirmed" && (
+                                {appt.status?.toLowerCase() === "confirmed" && (
                                     <div className="flex flex-col sm:flex-row gap-3 mt-4">
                                         <Button
                                             type="primary"
@@ -265,7 +269,7 @@ const myshedule = () => {
                                 )}
 
 
-                                {appt.status === "In Progress" && (
+                                {appt.status?.toLowerCase() === "in progress" && (
                                     <div className="mt-4">
                                         <Button
                                             type="primary"

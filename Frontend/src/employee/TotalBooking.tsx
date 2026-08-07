@@ -31,6 +31,7 @@ const TotalBooking = () => {
         time: item.time,
         date: item.date,
         status: item.status,
+        cancelReason: item.cancelReason || "",         
     }));
     const completedCount = appointments.filter(
         (a) => a.status === "Completed"
@@ -204,7 +205,12 @@ const TotalBooking = () => {
                                                 {appt.service}
                                             </p>
 
-                                            {appt.status === "Completed" && (
+                                            {appt.status?.toLowerCase() === "cancelled" && (
+                                                <p className="text-red-600 text-xs mt-1">
+                                                    reason for cancellation: {appt.cancelReason}
+                                                </p>
+                                            )}
+                                            {appt.status?.toLowerCase() === "completed" && (
                                                 <p className="text-green-600 text-xs mt-1">
                                                     Service completed successfully
                                                 </p>
@@ -216,11 +222,13 @@ const TotalBooking = () => {
                                     <div className="self-start sm:self-auto">
                                         <Tag
                                             color={
-                                                appt.status === "Completed"
+                                                appt.status?.toLowerCase() === "completed"
                                                     ? "green"
-                                                    : appt.status === "Confirmed"
+                                                    : appt.status?.toLowerCase() === "confirmed"
                                                         ? "blue"
-                                                        : appt.status === "Rejected"
+                                                        : appt.status?.toLowerCase() === "cancelled"
+                                                        ? "red"
+                                                        : appt.status?.toLowerCase() === "rejected"
                                                             ? "red"
                                                             : "gold"
                                             }
@@ -233,7 +241,7 @@ const TotalBooking = () => {
 
 
 
-                                {appt.status === "pending" && (
+                                {appt.status?.toLowerCase() === "pending" && (
                                     <div className=" grid  md:flex gap-4 mt-4">
                                         <Button
                                             type="primary"
@@ -253,7 +261,7 @@ const TotalBooking = () => {
                                 )}
 
 
-                                {appt.status === "Confirmed" && (
+                                {appt.status?.toLowerCase() === "confirmed" && (
                                     <div className="flex flex-col sm:flex-row gap-3 mt-4">
                                         <Button
                                             type="primary"
@@ -279,7 +287,7 @@ const TotalBooking = () => {
                                 )}
 
 
-                                {appt.status === "In Progress" && (
+                                {appt.status?.toLowerCase() === "in progress" && (
                                     <div className="mt-4">
                                         <Button
                                             type="primary"
