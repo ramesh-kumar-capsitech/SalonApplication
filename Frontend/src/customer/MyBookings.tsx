@@ -95,12 +95,23 @@ const MyBookings = () => {
             [
                 "pending",
                 "confirmed",
+<<<<<<< HEAD
                 "rejected",
+=======
+                
+>>>>>>> master
                 "in progress"
             ].includes(
                 b.status?.toLowerCase()
             )
     );
+<<<<<<< HEAD
+=======
+    const rejectedBookings = bookings.filter(
+        (b: any) =>
+            b.status?.toLowerCase() === "rejected"
+    );
+>>>>>>> master
     useEffect(() => {
         if (error) {
             message.error(
@@ -226,7 +237,11 @@ const MyBookings = () => {
                 <Segmented
                     block
                     value={tab}
+<<<<<<< HEAD
                     onChange={(val) => settab(val as "upcoming" | "past" | "cancelled")}
+=======
+                    onChange={(val) => settab(val as "upcoming" | "past" | "cancelled" | "rejected")}
+>>>>>>> master
 
                     options={[
                         {
@@ -236,10 +251,22 @@ const MyBookings = () => {
                         {
                             label: "Past",
                             value: "past"
+<<<<<<< HEAD
                         }, {
                             label: "Cancelled",
                             value: "cancelled"
                         },
+=======
+                        },
+                        {
+                            label: "Cancelled",
+                            value: "cancelled"
+                        },
+                        {
+                            label: "Rejected",
+                            value: "rejected"
+                        }
+>>>>>>> master
                     ]} rootClassName=" rounded-lg bg-gray-100 lg:w-[22%] md:w-[40%]     font-[Outfit] m-6  " />
 
 
@@ -735,7 +762,190 @@ const MyBookings = () => {
                     </div>
                 )
             }
+<<<<<<< HEAD
 
+=======
+ {
+                tab === "rejected" && (
+                    <div className="m-6 mt-0">
+
+                        {rejectedBookings.length === 0 ? (
+
+                            <Empty
+                                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                                description={<span className="font-[outfit]" >Not found Rejected bookings</span>}
+                            />
+
+                        ) : (
+
+                            <div className="grid gap-6">
+                                {rejectedBookings.map((b: any) => (
+                                    <Card
+                                        key={b.id}
+                                        className="rounded-2xl border font-[Outfit]"
+                                        bodyStyle={{ padding: 24 }}
+                                    >
+
+
+                                        <div className="flex flex-col md:flex-row md:justify-between gap-5">
+
+                                            <div className="flex gap-4">
+
+                                                <Avatar
+                                                    size={50}
+                                                    className="bg-red-100 shrink-0"
+                                                    icon={
+                                                        <span className="text-red-500 text-xl font-bold">
+                                                            ✕
+                                                        </span>
+                                                    }
+                                                />
+
+                                                <div>
+
+                                                    <h2 className="font-semibold text-lg">
+                                                        {b.salonName || "N/A"}
+                                                    </h2>
+
+                                                    <div className="flex items-center gap-2 text-gray-500 text-sm mt-1">
+                                                        <EnvironmentOutlined />
+                                                        {b.location || "N/A"}
+                                                    </div>
+
+                                                    <Tag
+                                                        color="red"
+                                                        className="rounded-full mt-3"
+                                                    >
+                                                        Rejected
+                                                    </Tag>
+
+                                                </div>
+
+                                            </div>
+
+                                            <div className="text-sm text-gray-500">
+
+                                                Booking ID :
+
+                                                <span className="font-semibold text-gray-900">
+                                                    {" "}
+                                                    {b.id?.slice(-6).toUpperCase()}
+                                                </span>
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <div className="bg-gray-50 rounded-xl p-5 mt-6
+        grid grid-cols-2 lg:grid-cols-5 gap-5">
+
+                                            <Detail
+                                                icon={<CalendarOutlined />}
+                                                label="Booking Date"
+                                                value={dayjs(b.date).format("DD MMM YYYY")}
+                                            />
+
+                                            <Detail
+                                                icon={<ClockCircleOutlined />}
+                                                label="Time"
+                                                value={b.time}
+                                            />
+
+                                            <Detail
+                                                label="Duration"
+                                                value={
+                                                    b.services?.reduce(
+                                                        (total: number, s: any) =>
+                                                            total + (s.duration || 0),
+                                                        0
+                                                    ) + " min"
+                                                }
+                                            />
+
+                                            <Detail
+                                                icon={<DollarOutlined />}
+                                                label="Amount"
+                                                value={`₹${b.totalPrice}`}
+                                                valueClass="text-red-500"
+                                            />
+
+                                            {/* <Detail
+                                                icon={<CalendarOutlined />}
+                                                label="Cancelled On"
+                                                value={
+                                                    b.cancelledAt
+                                                        ? dayjs(b.cancelledAt).format(
+                                                            "DD MMM YYYY"
+                                                        )
+                                                        : "-"
+                                                }
+                                            /> */}
+
+                                        </div>
+
+
+
+                                        <div className="mt-6">
+
+                                            <h3 className="text-gray-600 font-medium mb-2">
+                                                Cancel Reason
+                                            </h3>
+
+                                            <div className="bg-red-50 border border-red-200 rounded-xl p-4 text-red-600 break-words">
+
+                                                {b.cancelReason || "No reason provided"}
+
+                                            </div>
+
+                                        </div>
+
+
+
+                                        <div className="mt-6">
+
+                                            <h3 className="text-gray-600 font-medium mb-2">
+                                                Services
+                                            </h3>
+
+                                            <div className="flex flex-wrap gap-2">
+
+                                                {b.services?.length > 0 ? (
+
+                                                    b.services.map(
+                                                        (s: any, i: number) => (
+
+                                                            <Tag
+                                                                key={i}
+                                                                className="rounded-full px-3 py-1"
+                                                            >
+                                                                {s.name}
+                                                            </Tag>
+
+                                                        )
+                                                    )
+
+                                                ) : (
+
+                                                    <Tag>No Services</Tag>
+
+                                                )}
+
+                                            </div>
+
+                                        </div>
+
+                                    </Card>
+                                ))}
+                            </div>
+
+                        )}
+
+                    </div>
+                )
+            }
+>>>>>>> master
         </div >
     )
 }

@@ -327,6 +327,7 @@ GetDashboard()
     ApplySalon model
 )
     {
+<<<<<<< HEAD
         var update =
             Builders<ApplySalon>.Update
 
@@ -345,6 +346,21 @@ GetDashboard()
         _salonrequests.UpdateOne(
             x => x.Id == salonId,
             update
+=======
+        var update = Builders<ApplySalon>.Update
+
+            .Set(x => x.OwnerName,model.OwnerName)
+
+            .Set(x => x.Email,model.Email)
+
+            .Set(x=> x.SalonName,model.SalonName)    
+
+            .Set(x => x.Phone,model.Phone)
+
+            .Set(x => x.ProfileImage,model.ProfileImage);
+
+        _salonrequests.UpdateOne(x => x.Id == salonId,update
+>>>>>>> master
         );
 
         return "Profile Updated";

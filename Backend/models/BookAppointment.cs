@@ -27,7 +27,11 @@ public class BookAppointment
 
     public decimal TotalPrice { get; set; }
 
+<<<<<<< HEAD
     public string Status { get; set; } = "pending";
+=======
+    public string Status { get; set; } = "Pending";
+>>>>>>> master
 
     public string? CancelReason { get; set; }
 

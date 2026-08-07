@@ -116,7 +116,11 @@ GetEmployeeBookings(
         var bookings = _bookings.Find(x =>
             x.StaffId == staffId &&
             x.Date == date &&
+<<<<<<< HEAD
             x.Status != "Rejected"
+=======
+            x.Status != "Rejected" && x.Status != "Cancelled"
+>>>>>>> master
         ).ToList();
 
         List<string> bookedSlots = new List<string>();
