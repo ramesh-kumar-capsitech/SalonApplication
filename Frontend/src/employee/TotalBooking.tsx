@@ -232,16 +232,6 @@ const TotalBooking = () => {
                                                         : appt.status?.toLowerCase() === "rejected"
 >>>>>>> master
                                                             ? "red"
-=======
-                                               appt.status?.toLowerCase() === "completed"
-                                                    ? "green"
-                                                    : appt.status?.toLowerCase() === "confirmed"
-                                                        ? "blue"
-                                                        : appt.status?.toLowerCase() === "cancelled"
-                                                            ? "red"
-                                                        : appt.status?.toLowerCase() === "rejected"
->>>>>>> master
-                                                            ? "red"
                                                             : "gold"
                                             }
                                         >
