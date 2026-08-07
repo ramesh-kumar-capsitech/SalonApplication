@@ -100,12 +100,8 @@ public class ApplySaloncontroller : ControllerBase
         });
     }
     [HttpPost("salonlogin")]
-<<<<<<< HEAD
     public IActionResult SalonLogin(
     [FromBody] SalonLogin salon
-=======
-    public IActionResult SalonLogin([FromBody] SalonLogin salon
->>>>>>> master
 )
     {
         var loggedInSalon =

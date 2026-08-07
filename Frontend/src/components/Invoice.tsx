@@ -22,20 +22,10 @@ const Invoice = () => {
 
     const subtotal = booking.totalPrice;
 
-<<<<<<< HEAD
-    const discount = subtotal * 0.02;
-
-    const priceAfterDiscount = subtotal - discount;
-
-    const gst = priceAfterDiscount * 0.05;
-
-    const grandTotal = priceAfterDiscount + gst;
-=======
-const gst = subtotal * 0.05;      
+    const gst = subtotal * 0.05;      
 const discount = gst;             
 
 const grandTotal = subtotal + gst - discount;
->>>>>>> master
     return (
         <div
             id="invoice"
@@ -405,21 +395,7 @@ const grandTotal = subtotal + gst - discount;
                                     </span>
 
                                 </div>
-<<<<<<< HEAD
 
-=======
-<div className="flex justify-between">
-
-                                    <span>
-                                        GST(5%)
-                                    </span>
-
-                                    <span className="font-semibold">
-                                        + ₹{gst.toFixed(2)}
-                                    </span>
-
-                                </div>
->>>>>>> master
                                 <div className="flex justify-between">
 
                                     <span>
@@ -432,7 +408,6 @@ const grandTotal = subtotal + gst - discount;
 
                                 </div>
 
-<<<<<<< HEAD
                                 <div className="flex justify-between">
 
                                     <span>
@@ -444,9 +419,6 @@ const grandTotal = subtotal + gst - discount;
                                     </span>
 
                                 </div>
-=======
-                                
->>>>>>> master
 
                             </div>
 

@@ -216,21 +216,11 @@ const TotalBooking = () => {
                                     <div className="self-start sm:self-auto">
                                         <Tag
                                             color={
-<<<<<<< HEAD
                                                 appt.status === "Completed"
                                                     ? "green"
                                                     : appt.status === "Confirmed"
                                                         ? "blue"
                                                         : appt.status === "Rejected"
-=======
-                                               appt.status?.toLowerCase() === "completed"
-                                                    ? "green"
-                                                    : appt.status?.toLowerCase() === "confirmed"
-                                                        ? "blue"
-                                                        : appt.status?.toLowerCase() === "cancelled"
-                                                            ? "red"
-                                                        : appt.status?.toLowerCase() === "rejected"
->>>>>>> master
                                                             ? "red"
                                                             : "gold"
                                             }
@@ -243,11 +233,7 @@ const TotalBooking = () => {
 
 
 
-<<<<<<< HEAD
                                 {appt.status === "pending" && (
-=======
-                                {appt.status?.toLowerCase() === "pending" && (
->>>>>>> master
                                     <div className=" grid  md:flex gap-4 mt-4">
                                         <Button
                                             type="primary"

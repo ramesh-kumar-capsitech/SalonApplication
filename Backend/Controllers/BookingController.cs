@@ -20,7 +20,6 @@ public class BookingController
         BookAppointment booking
     )
     {
-<<<<<<< HEAD
         var result =
             _bookingService
                 .BookAppointment(
@@ -30,12 +29,6 @@ public class BookingController
         if (
             result ==
             "Slot already booked"
-=======
-        var result = _bookingService.BookAppointment(booking);
-
-        if (
-            result == "Slot already booked"
->>>>>>> master
         )
         {
             return BadRequest(

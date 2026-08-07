@@ -16,10 +16,7 @@ import {
     PhoneOutlined,
     UploadOutlined,
     LockOutlined,
-<<<<<<< HEAD
-=======
     ShopOutlined,
->>>>>>> master
 } from "@ant-design/icons";
 
 import axios from "axios";
@@ -56,11 +53,7 @@ const SettingSalon = () => {
 
         queryFn: async () => {
             const res = await getApiAuthGetsalonprofileId(userId)
-<<<<<<< HEAD
 
-=======
-            console.log("profileData", res.data.data)
->>>>>>> master
             return res.data.data;
 
 
@@ -74,11 +67,8 @@ const SettingSalon = () => {
         if (profileData) {
             profileForm.setFieldsValue({
                 fullName: profileData.ownerName,
+                salonName: profileData.salonName,
                 email: profileData.email,
-<<<<<<< HEAD
-=======
-                salonname: profileData.salonName,
->>>>>>> master
                 phone: profileData.phone,
             });
 
@@ -150,14 +140,10 @@ const SettingSalon = () => {
                             Email:
                                 values.email,
 
-<<<<<<< HEAD
-=======
-                            salonName:
-                                values.salonname,
-
->>>>>>> master
                             phone:
                                 values.phone,
+                            salonName:
+                                values.salonName,
 
                             ProfileImage:
                                 profileImage,
@@ -397,35 +383,6 @@ const SettingSalon = () => {
 
                                 <Form.Item
 
-<<<<<<< HEAD
-=======
-                                    name="salonname"
-
-                                    label={<span className="font-[Outfit] ">Salon Name</span>}
-
-                                    rules={[
-
-                                        {
-                                            required: true,
-                                            message: "Name is required"
-                                        },
-
-                                        {
-                                            min: 3,
-                                            message: "Minimum 3 characters required"
-                                        }
-                                    ]}
-                                >
-
-                                    <Input
-                                        prefix={<ShopOutlined />}
-                                        size="large"
-                                    />
-
-                                </Form.Item>
-                                <Form.Item
-
->>>>>>> master
                                     name="fullName"
 
                                     label={<span className="font-[Outfit] ">Full Name</span>}
@@ -446,6 +403,32 @@ const SettingSalon = () => {
 
                                     <Input
                                         prefix={<UserOutlined />}
+                                        size="large"
+                                    />
+
+                                </Form.Item>
+                                 <Form.Item
+
+                                    name="salonName"
+
+                                    label={<span className="font-[Outfit] ">Salon Name</span>}
+
+                                    rules={[
+
+                                        {
+                                            required: true,
+                                            message: "Name is required"
+                                        },
+
+                                        {
+                                            min: 3,
+                                            message: "Minimum 3 characters required"
+                                        }
+                                    ]}
+                                >
+
+                                    <Input
+                                        prefix={<ShopOutlined />}
                                         size="large"
                                     />
 

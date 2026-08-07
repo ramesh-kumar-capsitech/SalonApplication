@@ -126,11 +126,7 @@ const Contact = () => {
                         icon={<ClockCircleOutlined />}
                         title="Business Hours"
                         lines={[
-<<<<<<< HEAD
                             "Monday - Sunday: 9AM - 8PM",
-=======
-                            "Monday - Saturday: 9AM - 8PM",
->>>>>>> master
 
                         ]}
                     />

@@ -89,29 +89,22 @@ const MyBookings = () => {
         (b: any) =>
             b.status === "Cancelled"
     );
+    
+const rejectedBooking = bookings.filter(
+        (b: any) =>
+            b.status === "Rejected"
+    );
 
     const upcomingBookings = bookings.filter(
         (b: any) =>
             [
                 "pending",
                 "confirmed",
-<<<<<<< HEAD
-                "rejected",
-=======
-                
->>>>>>> master
                 "in progress"
             ].includes(
                 b.status?.toLowerCase()
             )
     );
-<<<<<<< HEAD
-=======
-    const rejectedBookings = bookings.filter(
-        (b: any) =>
-            b.status?.toLowerCase() === "rejected"
-    );
->>>>>>> master
     useEffect(() => {
         if (error) {
             message.error(
@@ -237,11 +230,7 @@ const MyBookings = () => {
                 <Segmented
                     block
                     value={tab}
-<<<<<<< HEAD
-                    onChange={(val) => settab(val as "upcoming" | "past" | "cancelled")}
-=======
                     onChange={(val) => settab(val as "upcoming" | "past" | "cancelled" | "rejected")}
->>>>>>> master
 
                     options={[
                         {
@@ -251,14 +240,7 @@ const MyBookings = () => {
                         {
                             label: "Past",
                             value: "past"
-<<<<<<< HEAD
                         }, {
-                            label: "Cancelled",
-                            value: "cancelled"
-                        },
-=======
-                        },
-                        {
                             label: "Cancelled",
                             value: "cancelled"
                         },
@@ -266,7 +248,6 @@ const MyBookings = () => {
                             label: "Rejected",
                             value: "rejected"
                         }
->>>>>>> master
                     ]} rootClassName=" rounded-lg bg-gray-100 lg:w-[22%] md:w-[40%]     font-[Outfit] m-6  " />
 
 
@@ -762,14 +743,11 @@ const MyBookings = () => {
                     </div>
                 )
             }
-<<<<<<< HEAD
-
-=======
- {
+             {
                 tab === "rejected" && (
                     <div className="m-6 mt-0">
 
-                        {rejectedBookings.length === 0 ? (
+                        {rejectedBooking.length === 0 ? (
 
                             <Empty
                                 image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -779,7 +757,7 @@ const MyBookings = () => {
                         ) : (
 
                             <div className="grid gap-6">
-                                {rejectedBookings.map((b: any) => (
+                                {rejectedBooking.map((b: any) => (
                                     <Card
                                         key={b.id}
                                         className="rounded-2xl border font-[Outfit]"
@@ -871,7 +849,7 @@ const MyBookings = () => {
                                                 valueClass="text-red-500"
                                             />
 
-                                            {/* <Detail
+                                            <Detail
                                                 icon={<CalendarOutlined />}
                                                 label="Cancelled On"
                                                 value={
@@ -881,7 +859,7 @@ const MyBookings = () => {
                                                         )
                                                         : "-"
                                                 }
-                                            /> */}
+                                            />
 
                                         </div>
 
@@ -945,7 +923,7 @@ const MyBookings = () => {
                     </div>
                 )
             }
->>>>>>> master
+
         </div >
     )
 }

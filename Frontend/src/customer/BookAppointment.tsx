@@ -423,31 +423,18 @@ const BookAppointment = () => {
                                     <div className="grid md:grid-cols-3 gap-6">
 
                                         {salons.map((salon) => (
-<<<<<<< HEAD
                                             <Card
-                                                key={salon.id}
-                                                onClick={() => setSelectedSalon(salon)}
-                                                className={`cursor-pointer rounded-xl text-center
-    ${selectedSalon?.id === salon.id
-                                                        ? "border-blue-500 ring-2 ring-blue-200"
-                                                        : ""
-                                                    }`}
-                                            ><div className="">
-=======
-                                           <Card
                                                 key={salon.id}
                                                 onClick={() => {
                                                     setSelectedSalon(salon);
                                                     setStep(1);
                                                 }}
                                                 className={`cursor-pointer rounded-xl text-center
-                                                    ${selectedSalon?.id === salon.id
-                                                    ? "border-blue-500 ring-2 ring-blue-200"
-                                                    : ""
+    ${selectedSalon?.id === salon.id
+                                                        ? "border-blue-500 ring-2 ring-blue-200"
+                                                        : ""
                                                     }`}
-                                                >
-                                                <div className="">
->>>>>>> master
+                                            ><div className="">
 
                                                     <div>
                                                         <h3 className="text-lg font-semibold">{salon.salonName}</h3>
@@ -490,11 +477,7 @@ const BookAppointment = () => {
 
                     {step === 1 && (
                         <>
-<<<<<<< HEAD
                             <h2 className="text-xl font-semibold mb-6">Select Services</h2>
-=======
-                            <h2 className="text-xl font-semibold mb-6">Select Services in {selectedSalon?.salonName}</h2>
->>>>>>> master
                             <div>
                                 <Input placeholder="Search services by name , time , price " className='w-[40%] font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100  mb-6 '
                                     onChange={(e) => handleSearch(e.target.value)}
@@ -566,16 +549,10 @@ const BookAppointment = () => {
                                         staffList.map((staff, index) => (
                                             <Card
                                                 key={index}
-<<<<<<< HEAD
-                                                onClick={() => setSelectedStaff(staff)}
-=======
                                                 onClick={() => {
-
-                                              
                                                     setSelectedStaff(staff);
                                                     setStep(3);
-                                                  }}
->>>>>>> master
+                                                }}
                                                 className={`cursor-pointer text-center rounded-xl
         ${selectedStaff === staff
                                                         ? "border-blue-500 ring-2 ring-blue-200"
