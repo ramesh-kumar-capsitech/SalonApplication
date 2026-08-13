@@ -172,7 +172,7 @@ const BookAppointment = () => {
         const matchesSearch =
             !searchTerm ||
             salon.fullName?.toLowerCase().includes(searchTerm) ||
-            salon.role?.toLowerCase().includes(searchTerm) ||
+            salon.designation?.toLowerCase().includes(searchTerm) ||
             salon.skills?.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
 
         return (matchesSearch);
@@ -560,7 +560,7 @@ const BookAppointment = () => {
                                                     }`}
                                             >
                                                 <h3 className="text-lg font-semibold">{staff.fullName}</h3>
-                                                <p className="text-gray-500">{staff.role}</p>
+                                                <p className="text-gray-500">{staff.designation}</p>
 
 
                                                 <div className="flex flex-wrap gap-2 justify-center mt-2">

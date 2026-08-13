@@ -162,7 +162,7 @@ const AllBooking = () => {
 
     const authData = JSON.parse(localStorage.getItem("persist:auth")!);
     const user = JSON.parse(authData.user);
-    const salon = user.salonId;
+    const salon = user.id;
 
     const { data: bookings = [], isLoading, error } = useQuery({
         queryKey: ["bookings", salon],
@@ -400,7 +400,7 @@ const AllBooking = () => {
                             value: "reject",
                         },
                         {
-                            label: `Cancel `,
+                            label: `Cancel (${filterByDate(cancelledBookings).length})`,
                             value: "cancel",
                         }
 

@@ -256,7 +256,7 @@ const StaffSalon = () => {
                                         <div>
                                             <h2 className="font-semibold m-0 break-words">{appreq.fullName}</h2>
                                             <p className="text-gray-500 text-sm m-0 break-words">
-                                                {appreq.role}
+                                                {appreq.designation}
                                             </p>
 
                                             <div className="flex flex-wrap gap-2 mt-1">
@@ -430,7 +430,7 @@ const StaffSalon = () => {
 
                                             <div>
                                                 <h2 className="font-semibold m-0">{req.name}</h2>
-                                                <p className="text-gray-500 text-sm m-0">{req.role}</p>
+                                                <p className="text-gray-500 text-sm m-0">{req.designation}</p>
 
                                                 <Tag color="gold" className="rounded-full mt-1">
                                                     Pending Review

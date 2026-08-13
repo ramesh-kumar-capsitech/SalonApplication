@@ -91,7 +91,7 @@ public class EmployeeService
                 {
                     emp.Id,
                     emp.FullName,
-                    emp.Role,
+                    emp.Designation,
                     emp.Email,
                     emp.Phone,
                     emp.Skills,
@@ -140,8 +140,8 @@ public class EmployeeService
             .Set(x => x.FullName,
                 updatedEmployee.FullName)
 
-            .Set(x => x.Role,
-                updatedEmployee.Role)
+            .Set(x => x.Designation,
+                updatedEmployee.Designation)
 
             .Set(x => x.Email,
                 updatedEmployee.Email)

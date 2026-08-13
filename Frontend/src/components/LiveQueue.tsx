@@ -346,7 +346,7 @@ const LiveQueue = () => {
                                     </Title>
 
                                     <Text type="secondary">
-                                        {staff.role}
+                                        {staff.designation}
                                     </Text>
 
                                 </div>

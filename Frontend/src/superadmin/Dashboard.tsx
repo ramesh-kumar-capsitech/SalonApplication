@@ -30,7 +30,7 @@ const Dashboard = () => {
 
         smooth: true,
         lineStyle: { lineWidth: 3 },
-        point: {
+        point: {    
             size: 5,
             shape: 'circle',
         },

@@ -23,17 +23,11 @@ const Sidebar: React.FC = () => {
 
         if (user) {
 
-            setloggeduser(user.fullName || "");
+            setloggeduser(user.name || "");
             setemail(user.email || "");
             setProfileImage(user.profileImage || "");
 
-            const initials = user.fullName
-                ? user.fullName
-                    .split(" ")
-                    .map((w: string) => w[0])
-                    .join("")
-                    .toUpperCase()
-                : "";
+            const initials = user.name? user.name.split(" ").map((w: string) => w[0]).join("").toUpperCase(): "";
 
             setfirstname(initials);
         }
@@ -43,9 +37,7 @@ const Sidebar: React.FC = () => {
 
     const handleLogout = () => {
 
-        const confirmLogout = window.confirm(
-            "Are you sure you want to logout?"
-        );
+        const confirmLogout = window.confirm("Are you sure you want to logout?");
 
         if (!confirmLogout) return;
 

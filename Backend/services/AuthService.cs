@@ -18,7 +18,7 @@ public class AuthService
         _employees = db.GetCollection<Employee>("employees");
         _users = db.GetCollection<RegisterUsers>("users");
         _admins = db.GetCollection<Admin>("admins");
-        _salons = db.GetCollection<Admin>("admins");
+        _salons = db.GetCollection<Admin>("salons");
     }
 
     public string Signup(RegisterUsers user)
@@ -39,20 +39,103 @@ public class AuthService
         return "Signup successful";
     }
 
-    public RegisterUsers? Login(Login user)
+   public RegisterUsers? Login(Login user)
+{
+   
+
+    var customer = _users
+        .Find(x =>
+            x.Email == user.Email &&
+            x.Password == user.Password
+        )
+        .FirstOrDefault();
+
+    if (customer != null)
     {
-        var existing = _users
-            .Find(x =>
-                x.Email == user.Email &&
-                x.Password == user.Password
-            )
-            .FirstOrDefault();
+        customer.Role = "Customer";
 
-        if (existing == null)
-            return null;
-
-        return existing;
+        return customer;
     }
+
+
+
+
+    var superAdmin = _admins
+        .Find(x =>
+            x.Email == user.Email &&
+            x.Password == user.Password &&
+            x.Role == "SuperAdmin"
+        )
+        .FirstOrDefault();
+
+    if (superAdmin != null)
+    {
+        return new RegisterUsers
+        {
+            Id = superAdmin.Id,
+            Name = superAdmin.Name,
+            Email = superAdmin.Email,
+            Password = superAdmin.Password,
+            MobileNumber = superAdmin.MobileNumber,
+            ProfileImage = superAdmin.ProfileImage,
+            Role = "SuperAdmin"
+        };
+    }
+
+
+ 
+
+    var salonAdmin = _salonrequests
+    .Find(x =>
+        x.Email == user.Email &&
+        x.Password == user.Password &&
+        x.Status == "approved" &&
+        x.IsActive == "active"
+    )
+    .FirstOrDefault();
+
+if (salonAdmin != null)
+{
+    return new RegisterUsers
+    {
+        Id = salonAdmin.Id,
+        Name = salonAdmin.SalonName,
+        Email = salonAdmin.Email,
+        Password = salonAdmin.Password,
+        ProfileImage = salonAdmin.ProfileImage,
+        Role = "SalonAdmin"
+    };
+}
+
+    
+
+    var employee = _employees
+        .Find(x =>
+            x.Email == user.Email &&
+            x.Password == user.Password &&
+            x.Status == "active"
+        )
+        .FirstOrDefault();
+
+    if (employee != null)
+    {
+        return new RegisterUsers
+        {
+            Id = employee.Id,
+            Name = employee.FullName,
+            Email = employee.Email,
+            Password = employee.Password,
+            MobileNumber = employee.Phone,
+            ProfileImage = employee.ProfileImage,
+            Role = "Employee"
+        };
+    }
+
+
+  
+
+    return null;
+}
     public List<RegisterUsers> GetAllUsers()
     {
         return _users

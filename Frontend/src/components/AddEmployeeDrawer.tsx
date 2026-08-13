@@ -35,8 +35,8 @@ const AddEmployeeDrawer = ({
                 fullName:
                     editingEmployee.fullName,
 
-                role:
-                    editingEmployee.role,
+                designation:
+                    editingEmployee.designation,
 
                 email:
                     editingEmployee.email,
@@ -82,7 +82,7 @@ const AddEmployeeDrawer = ({
                 return await putApiAuthEditemployeeId(editingEmployee.id,
                     {
                         fullName: values.fullName,
-                        role: values.role,
+                        designation: values.designation,
                         email: values.email,
                         phone: values.phone,
                         skills: values.skills,
@@ -96,7 +96,7 @@ const AddEmployeeDrawer = ({
                 {
                     salonId,
                     fullName: values.fullName,
-                    role: values.role,
+                    designation: values.designation,
                     email: values.email,
                     phone: values.phone,
                     skills: values.skills,
@@ -227,20 +227,20 @@ const AddEmployeeDrawer = ({
 
 
                 <Form.Item
-                    label={<span className="font-[Outfit] ">Designation / Role</span>}
-                    name="role"
+                    label={<span className="font-[Outfit] ">Designation</span>}
+                    name="designation"
                     rules={[
                         {
                             required: true,
                             message:
-                                "Please select role"
+                                "Please select designation"
                         }
                     ]}
                 >
 
                     <Select
                         size="middle"
-                        placeholder="Select role"
+                        placeholder="Select designation"
                     >
 
                         <Select.Option value="Hair Stylist">

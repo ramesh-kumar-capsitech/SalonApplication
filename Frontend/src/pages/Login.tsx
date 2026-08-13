@@ -25,174 +25,258 @@ const Login = () => {
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setlogininfo({ ...logininfo, [e.target.name]: e.target.value })
     }
-    const loginMutation = useMutation({
-        mutationFn: async (loginData: {
-            email: string;
-            password: string;
-        }) => {
+    // const loginMutation = useMutation({
+    //     mutationFn: async (loginData: {
+    //         email: string;
+    //         password: string;
+    //     }) => {
 
-            try {
-                const superAdminRes = await postApiAuthSuperadminlogin(
-                    loginData
-                );
+    //         try {
+    //             const superAdminRes = await postApiAuthLogin(
+    //                 loginData
+    //             );
 
-                return {
-                    role: "superadmin",
-                    data: superAdminRes.data,
-                };
-            } catch { }
+    //             return {
+    //                 role: "superadmin",
+    //                 data: superAdminRes.data,
+    //             };
+    //         } catch { }
 
-            try {
-                const customerRes = await postApiAuthLogin({
-                    email: loginData.email,
-                    password: loginData.password,
-                });
+    //         try {
+    //             const customerRes = await postApiAuthLogin({
+    //                 email: loginData.email,
+    //                 password: loginData.password,
+    //             });
 
-                return {
-                    role: "customer",
-                    data: customerRes.data,
-                };
-            } catch { }
+    //             return {
+    //                 role: "customer",
+    //                 data: customerRes.data,
+    //             };
+    //         } catch { }
 
-            try {
-                const salonRes = await postApiAuthSalonlogin(
-                    {
-                        email: loginData.email,
-                        password: loginData.password,
-                    }
-                );
+    //         try {
+    //             const salonRes = await postApiAuthSalonlogin(
+    //                 {
+    //                     email: loginData.email,
+    //                     password: loginData.password,
+    //                 }
+    //             );
 
-                return {
-                    role: "salonadmin",
-                    data: salonRes.data,
-                };
-            } catch { }
+    //             return {
+    //                 role: "salonadmin",
+    //                 data: salonRes.data,
+    //             };
+    //         } catch { }
 
-            try {
-                const employeeRes = await postApiAuthEmployeelogin(
-                    {
-                        email: loginData.email,
-                        password: loginData.password,
-                    }
-                );
+    //         try {
+    //             const employeeRes = await postApiAuthEmployeelogin(
+    //                 {
+    //                     email: loginData.email,
+    //                     password: loginData.password,
+    //                 }
+    //             );
 
-                return {
-                    role: "employee",
-                    data: employeeRes.data,
-                };
-            } catch { }
+    //             return {
+    //                 role: "employee",
+    //                 data: employeeRes.data,
+    //             };
+    //         } catch { }
 
-            throw new Error("Invalid Credentials");
-        },
+    //         throw new Error("Invalid Credentials");
+    //     },
 
-        onSuccess: (result) => {
+    //     onSuccess: (result) => {
 
 
-            if (result.role === "superadmin") {
-                dispatch(
-                    loginSuccess({
-                        token: "superadmin-token",
-                        user: {
-                            id: result.data.admin.id,
-                            name: result.data.admin.name,
-                            email: result.data.admin.email,
-                            profileImage: result.data.admin.profileImage,
-                            role: "superadmin",
-                        },
-                    })
-                );
+    //         if (result.role === "superadmin") {
+    //             dispatch(
+    //                 loginSuccess({
+    //                     token: "superadmin-token",
+    //                     user: {
+    //                         id: result.data.admin.id,
+    //                         name: result.data.admin.name,
+    //                         email: result.data.admin.email,
+    //                         profileImage: result.data.admin.profileImage,
+    //                         role: "superadmin",
+    //                     },
+    //                 })
+    //             );
 
-                message.success(
-                    "Super Admin Login Success"
-                );
-                console.log(result.data);
-                console.log(result.data.admin);
-                navigate("/superadmin");
-            }
-            if (result.role === "customer") {
-                dispatch(
-                    loginSuccess({
-                        token: result.data.token,
-                        user: {
-                            _id: result.data.user.id,
-                            name: result.data.user.name,
-                            email: result.data.user.email,
-                            mobile: result.data.user.mobileNumber,
-                            profileImage: result.data.user.profileImage,
-                            role: "customer",
-                        },
-                    })
-                );
+    //             message.success(
+    //                 "Super Admin Login Success"
+    //             );
+    //             console.log(result.data);
+    //             console.log(result.data.admin);
+    //             navigate("/superadmin");
+    //         }
+    //         if (result.role === "customer") {
+    //             dispatch(
+    //                 loginSuccess({
+    //                     token: result.data.token,
+    //                     user: {
+    //                         _id: result.data.user.id,
+    //                         name: result.data.user.name,
+    //                         email: result.data.user.email,
+    //                         mobile: result.data.user.mobileNumber,
+    //                         profileImage: result.data.user.profileImage,
+    //                         role: "customer",
+    //                     },
+    //                 })
+    //             );
 
-                message.success(
-                    "Customer Login Success"
-                );
+    //             message.success(
+    //                 "Customer Login Success"
+    //             );
 
-                navigate("/customer");
-            }
-            if (result.role === "salonadmin") {
-                dispatch(
-                    loginSuccess({
-                        token: result.data.token,
-                        user: {
-                            salonId: result.data.salon.id,
+    //             navigate("/customer");
+    //         }
+    //         if (result.role === "salonadmin") {
+    //             dispatch(
+    //                 loginSuccess({
+    //                     token: result.data.token,
+    //                     user: {
+    //                         salonId: result.data.salon.id,
 
-                            salonownername:
-                                result.data.salon.ownerName,
+    //                         salonownername:
+    //                             result.data.salon.ownerName,
 
-                            email:
-                                result.data.salon.email,
+    //                         email:
+    //                             result.data.salon.email,
 
-                            profileImage:
-                                result.data.salon.profileImage,
-                            status: result.data.salon.status,
+    //                         profileImage:
+    //                             result.data.salon.profileImage,
+    //                         status: result.data.salon.status,
 
-                            role: "salonadmin",
-                        },
-                    })
-                );
+    //                         role: "salonadmin",
+    //                     },
+    //                 })
+    //             );
 
-                message.success("Salon Admin Login Success");
+    //             message.success("Salon Admin Login Success");
 
-                if (result.data.salon.status === "approved") {
-                    navigate("/salonadmin");
-                } else {
-                    navigate("/salonstatus");
-                }
-            }
-            if (result.role === "employee") {
-                const employee = result.data.employee;
+    //             if (result.data.salon.status === "approved") {
+    //                 navigate("/salonadmin");
+    //             } else {
+    //                 navigate("/salonstatus");
+    //             }
+    //         }
+    //         if (result.role === "employee") {
+    //             const employee = result.data.employee;
 
-                dispatch(
-                    loginSuccess({
-                        token: result.data.token,
-                        user: {
-                            id: employee.id,
-                            salonId: employee.salonId,
+    //             dispatch(
+    //                 loginSuccess({
+    //                     token: result.data.token,
+    //                     user: {
+    //                         id: employee.id,
+    //                         salonId: employee.salonId,
 
-                            fullName: employee.fullName,
+    //                         fullName: employee.fullName,
 
-                            profileImage: employee.profileImage,
+    //                         profileImage: employee.profileImage,
 
-                            role: "employee",
-                        },
-                    })
-                );
+    //                         role: "employee",
+    //                     },
+    //                 })
+    //             );
 
-                message.success("Employee Login Success");
+    //             message.success("Employee Login Success");
 
-                navigate("/employee");
-            }
+    //             navigate("/employee");
+    //         }
 
-        },
+    //     },
 
-        onError: () => {
-            message.error("Invalid Credentials");
+    //     onError: () => {
+    //         message.error("Invalid Credentials");
+    //     }
+    // });
+
+
+const loginMutation = useMutation({
+    mutationFn: async (loginData: {
+        email: string;
+        password: string;
+    }) => {
+
+        const response = await postApiAuthLogin(loginData);
+
+        return response.data;
+    },
+
+    onSuccess: (data) => {
+
+        console.log("LOGIN RESPONSE:", data);
+
+        if (!data.success) {
+            message.error(data.message || "Invalid Credentials");
+            return;
         }
-    });
+
+        const user = data.user;
+
+        dispatch(
+            loginSuccess({
+                token: data.token,
+
+                user: {
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    profileImage: user.profileImage,
+                    role: user.role,
+                },
+            })
+        );
 
 
+        
 
+        if (user.role === "SuperAdmin") {
+
+            message.success(
+                "Super Admin Login Success"
+            );
+
+            navigate("/superadmin");
+
+        }
+        else if (user.role === "Customer") {
+
+            message.success(
+                "Customer Login Success"
+            );
+
+            navigate("/customer");
+
+        }
+        else if (user.role === "SalonAdmin") {
+
+            navigate("/salonadmin");
+
+        }
+        else if (user.role === "Employee") {
+
+            navigate("/employee");
+
+        }
+        else {
+
+            message.error(
+                "Invalid user role"
+            );
+        }
+    },
+
+    onError: (error: any) => {
+
+        console.log("LOGIN ERROR:", error);
+
+        message.error(
+            error?.response?.data?.message ||
+            "Invalid Credentials"
+        );
+    }
+});
     const handleSubmit = async () => {
         try {
             const result = await loginMutation.mutateAsync(logininfo);

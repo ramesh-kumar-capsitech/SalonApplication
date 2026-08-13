@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 [ApiController]
 [Route("api/auth")]
 public class AuthController : ControllerBase
@@ -31,25 +32,35 @@ public class AuthController : ControllerBase
     }
             
     [HttpPost("login")]
+public IActionResult Login([FromBody] Login user)
+{
+    var loggedInUser = _service.Login(user);
 
-    public IActionResult Login([FromBody] Login user)
+    if (loggedInUser == null)
     {
-        var loggedInUser = _service.Login(user);
-
-        if (loggedInUser == null)
-            return Unauthorized("Invalid credentials");
-
-        var tokenHandler = new JwtSecurityTokenHandler();
-
-        var key = Encoding.UTF8.GetBytes(
-            "ThisIsMySuperSecretJwtKey123456789"
-        );
-
-        var tokenDescriptor = new SecurityTokenDescriptor
+        return Unauthorized(new
         {
-            Subject = new ClaimsIdentity(
-                new[]
-                {
+            success = false,
+            message = "Invalid credentials"
+        });
+    }
+
+    var tokenHandler = new JwtSecurityTokenHandler();
+
+    var key = Encoding.UTF8.GetBytes(
+        "ThisIsMySuperSecretJwtKey123456789"
+    );
+
+    var tokenDescriptor = new SecurityTokenDescriptor
+    {
+        Subject = new ClaimsIdentity(
+            new[]
+            {
+                new Claim(
+                    ClaimTypes.NameIdentifier,
+                    loggedInUser.Id!
+                ),
+
                 new Claim(
                     ClaimTypes.Email,
                     loggedInUser.Email!
@@ -58,38 +69,49 @@ public class AuthController : ControllerBase
                 new Claim(
                     ClaimTypes.Name,
                     loggedInUser.Name!
-                )
-                }
-            ),
-
-            Expires = DateTime.UtcNow.AddDays(7),
-
-            SigningCredentials =
-                new SigningCredentials(
-                    new SymmetricSecurityKey(key),
-                    SecurityAlgorithms.HmacSha256Signature
                 ),
 
-            Issuer = "capsiqueue",
+                new Claim(
+                    ClaimTypes.Role,
+                    loggedInUser.Role!
+                )
+            }
+        ),
 
-            Audience = "capsiqueueusers"
-        };
+        Expires = DateTime.UtcNow.AddDays(7),
 
-        var token =
-            tokenHandler.CreateToken(tokenDescriptor);
+        Issuer = "capsiqueue",
 
-        string jwtToken =
-            tokenHandler.WriteToken(token);
+        Audience = "capsiqueueusers",
 
-        return Ok(new
+        SigningCredentials =
+            new SigningCredentials(
+                new SymmetricSecurityKey(key),
+                SecurityAlgorithms.HmacSha256Signature
+            )
+    };
+
+    var token =
+        tokenHandler.CreateToken(tokenDescriptor);
+
+    var jwtToken =
+        tokenHandler.WriteToken(token);
+
+    return Ok(new
+    {
+        success = true,
+        token = jwtToken,
+
+        user = new
         {
-            success = true,
-
-            token = jwtToken,
-
-            user = loggedInUser
-        });
-    }
+            id = loggedInUser.Id,
+            name = loggedInUser.Name,
+            email = loggedInUser.Email,
+            profileImage = loggedInUser.ProfileImage,
+            role = loggedInUser.Role
+        }
+    });
+}
     [HttpGet("getallusers")]
     public IActionResult GetAllUsers()
     {
@@ -175,40 +197,7 @@ public class AuthController : ControllerBase
             message = result
         });
     }
-    [HttpPost("superadminlogin")]
-    public IActionResult SuperAdminLogin(
-        [FromBody] Login model
-    )
-    {
-        var admin =
-            _service.SuperAdminLogin(
-                model.Email,
-                model.Password
-            );
-
-        if (admin == null)
-        {
-            return Unauthorized(new
-            {
-                success = false,
-                message = "Invalid Credentials"
-            });
-        }
-
-        return Ok(new
-        {
-            success = true,
-
-            admin = new
-            {
-                id = admin.Id,
-                name = admin.Name,
-                profileImage = admin.ProfileImage,
-                email = admin.Email,
-                role = admin.Role
-            }
-        });
-    }
+   
     [HttpGet("getadminprofile/{id}")]
     public IActionResult GetAdminProfile(string id)
     {

@@ -107,7 +107,7 @@ const Dashboard = () => {
 
     const authData = JSON.parse(localStorage.getItem("persist:auth")!);
     const user = JSON.parse(authData.user);
-    const salon = user.salonId;
+    const salon = user.id;
 
     const { data: bookings = [], isLoading, error } = useQuery({
         queryKey: ["bookings", salon],
@@ -332,7 +332,7 @@ const Dashboard = () => {
                     editingEmployee,
                     {
                         fullName: values.fullName,
-                        role: values.role,
+                        designation: values.designation,
                         email: values.email,
                         phone: values.phone,
                         skills: values.skills,
@@ -348,7 +348,7 @@ const Dashboard = () => {
                 {
                     salonId: salon,
                     fullName: values.fullName,
-                    role: values.role,
+                    designation: values.designation,
                     email: values.email,
                     phone: values.phone,
                     skills: values.skills,
@@ -1143,7 +1143,7 @@ const Dashboard = () => {
                                         </p>
 
                                         <p className="text-sm text-gray-500 m-0 break-words">
-                                            {member.role}
+                                            {member.designation}
                                         </p>
                                     </div>
                                 </div>
@@ -1187,8 +1187,8 @@ const Dashboard = () => {
                                                         fullName:
                                                             member.fullName,
 
-                                                        role:
-                                                            member.role,
+                                                        designation:
+                                                            member.designation,
 
                                                         email:
                                                             member.email,

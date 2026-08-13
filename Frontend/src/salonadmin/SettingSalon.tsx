@@ -47,7 +47,7 @@ const SettingSalon = () => {
 
     const user = JSON.parse(authData.user);
 
-    const userId = user.salonId;
+    const userId = user.id;
 
     const { data: profileData } = useQuery({
         queryKey: ["adminProfile", userId],

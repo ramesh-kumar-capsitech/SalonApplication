@@ -21,10 +21,11 @@ public class ApplySalon
     { get; set; }
 
     public string? TotalStaff { get; set; }
-
+   public string? Role { get; set; }  = "salonadmin";
     public string? SalonAddress { get; set; }
 
     public string? SalonDescription { get; set; }
+    
     public List<string> GalleryImages { get; set; } = new();
     public string Status { get; set; } = "pending";
 
@@ -46,6 +47,7 @@ public class ApplySalon
     public string? CurrentPassword { get; set; }
 
     public string? NewPassword { get; set; }
+
 
     public string? ConfirmPassword { get; set; }
     public List<string> WeeklyOffDays { get; set; } = new();
