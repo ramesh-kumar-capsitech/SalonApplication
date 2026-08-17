@@ -47,11 +47,7 @@ const BookAppointment = () => {
         setSearchTerm(value.toLowerCase());
 
     };
-    const {
-        data: salonss = [],
-        isLoading,
-        error
-    } = useQuery({
+    const {data: salonss = [],isLoading,error} = useQuery({
         queryKey: ["salons"],
 
         queryFn: async () => {
@@ -182,17 +178,9 @@ const BookAppointment = () => {
 
             mutationFn: async () => {
 
-                const authData =
-                    JSON.parse(
-                        localStorage.getItem(
-                            "persist:auth"
-                        )!
-                    );
+                const authData =JSON.parse(localStorage.getItem("persist:auth")!);
 
-                const user =
-                    JSON.parse(
-                        authData.user
-                    );
+                const user =JSON.parse(authData.user);
 
                 if (
                     !user?.id &&

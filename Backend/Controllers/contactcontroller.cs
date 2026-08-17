@@ -29,4 +29,26 @@ public class contactcontroller : ControllerBase
             message = "Failed to send message"
         });
     }
+    [HttpGet("getallcontacts")]
+    public IActionResult GetAllContacts()
+    {
+        var contacts = _contactservice.GetAllContacts();
+        return Ok(contacts);
+    }
+    [HttpGet("getcontactbyid/{id}")]
+   
+    public IActionResult GetContactById(string id)
+    {
+        var contacts = _contactservice.GetContactsById(id);
+
+        if (contacts == null || !contacts.Any())
+        {
+            return NotFound(new
+            {
+                message = "Contact not found"
+            });
+        }
+
+        return Ok(contacts);
+    }
 }

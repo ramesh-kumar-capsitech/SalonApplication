@@ -9,6 +9,8 @@ export interface Contact {
   /** @nullable */
   id?: string | null;
   /** @nullable */
+  customerId?: string | null;
+  /** @nullable */
   name?: string | null;
   /** @nullable */
   email?: string | null;
@@ -16,4 +18,7 @@ export interface Contact {
   subject?: string | null;
   /** @nullable */
   message?: string | null;
+  createdAt?: string;
+  /** @nullable */
+  status?: string | null;
 }

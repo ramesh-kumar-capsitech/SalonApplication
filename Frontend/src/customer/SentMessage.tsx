@@ -1,0 +1,191 @@
+import { CalendarOutlined, ClockCircleOutlined, MoreOutlined } from "@ant-design/icons";
+import { Avatar, Button, Card, Dropdown, Empty, Spin, Tag } from "antd";
+import Title from "antd/es/typography/Title";
+import Text from "antd/es/typography/Text";
+import Divider from "antd/es/divider";
+import { UserOutlined } from "@ant-design/icons";
+import { useQuery } from "@tanstack/react-query";
+import { getApiAuthGetcontactbyidId } from "../api/generated/loginsignuphome";
+import dayjs from "dayjs";
+const SentMessage = () => {
+        const currentPath = window.location.pathname;
+        const authData =JSON.parse(localStorage.getItem("persist:auth")!);
+
+        const user =JSON.parse(authData.user);
+
+        const {data: allContacts = [],isLoading,error,} = useQuery({
+        queryKey: ["contacts", user.id],
+        queryFn: async () => {
+            const res = await getApiAuthGetcontactbyidId(user.id);
+            console.log("allContacts", res.data);
+            return res.data;
+        },
+    });
+
+    return (
+        <div>
+           <div className="flex items-center justify-between px-3 py-[23px]   ">
+                <div>
+                    <h1 className="text-lg  font-semibold text-gray-900 ">
+                        Sent Messages
+                    </h1>
+
+                    <p>All sent messages will appear here </p>
+                </div>
+                <div>
+                     <Dropdown
+                                menu={{
+                                    items: [
+                                       {
+                                            key: "contact",
+                                            label: "Contact",
+                                            disabled: currentPath === "/customer/contact",
+                                        },
+                                        {
+                                            key: "inbox",
+                                            label: "Inbox",
+                                            disabled: currentPath === "/customer/inbox",
+                                        },
+                                        {
+                                            key: "sent",
+                                            label: "Sent",
+                                            disabled: currentPath === "/customer/sent",
+                                        },
+                                    ],
+                                    onClick: ({ key }) => {
+                                        if (key === "inbox") {
+                                            window.location.href = "/customer/inbox";
+                                        } else if (key === "sent") {
+                                            window.location.href = "/customer/sent";
+                                        }
+                                        else if (key === "contact") {
+                                            window.location.href = "/customer/contact";
+                                        }
+                                    }
+                                    // onClick: ({ key }) => handleMenuClick(key, salon.id)
+                                }}
+                            >
+                                <Button shape="circle" icon={<MoreOutlined />} />
+                            </Dropdown>
+                </div>
+
+            </div>
+
+            <hr />
+            <div>
+                <Card bordered={false}
+                        style={{
+                            borderRadius: 18,
+                          
+                        }}
+                        >
+
+                
+                        <div className="flex justify-between m-0 p-0 ">
+                            <Text strong>
+                                Total Messages
+                            </Text>
+
+                            <Tag color="blue">
+                                {allContacts.length} Messages
+                            </Tag>
+                        </div>
+
+                        </Card>
+
+            {
+                isLoading ? (
+                    <div className="flex justify-center items-center h-[80vh]">
+                        <Spin size="large" />
+                    </div>
+                ) : error ? (
+                    <div className="flex justify-center items-center h-[80vh]">
+                        <Empty description={<span className="font-[outfit] text-red-500">Failed to load customer messages</span>} />
+
+                       
+                    </div>
+                ) : allContacts.length === 0 ? (
+                    <div className="flex justify-center items-center h-[80vh]">
+                        <p>No messages found</p>
+                    </div>
+                ) : (
+                allContacts.map((contact: any) => (
+                                       <Card
+                        bordered={false}
+                        style={{
+                            borderRadius: 18,
+                           
+                        }}
+                        
+                    >
+                        
+
+                    
+
+                       
+
+                        <div 
+                            style={{
+                               
+                                overflowY: "auto",
+                            }}
+                        >
+                            <Card
+                            
+                                size="small"
+                                className=""
+                                style={{ borderRadius: 12 }}
+                            >
+                                <div className="flex justify-between">
+                                    <Tag color="purple">
+                                      #{contact.id?.slice(-6).toUpperCase()}
+                                    </Tag>
+
+                                    <Tag color="yellow">
+                                        {contact.status}
+                                    </Tag>
+                                </div>
+
+                                <Title
+                                    level={5}
+                                    style={{
+                                        marginTop: 10,
+                                        marginBottom: 4,
+                                    }}
+                                >
+                                    Subject : {contact.subject}
+                                </Title>
+
+                                <Text>
+                                    Message : {contact.message}
+                                </Text>
+
+                                <br />
+                            <div className="grid  gap-1 mt-1">
+                                <Text type="secondary">
+                                    <ClockCircleOutlined /> {dayjs(contact.time).format("h:mm A") || "Time not available"}
+                                </Text>
+                                <Text type="secondary">
+                                    <CalendarOutlined /> {dayjs(contact.date).format("dddd, Do MMMM YYYY") || "Date not available"}
+                                </Text>
+                                </div>
+                            </Card>
+
+                            
+                        
+                            
+                        </div>
+                    </Card>
+                )
+                )
+            )
+            }
+
+             
+            </div>
+           
+        </div>
+    );
+};
+
+export default SentMessage;

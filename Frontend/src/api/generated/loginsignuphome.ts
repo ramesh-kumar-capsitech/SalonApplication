@@ -2846,6 +2846,174 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
+export const getApiAuthGetallcontacts = (
+     options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.default.get(
+      `/api/auth/getallcontacts`,options
+    );
+  }
+
+
+
+
+export const getGetApiAuthGetallcontactsQueryKey = () => {
+    return [
+    `/api/auth/getallcontacts`
+    ] as const;
+    }
+
+    
+export const getGetApiAuthGetallcontactsQueryOptions = <TData = Awaited<ReturnType<typeof getApiAuthGetallcontacts>>, TError = AxiosError<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetallcontacts>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiAuthGetallcontactsQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthGetallcontacts>>> = ({ signal }) => getApiAuthGetallcontacts({ signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetallcontacts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiAuthGetallcontactsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiAuthGetallcontacts>>>
+export type GetApiAuthGetallcontactsQueryError = AxiosError<unknown>
+
+
+export function useGetApiAuthGetallcontacts<TData = Awaited<ReturnType<typeof getApiAuthGetallcontacts>>, TError = AxiosError<unknown>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetallcontacts>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiAuthGetallcontacts>>,
+          TError,
+          Awaited<ReturnType<typeof getApiAuthGetallcontacts>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGetallcontacts<TData = Awaited<ReturnType<typeof getApiAuthGetallcontacts>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetallcontacts>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiAuthGetallcontacts>>,
+          TError,
+          Awaited<ReturnType<typeof getApiAuthGetallcontacts>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGetallcontacts<TData = Awaited<ReturnType<typeof getApiAuthGetallcontacts>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetallcontacts>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiAuthGetallcontacts<TData = Awaited<ReturnType<typeof getApiAuthGetallcontacts>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetallcontacts>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiAuthGetallcontactsQueryOptions(options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const getApiAuthGetcontactbyidId = (
+    id: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.default.get(
+      `/api/auth/getcontactbyid/${id}`,options
+    );
+  }
+
+
+
+
+export const getGetApiAuthGetcontactbyidIdQueryKey = (id?: string,) => {
+    return [
+    `/api/auth/getcontactbyid/${id}`
+    ] as const;
+    }
+
+    
+export const getGetApiAuthGetcontactbyidIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>, TError = AxiosError<unknown>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiAuthGetcontactbyidIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>> = ({ signal }) => getApiAuthGetcontactbyidId(id, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiAuthGetcontactbyidIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>>
+export type GetApiAuthGetcontactbyidIdQueryError = AxiosError<unknown>
+
+
+export function useGetApiAuthGetcontactbyidId<TData = Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>, TError = AxiosError<unknown>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGetcontactbyidId<TData = Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGetcontactbyidId<TData = Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiAuthGetcontactbyidId<TData = Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetcontactbyidId>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiAuthGetcontactbyidIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 export const postApiAuthAddemployee = (
     employee: Employee, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<void>> => {

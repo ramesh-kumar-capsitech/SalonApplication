@@ -40,6 +40,8 @@ import Test from './components/test'
 import Schedule from './salonadmin/Schedule'
 import LiveQueue from './components/LiveQueue'
 import CustomerMessages from './superadmin/CustomerMessages'
+import SentMessage from './customer/SentMessage'
+import Inbox from './customer/Inbox'
 
 function App() {
   return (
@@ -111,7 +113,8 @@ function App() {
         <Route path='privacy' element={<Privacy />} />
         <Route path="salon-details/:id" element={<SalonDetailscustomer />} />
         <Route path='settingcustomer' element={<Settingcustomer />} />
-
+        <Route path='inbox' element={<Inbox />} />
+        <Route path='sent' element={<SentMessage />} />
       </Route>
     </Routes >
   )

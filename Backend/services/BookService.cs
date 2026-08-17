@@ -61,7 +61,7 @@ public class BookingService
         return "Booking Created Successfully";
     }
     public List<BookAppointment>
-GetBookings(string userId)
+     GetBookings(string userId)
     {
         return _bookings
             .Find(x => x.UserId == userId)
