@@ -27,6 +27,8 @@ export interface ApplySalon {
   /** @nullable */
   totalStaff?: string | null;
   /** @nullable */
+  role?: string | null;
+  /** @nullable */
   salonAddress?: string | null;
   /** @nullable */
   salonDescription?: string | null;

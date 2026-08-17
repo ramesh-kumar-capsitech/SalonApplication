@@ -13,6 +13,8 @@ export interface Employee {
   /** @nullable */
   fullName?: string | null;
   /** @nullable */
+  designation?: string | null;
+  /** @nullable */
   role?: string | null;
   /** @nullable */
   email?: string | null;

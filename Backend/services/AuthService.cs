@@ -18,14 +18,12 @@ public class AuthService
         _employees = db.GetCollection<Employee>("employees");
         _users = db.GetCollection<RegisterUsers>("users");
         _admins = db.GetCollection<Admin>("admins");
-        _salons = db.GetCollection<Admin>("salons");
+        // _salons = db.GetCollection<Admin>("salons");
     }
 
     public string Signup(RegisterUsers user)
     {
-        var salonRequest = _salonrequests
-        .Find(x => x.Email == user.Email)
-        .FirstOrDefault();
+        var salonRequest = _salonrequests.Find(x => x.Email == user.Email).FirstOrDefault();
 
         var userr = _users.Find(x => x.Email == user.Email).FirstOrDefault();
         var salonAdmin = _salons.Find(x => x.Email == user.Email).FirstOrDefault();

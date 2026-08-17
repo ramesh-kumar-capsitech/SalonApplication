@@ -16,6 +16,7 @@ export * from './cancelBookingModel';
 export * from './changeAdminPasswordModel';
 export * from './changePasswordModel';
 export * from './changecustomerPasswordModel';
+export * from './contact';
 export * from './customerProfileUpdate';
 export * from './deleteGalleryImageModel';
 export * from './employee';

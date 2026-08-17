@@ -39,6 +39,8 @@ import Invoice from './components/Invoice'
 import Test from './components/test'
 import Schedule from './salonadmin/Schedule'
 import LiveQueue from './components/LiveQueue'
+import CustomerMessages from './superadmin/CustomerMessages'
+
 function App() {
   return (
     <Routes>
@@ -63,6 +65,8 @@ function App() {
         <Route path="users" element={<Users />} />
         <Route path="request" element={<Requests />} />
         <Route path="setting" element={<Setting />} />
+        <Route path="customer-messages" element={<CustomerMessages />} />
+
         <Route path="salon-details/:id" element={<SalonDetails />} />
 
       </Route>

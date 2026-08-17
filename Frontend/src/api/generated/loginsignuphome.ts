@@ -41,6 +41,7 @@ import type {
   ChangeAdminPasswordModel,
   ChangePasswordModel,
   ChangecustomerPasswordModel,
+  Contact,
   CustomerProfileUpdate,
   DeleteGalleryImageModel,
   Employee,
@@ -1939,62 +1940,6 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       return useMutation(mutationOptions, queryClient);
     }
     
-export const postApiAuthSuperadminlogin = (
-    login: Login, options?: AxiosRequestConfig
- ): Promise<AxiosResponse<void>> => {
-    
-    
-    return axios.default.post(
-      `/api/auth/superadminlogin`,
-      login,options
-    );
-  }
-
-
-
-export const getPostApiAuthSuperadminloginMutationOptions = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthSuperadminlogin>>, TError,{data: Login}, TContext>, axios?: AxiosRequestConfig}
-): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthSuperadminlogin>>, TError,{data: Login}, TContext> => {
-
-const mutationKey = ['postApiAuthSuperadminlogin'];
-const {mutation: mutationOptions, axios: axiosOptions} = options ?
-      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
-      options
-      : {...options, mutation: {...options.mutation, mutationKey}}
-      : {mutation: { mutationKey, }, axios: undefined};
-
-      
-
-
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthSuperadminlogin>>, {data: Login}> = (props) => {
-          const {data} = props ?? {};
-
-          return  postApiAuthSuperadminlogin(data,axiosOptions)
-        }
-
-        
-
-
-  return  { mutationFn, ...mutationOptions }}
-
-    export type PostApiAuthSuperadminloginMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthSuperadminlogin>>>
-    export type PostApiAuthSuperadminloginMutationBody = Login
-    export type PostApiAuthSuperadminloginMutationError = AxiosError<unknown>
-
-    export const usePostApiAuthSuperadminlogin = <TError = AxiosError<unknown>,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthSuperadminlogin>>, TError,{data: Login}, TContext>, axios?: AxiosRequestConfig}
- , queryClient?: QueryClient): UseMutationResult<
-        Awaited<ReturnType<typeof postApiAuthSuperadminlogin>>,
-        TError,
-        {data: Login},
-        TContext
-      > => {
-
-      const mutationOptions = getPostApiAuthSuperadminloginMutationOptions(options);
-
-      return useMutation(mutationOptions, queryClient);
-    }
-    
 export const getApiAuthGetadminprofileId = (
     id: string, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<void>> => {
@@ -2841,6 +2786,62 @@ const {mutation: mutationOptions, axios: axiosOptions} = options ?
       > => {
 
       const mutationOptions = getPutApiAuthCancelbookingMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+export const postApiAuthContact = (
+    contact: Contact, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.default.post(
+      `/api/auth/contact`,
+      contact,options
+    );
+  }
+
+
+
+export const getPostApiAuthContactMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthContact>>, TError,{data: Contact}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthContact>>, TError,{data: Contact}, TContext> => {
+
+const mutationKey = ['postApiAuthContact'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthContact>>, {data: Contact}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiAuthContact(data,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiAuthContactMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthContact>>>
+    export type PostApiAuthContactMutationBody = Contact
+    export type PostApiAuthContactMutationError = AxiosError<unknown>
+
+    export const usePostApiAuthContact = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthContact>>, TError,{data: Contact}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiAuthContact>>,
+        TError,
+        {data: Contact},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiAuthContactMutationOptions(options);
 
       return useMutation(mutationOptions, queryClient);
     }

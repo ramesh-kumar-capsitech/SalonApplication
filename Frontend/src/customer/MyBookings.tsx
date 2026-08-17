@@ -63,21 +63,20 @@ const MyBookings = () => {
     );
 
     const user = JSON.parse(authData.user);
-
+    const id = user.id;
     console.log("USER:", user);
 
-    if (!user?._id) {
+    if (!id) {
         console.log("User not found");
         return;
     }
     const { data: bookings = [], isLoading, error } = useQuery({
-        queryKey: ["customerBookings",
-            user?.id || user?._id],
+        queryKey: ["customerBookings", id],
         queryFn: async () => {
-            const res = await getApiAuthGetbookingsUserId(user._id);
+            const res = await getApiAuthGetbookingsUserId(id);
             return res.data;
         },
-        enabled: !!(user?.id || user?._id)
+        enabled: !!id
     })
 
 

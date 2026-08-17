@@ -1,5 +1,5 @@
-import React from "react";
-import { Card, Form, Input, Button, Avatar } from "antd";
+import React, { useEffect } from "react";
+import { Card, Form, Input, Button, Avatar, message } from "antd";
 import {
     MailOutlined,
     PhoneOutlined,
@@ -7,8 +7,9 @@ import {
     ClockCircleOutlined,
 } from "@ant-design/icons";
 
-import emailjs from "@emailjs/browser";
-import { message } from "antd";
+
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { getApiAuthGetcustomerprofileId, postApiAuthContact } from "../api/generated/loginsignuphome";
 interface InfoCardProps {
     icon: React.ReactNode;
     title: string;
@@ -20,6 +21,7 @@ const InfoCard: React.FC<InfoCardProps> = ({
     title,
     lines,
 }) => {
+    
     return (
         <Card className="rounded-2xl border" bodyStyle={{ padding: 20 }}>
             <div className="flex items-start gap-4">
@@ -44,6 +46,100 @@ const InfoCard: React.FC<InfoCardProps> = ({
 };
 
 const Contact = () => {
+     const [form] = Form.useForm();
+    const [profileForm] = Form.useForm();
+     const authData = JSON.parse(
+        localStorage.getItem("persist:auth")!
+    );
+
+    const user = JSON.parse(authData.user);
+
+    const userId = user.id;
+
+    const { data: profileData } = useQuery({
+        queryKey: ["adminProfile", userId],
+
+        queryFn: async () => {
+            const res = await getApiAuthGetcustomerprofileId(userId)
+
+            return res.data.data;
+
+
+        },
+
+
+
+
+    });
+    useEffect(() => {
+        if (profileData) {
+            profileForm.setFieldsValue({
+                fullName: profileData.name,
+                email: profileData.email,
+                phone: profileData.mobileNumber,
+            });
+
+            
+
+          
+        }
+    }, [profileData]);
+    const queryClient = useQueryClient();
+        const messagecontactMutation =
+        useMutation({
+            mutationFn: async (values: any) => {
+
+                const res =
+                    await postApiAuthContact(
+                        {
+                            Name:
+                                values.fullName,
+
+                            Email:
+                                values.email,
+
+                            Subject:
+                                values.subject,
+
+                            Message:
+                                values.message,
+                        }
+                    );
+
+                return res.data;
+            },
+
+            onSuccess: () => {
+
+                message.success(
+                    "Message sent successfully"
+                );
+                profileForm.resetFields(["message" , "subject"]);
+                queryClient.invalidateQueries({
+                    queryKey: [
+                        "adminProfile",
+                        userId,
+                    ],
+                });
+            },
+
+            onError: (
+                error: any
+            ) => {
+
+                message.error(
+                    error?.response?.data
+                        ?.message ||
+                    "Something went wrong"
+                );
+            },
+        });
+         const handleSendMessage = (values: any) => {
+
+        messagecontactMutation.mutate(
+            values
+        );
+    };
     return (
         <div>
             <div className="flex items-center justify-between px-3 py-[23px]   ">
@@ -64,20 +160,66 @@ const Contact = () => {
                         Send us a Message
                     </h2>
 
-                    <Form layout="vertical">
-                        <Form.Item label={<span className="font-[Outfit]">Full Name</span>}>
+                    <Form layout="vertical"  form={profileForm} onFinish={handleSendMessage}>
+                        <Form.Item name="fullName" label={<span className="font-[Outfit]">Full Name</span>} 
+                      rules={[
+                        
+                            {
+                                required: true,
+                                message: "Name is required"
+                            },
+
+                            {
+                                min: 3,
+                                message: "Minimum 3 characters required"
+                            }
+                              ]}>
                             <Input placeholder="John Doe" />
                         </Form.Item>
 
-                        <Form.Item label={<span className="font-[Outfit]">Email</span>} >
+                        <Form.Item name="email" label={<span className="font-[Outfit]">Email</span>} 
+                      rules={[
+                        
+                            {
+                                required: true,
+                                message: "Email is required"
+                            },
+
+                            {
+                                type: "email",
+                                message: "Please enter a valid email"
+                            }
+                              ]}>   
                             <Input placeholder="john@example.com" />
                         </Form.Item>
 
-                        <Form.Item label={<span className="font-[Outfit]">Subject</span>}>
+                        <Form.Item name="subject" label={<span className="font-[Outfit]">Subject</span>} 
+                      rules={[
+                        
+                            {
+                                required: true,
+                                message: "Subject is required"
+                            },
+                            {
+                                min: 6,
+                                message: "Minimum 6 characters required"
+                            }
+                              ]}>
                             <Input placeholder="How can we help?" />
                         </Form.Item>
 
-                        <Form.Item label={<span className="font-[Outfit]">Message</span>}>
+                        <Form.Item name="message" label={<span className="font-[Outfit]">Message</span>} 
+                      rules={[
+                        
+                            {
+                                required: true,
+                                message: "Message is required"
+                            },
+                            {
+                                min: 6,
+                                message: "Minimum 6 characters required"
+                            }
+                              ]}>
                             <Input.TextArea
                                 rows={4}
                                 placeholder="Your message..."
@@ -85,6 +227,7 @@ const Contact = () => {
                         </Form.Item>
 
                         <Button
+                          htmlType="submit"
                             type="primary"
                             className="w-full rounded-full h-11"
                         >
@@ -93,7 +236,7 @@ const Contact = () => {
                     </Form>
                 </Card>
 
-                {/* RIGHT : CONTACT INFO */}
+              
                 <div className="space-y-6">
                     <InfoCard
                         icon={<MailOutlined />}

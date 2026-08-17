@@ -13,7 +13,8 @@ const myshedule = () => {
 
     const authData = JSON.parse(localStorage.getItem("persist:auth")!);
     const user = JSON.parse(authData.user);
-    const empid = user.id
+    const empid = user.id;
+
 
     const { data: bookings = [], isLoading, error } = useQuery({
         queryKey: ["bookings", empid],
@@ -158,15 +159,12 @@ const myshedule = () => {
                         </p> */}
                     </div>
 
-on
+
                     <div className="space-y-4">
                         {appointments.map((appt) => (
                             <div
                                 key={appt.id}
-                                className={`border rounded-xl p-4 ${appt.status === "In Progress"
-                                    ? "border-blue-500 bg-blue-50"
-                                    : ""
-                                    }`}
+                                className={`border rounded-xl p-4 ${appt.status === "In Progress" ? "border-blue-500 bg-blue-50": ""}`}
                             >
                                 <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
 
@@ -285,7 +283,7 @@ on
 
                                 {/* {appt.status === "Completed" && (
                                     <div className="mt-4 text-green-600 text-sm">
-                                        ✅ Service Completed
+                                    Service Completed
                                     </div>
                                 )} */}
                             </div>

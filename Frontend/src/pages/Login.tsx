@@ -9,7 +9,7 @@ import { useAppDispatch } from "../redux/hooks";
 import { loginSuccess } from "../redux/authSlice";
 import { useAppSelector } from "../redux/hooks";
 import { useMutation } from "@tanstack/react-query";
-import { postApiAuthEmployeelogin, postApiAuthLogin, postApiAuthSalonlogin, postApiAuthSuperadminlogin } from "../api/generated/loginsignuphome";
+import { postApiAuthEmployeelogin, postApiAuthLogin, postApiAuthSalonlogin } from "../api/generated/loginsignuphome";
 const Login = () => {
     const auth = useAppSelector((state: { auth: any }) => state.auth);
 

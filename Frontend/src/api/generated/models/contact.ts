@@ -5,7 +5,7 @@
  * OpenAPI spec version: 1.0
  */
 
-export interface RegisterUsers {
+export interface Contact {
   /** @nullable */
   id?: string | null;
   /** @nullable */
@@ -13,11 +13,7 @@ export interface RegisterUsers {
   /** @nullable */
   email?: string | null;
   /** @nullable */
-  mobileNumber?: string | null;
+  subject?: string | null;
   /** @nullable */
-  password?: string | null;
-  /** @nullable */
-  role?: string | null;
-  /** @nullable */
-  profileImage?: string | null;
+  message?: string | null;
 }

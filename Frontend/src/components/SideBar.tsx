@@ -1,7 +1,7 @@
 import React, { useEffect, useState, type FC } from "react";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo1.png'
-import { HomeOutlined, TeamOutlined } from '@ant-design/icons';
+import { HomeOutlined, MessageOutlined, TeamOutlined } from '@ant-design/icons';
 import { ShopOutlined } from '@ant-design/icons';
 import { FileTextOutlined } from '@ant-design/icons';
 import { SettingOutlined } from '@ant-design/icons';
@@ -142,6 +142,18 @@ const Sidebar: React.FC = () => {
                                         {pendingCount}
                                     </span>
                                 )}
+                            </li>
+                        </NavLink>
+                         <NavLink to="/superadmin/customer-messages"
+                            className={({ isActive }) =>
+                                isActive
+                                    ? "bg-white/30 rounded-lg"
+                                    : ""
+                            }>
+                            <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20">
+                                <MessageOutlined />
+
+                                <p className="hidden md:block font-semibold m-0 ">Customer Messages</p>
                             </li>
                         </NavLink>
                         <NavLink to="/superadmin/setting"
