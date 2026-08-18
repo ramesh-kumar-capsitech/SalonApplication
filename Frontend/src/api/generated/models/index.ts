@@ -25,6 +25,7 @@ export * from './employeeProfileUpdate';
 export * from './login';
 export * from './registerUsers';
 export * from './rejectRequest';
+export * from './replycontact';
 export * from './salonBookingRequest';
 export * from './salonLogin';
 export * from './salonServiceModel';

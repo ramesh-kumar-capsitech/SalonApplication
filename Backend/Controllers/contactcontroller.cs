@@ -51,4 +51,50 @@ public class contactcontroller : ControllerBase
 
         return Ok(contacts);
     }
+    [HttpPost("replymessage")]
+    public IActionResult ReplyMessage([FromBody] Replycontact replycontact)
+    {
+        var result = _contactservice.ReplyMessage(replycontact);
+
+        if (result == "Reply sent successfully")
+        {
+            return Ok(new
+            {
+                success = true,
+                message = result
+            });
+        }
+
+        return BadRequest(new
+        {
+            success = false,
+            message = "Failed to send reply"
+        });
+    }
+    [HttpPut("seenmessage/{id}")]
+    public IActionResult SeenMessage(string id)
+    {
+        var result = _contactservice.SeenMessage(id);
+
+        if (result == "Message marked as seen")
+        {
+            return Ok(new
+            {
+                success = true,
+                message = result
+            });
+        }
+
+        return BadRequest(new
+        {
+            success = false,
+            message = "Failed to mark message as seen"
+        });
+    }
+    [HttpGet("getreplycontacts")]
+    public IActionResult GetReplycontacts()
+    {
+        var replycontacts = _contactservice.GetReplycontacts();
+        return Ok(replycontacts);
+    }
 }

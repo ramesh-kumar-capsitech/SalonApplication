@@ -365,7 +365,7 @@ const Dashboard = () => {
                     </div>
 
                 </div>
-                <div className="md:w-1/4 bg-white rounded-2xl border border-gray-200 p-6">
+                <div className="lg:w-1/4 bg-white rounded-2xl border border-gray-200 p-6">
 
 
                     <div className="flex items-start justify-between">

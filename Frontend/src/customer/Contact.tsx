@@ -86,6 +86,7 @@ const Contact = () => {
           
         }
     }, [profileData]);
+
     const queryClient = useQueryClient();
         const messagecontactMutation =
         useMutation({
@@ -137,7 +138,7 @@ const Contact = () => {
                 );
             },
         });
-         const handleSendMessage = (values: any) => {
+        const handleSendMessage = (values: any) => {
 
         messagecontactMutation.mutate(
             values

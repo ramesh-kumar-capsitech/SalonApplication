@@ -50,6 +50,7 @@ import type {
   Login,
   RegisterUsers,
   RejectRequest,
+  Replycontact,
   SalonBookingRequest,
   SalonLogin,
   UpdateBookingStatusRequest
@@ -3003,6 +3004,201 @@ export function useGetApiAuthGetcontactbyidId<TData = Awaited<ReturnType<typeof 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetApiAuthGetcontactbyidIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+export const postApiAuthReplymessage = (
+    replycontact: Replycontact, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.default.post(
+      `/api/auth/replymessage`,
+      replycontact,options
+    );
+  }
+
+
+
+export const getPostApiAuthReplymessageMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthReplymessage>>, TError,{data: Replycontact}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof postApiAuthReplymessage>>, TError,{data: Replycontact}, TContext> => {
+
+const mutationKey = ['postApiAuthReplymessage'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof postApiAuthReplymessage>>, {data: Replycontact}> = (props) => {
+          const {data} = props ?? {};
+
+          return  postApiAuthReplymessage(data,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PostApiAuthReplymessageMutationResult = NonNullable<Awaited<ReturnType<typeof postApiAuthReplymessage>>>
+    export type PostApiAuthReplymessageMutationBody = Replycontact
+    export type PostApiAuthReplymessageMutationError = AxiosError<unknown>
+
+    export const usePostApiAuthReplymessage = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof postApiAuthReplymessage>>, TError,{data: Replycontact}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof postApiAuthReplymessage>>,
+        TError,
+        {data: Replycontact},
+        TContext
+      > => {
+
+      const mutationOptions = getPostApiAuthReplymessageMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+export const putApiAuthSeenmessageId = (
+    id: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.default.put(
+      `/api/auth/seenmessage/${id}`,undefined,options
+    );
+  }
+
+
+
+export const getPutApiAuthSeenmessageIdMutationOptions = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiAuthSeenmessageId>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+): UseMutationOptions<Awaited<ReturnType<typeof putApiAuthSeenmessageId>>, TError,{id: string}, TContext> => {
+
+const mutationKey = ['putApiAuthSeenmessageId'];
+const {mutation: mutationOptions, axios: axiosOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }, axios: undefined};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof putApiAuthSeenmessageId>>, {id: string}> = (props) => {
+          const {id} = props ?? {};
+
+          return  putApiAuthSeenmessageId(id,axiosOptions)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type PutApiAuthSeenmessageIdMutationResult = NonNullable<Awaited<ReturnType<typeof putApiAuthSeenmessageId>>>
+    
+    export type PutApiAuthSeenmessageIdMutationError = AxiosError<unknown>
+
+    export const usePutApiAuthSeenmessageId = <TError = AxiosError<unknown>,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof putApiAuthSeenmessageId>>, TError,{id: string}, TContext>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof putApiAuthSeenmessageId>>,
+        TError,
+        {id: string},
+        TContext
+      > => {
+
+      const mutationOptions = getPutApiAuthSeenmessageIdMutationOptions(options);
+
+      return useMutation(mutationOptions, queryClient);
+    }
+    
+export const getApiAuthGetreplycontacts = (
+     options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.default.get(
+      `/api/auth/getreplycontacts`,options
+    );
+  }
+
+
+
+
+export const getGetApiAuthGetreplycontactsQueryKey = () => {
+    return [
+    `/api/auth/getreplycontacts`
+    ] as const;
+    }
+
+    
+export const getGetApiAuthGetreplycontactsQueryOptions = <TData = Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>, TError = AxiosError<unknown>>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiAuthGetreplycontactsQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>> = ({ signal }) => getApiAuthGetreplycontacts({ signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiAuthGetreplycontactsQueryResult = NonNullable<Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>>
+export type GetApiAuthGetreplycontactsQueryError = AxiosError<unknown>
+
+
+export function useGetApiAuthGetreplycontacts<TData = Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>, TError = AxiosError<unknown>>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>,
+          TError,
+          Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGetreplycontacts<TData = Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>,
+          TError,
+          Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGetreplycontacts<TData = Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiAuthGetreplycontacts<TData = Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>, TError = AxiosError<unknown>>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplycontacts>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiAuthGetreplycontactsQueryOptions(options)
 
   const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

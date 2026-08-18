@@ -141,9 +141,19 @@ const SentMessage = () => {
                                       #{contact.id?.slice(-6).toUpperCase()}
                                     </Tag>
 
-                                    <Tag color="yellow">
-                                        {contact.status}
-                                    </Tag>
+                                    <Tag
+                                    color={
+                                        contact.status === "Delivered"
+                                            ? "yellow"
+                                            : contact.status === "Seen"
+                                            ? "blue"
+                                            : contact.status === "Replied"
+                                            ? "green"
+                                            : "default"
+                                    }
+                                >
+                                    {contact.status}
+                                </Tag>
                                 </div>
 
                                 <Title
@@ -163,10 +173,10 @@ const SentMessage = () => {
                                 <br />
                             <div className="grid  gap-1 mt-1">
                                 <Text type="secondary">
-                                    <ClockCircleOutlined /> {dayjs(contact.time).format("h:mm A") || "Time not available"}
+                                    <ClockCircleOutlined />  {dayjs(contact.createdAt).format("h:mm A")}
                                 </Text>
                                 <Text type="secondary">
-                                    <CalendarOutlined /> {dayjs(contact.date).format("dddd, Do MMMM YYYY") || "Date not available"}
+                                    <CalendarOutlined />  {dayjs(contact.createdAt).format("DD MMM YYYY")}
                                 </Text>
                                 </div>
                             </Card>
