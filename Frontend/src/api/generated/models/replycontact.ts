@@ -26,5 +26,9 @@ export interface Replycontact {
   replyMessage?: string | null;
   /** @nullable */
   replySubject?: string | null;
+  /** @nullable */
+  messageDateTime?: string | null;
+  /** @nullable */
+  status?: string | null;
   createdAt?: string;
 }

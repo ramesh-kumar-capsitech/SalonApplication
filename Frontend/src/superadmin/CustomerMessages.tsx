@@ -2,8 +2,9 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getApiAuthGetallcontacts, getApiAuthGetreplycontacts, postApiAuthReplymessage, putApiAuthSeenmessageId } from "../api/generated/loginsignuphome";
 import { Avatar, Button, Col, Drawer, Empty, Form, Input, message, Row, Segmented, Spin, Tag } from "antd";
 import dayjs from "dayjs";
+import * as signalR from "@microsoft/signalr";
 import TextArea from "antd/es/input/TextArea";
-import { useState } from "react";
+import { useEffect, useState } from "react";
  
 const CustomerMessages: React.FC = () => {
    
@@ -48,16 +49,16 @@ const queryClient = useQueryClient();
                 const res =
                     await postApiAuthReplymessage(
                         {
-                          SuperAdminId: userId,
-                          MessageId: selectedContact?.id,
+                        SuperAdminId: userId,
+                        MessageId: selectedContact?.id,
                         CustomerId: selectedContact?.customerId,
                         CustomerName: selectedContact?.name,
                         CustomerEmail: selectedContact?.email,
                         CustomerSubject: selectedContact?.subject,
                         CustomerMessage: selectedContact?.message,
                         MessageDateTime: selectedContact?.createdAt,
-                           ReplySubject: values.subject,
-                           ReplyMessage: values.message,   
+                        ReplySubject: values.subject,
+                        ReplyMessage: values.message,   
                         }
                     );
 
@@ -138,6 +139,33 @@ console.log(error?.response?.data ?.message );
 
         SeenMessageMutation.mutate(id);
     }
+      useEffect(() => {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:7074/contactmessagereply")
+                .withAutomaticReconnect()
+                .build();
+    
+            connection
+                .start()
+                .then(() => {
+                    console.log(" SignalR Connected");
+                })
+                .catch((err) => {
+                    console.error(" SignalR Connection Error:", err);
+                });
+    
+            connection.on("MessageUpdated", () => {
+                console.log(" Message Received");
+    
+                queryClient.invalidateQueries({
+                    queryKey: ["contacts"],
+                });
+            });
+    
+            return () => {
+                connection.stop();
+            };
+        }, [queryClient]);
     return (
         <div>
              <Drawer
@@ -293,12 +321,12 @@ console.log(error?.response?.data ?.message );
                                             {contact.email }
                                         </p>
 
-                                        <p className="text-blue-600 text-xs mt-2 mb-0 break-words">
+                                        <p className="text-blue-600 text-sm mt-2 mb-0 break-words">
                                             Subject:{" "}
                                             {contact.subject }
                                         </p>
 
-                                        <p className="text-green-600 text-xs mt-1 mb-0 break-words">
+                                        <p className="text-sm text-gray-600 leading-5 m-0 break-words">
                                             Message:{" "}
                                             {contact.message }
                                             
@@ -378,7 +406,7 @@ console.log(error?.response?.data ?.message );
                                         {(
                                             contact.name ||
                                             contact.customerName ||
-                                            "S"
+                                            "?"
                                         )
                                             .charAt(0)
                                             .toUpperCase()}
@@ -387,25 +415,22 @@ console.log(error?.response?.data ?.message );
                                     <div className="min-w-0">
                                         <p className="font-medium m-0 break-words text-gray-900">
                                             {contact.name ||
-                                                contact.customerName ||
-                                                "Suresh Bishnoi 007"}
+                                                contact.customerName }
                                         </p>
 
                                         <p className="text-xs text-gray-500 m-0 break-words">
                                             Email:{" "}
-                                            {contact.email || "sb@gmail.com"}
+                                            {contact.email }
                                         </p>
 
-                                        <p className="text-blue-600 text-xs mt-2 mb-0 break-words">
+                                        <p className="text-blue-600 text-sm mt-2 mb-0 break-words">
                                             Subject:{" "}
-                                            {contact.subject ||
-                                                "Service completed successfully"}
+                                            {contact.subject}
                                         </p>
 
-                                        <p className="text-green-600 text-xs mt-1 mb-0 break-words">
+                                        <p className="text-sm text-gray-600 leading-5 m-0 break-words">
                                             Message:{" "}
-                                            {contact.message ||
-                                                "Service completed successfully"}
+                                            {contact.message}
                                         </p>
                                     </div>
                                 </div>
@@ -445,7 +470,7 @@ console.log(error?.response?.data ?.message );
                         <Empty
                             description={
                                 <span className="font-[outfit]">
-                                    No Pending customer messages found.
+                                    No Replied messages found.
                                 </span>
                             }
                         />

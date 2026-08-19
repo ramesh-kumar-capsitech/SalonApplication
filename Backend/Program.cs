@@ -59,4 +59,5 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.MapHub<LiveQueueHub>("/livequeuehub");
+app.MapHub<ContactHub>("/contactmessagereply");
 app.Run();

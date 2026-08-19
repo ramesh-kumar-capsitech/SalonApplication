@@ -3210,6 +3210,90 @@ export function useGetApiAuthGetreplycontacts<TData = Awaited<ReturnType<typeof 
 
 
 
+export const getApiAuthGetreplybyidId = (
+    id: string, options?: AxiosRequestConfig
+ ): Promise<AxiosResponse<void>> => {
+    
+    
+    return axios.default.get(
+      `/api/auth/getreplybyid/${id}`,options
+    );
+  }
+
+
+
+
+export const getGetApiAuthGetreplybyidIdQueryKey = (id?: string,) => {
+    return [
+    `/api/auth/getreplybyid/${id}`
+    ] as const;
+    }
+
+    
+export const getGetApiAuthGetreplybyidIdQueryOptions = <TData = Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>, TError = AxiosError<unknown>>(id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>, TError, TData>>, axios?: AxiosRequestConfig}
+) => {
+
+const {query: queryOptions, axios: axiosOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetApiAuthGetreplybyidIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>> = ({ signal }) => getApiAuthGetreplybyidId(id, { signal, ...axiosOptions });
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetApiAuthGetreplybyidIdQueryResult = NonNullable<Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>>
+export type GetApiAuthGetreplybyidIdQueryError = AxiosError<unknown>
+
+
+export function useGetApiAuthGetreplybyidId<TData = Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>, TError = AxiosError<unknown>>(
+ id: string, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGetreplybyidId<TData = Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>,
+          TError,
+          Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>
+        > , 'initialData'
+      >, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetApiAuthGetreplybyidId<TData = Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+
+export function useGetApiAuthGetreplybyidId<TData = Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>, TError = AxiosError<unknown>>(
+ id: string, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getApiAuthGetreplybyidId>>, TError, TData>>, axios?: AxiosRequestConfig}
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetApiAuthGetreplybyidIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions, queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 export const postApiAuthAddemployee = (
     employee: Employee, options?: AxiosRequestConfig
  ): Promise<AxiosResponse<void>> => {

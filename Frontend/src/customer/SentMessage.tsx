@@ -2,11 +2,13 @@ import { CalendarOutlined, ClockCircleOutlined, MoreOutlined } from "@ant-design
 import { Avatar, Button, Card, Dropdown, Empty, Spin, Tag } from "antd";
 import Title from "antd/es/typography/Title";
 import Text from "antd/es/typography/Text";
+import * as signalR from "@microsoft/signalr";
 import Divider from "antd/es/divider";
 import { UserOutlined } from "@ant-design/icons";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getApiAuthGetcontactbyidId } from "../api/generated/loginsignuphome";
 import dayjs from "dayjs";
+import { useEffect } from "react";
 const SentMessage = () => {
         const currentPath = window.location.pathname;
         const authData =JSON.parse(localStorage.getItem("persist:auth")!);
@@ -21,7 +23,34 @@ const SentMessage = () => {
             return res.data;
         },
     });
-
+const queryClient = useQueryClient();
+useEffect(() => {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:7074/contactmessagereply")
+                .withAutomaticReconnect()
+                .build();
+    
+            connection
+                .start()
+                .then(() => {
+                    console.log(" SignalR Connected");
+                })
+                .catch((err) => {
+                    console.error(" SignalR Connection Error:", err);
+                });
+    
+            connection.on("MessageUpdated", () => {
+                console.log(" Message Received");
+    
+                queryClient.invalidateQueries({
+                    queryKey: ["contacts"],
+                });
+            });
+    
+            return () => {
+                connection.stop();
+            };
+        }, [queryClient]);
     return (
         <div>
            <div className="flex items-center justify-between px-3 py-[23px]   ">

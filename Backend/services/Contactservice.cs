@@ -44,6 +44,10 @@ public class Contactservice
     {
         return _replycontacts.Find(_ => true).ToList();
     }
+     public List<Replycontact> GetReplyById(string id)
+    {
+       return _replycontacts.Find(reply => reply.CustomerId == id).ToList();
+    }
 }
 
 

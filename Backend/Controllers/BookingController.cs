@@ -2,8 +2,7 @@
 using Microsoft.AspNetCore.SignalR;
 [ApiController]
 [Route("api/auth")]
-public class BookingController
-    : ControllerBase
+public class BookingController    : ControllerBase
 {
     private readonly BookingService _bookingService;
     private readonly IHubContext<LiveQueueHub> _hubContext;

@@ -4,16 +4,24 @@ using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 [ApiController]
 [Route("api/auth")]
 public class contactcontroller : ControllerBase
 {
-    private readonly Contactservice _contactservice = new Contactservice();
+     private readonly Contactservice _contactservice = new Contactservice();
+    private readonly IHubContext<ContactHub> _hubContextMessage;
+    public contactcontroller(IHubContext<ContactHub> hubContext)
+    {
+        _contactservice = new Contactservice();
+        _hubContextMessage = hubContext;
+    }
+   
     [HttpPost("contact")]
-    public IActionResult contactmessage([FromBody] contact contact)
+    public async Task<IActionResult> contactmessage([FromBody] contact contact)
     {
         var result = _contactservice.contactmessage(contact);
-
+        await _hubContextMessage.Clients.All.SendAsync("MessageUpdated");
         if (result == "Message sent successfully")
         {
             return Ok(new
@@ -51,11 +59,12 @@ public class contactcontroller : ControllerBase
 
         return Ok(contacts);
     }
+   
     [HttpPost("replymessage")]
-    public IActionResult ReplyMessage([FromBody] Replycontact replycontact)
+    public async Task<IActionResult> ReplyMessage([FromBody] Replycontact replycontact)
     {
         var result = _contactservice.ReplyMessage(replycontact);
-
+        await _hubContextMessage.Clients.All.SendAsync("MessageUpdated");
         if (result == "Reply sent successfully")
         {
             return Ok(new
@@ -72,9 +81,10 @@ public class contactcontroller : ControllerBase
         });
     }
     [HttpPut("seenmessage/{id}")]
-    public IActionResult SeenMessage(string id)
+    public async  Task<IActionResult> SeenMessage(string id)
     {
         var result = _contactservice.SeenMessage(id);
+        await _hubContextMessage.Clients.All.SendAsync("MessageUpdated");
 
         if (result == "Message marked as seen")
         {
@@ -95,6 +105,21 @@ public class contactcontroller : ControllerBase
     public IActionResult GetReplycontacts()
     {
         var replycontacts = _contactservice.GetReplycontacts();
+        return Ok(replycontacts);
+    }
+     [HttpGet("getreplybyid/{id}")]
+    public IActionResult GetReplyById(string id)
+    {
+        var replycontacts = _contactservice.GetReplyById(id);
+
+        if (replycontacts == null || !replycontacts.Any())
+        {
+            return NotFound(new
+            {
+                message = "Reply not found"
+            });
+        }
+
         return Ok(replycontacts);
     }
 }
