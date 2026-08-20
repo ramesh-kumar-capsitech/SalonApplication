@@ -3,8 +3,8 @@ import { getApiAuthGetallcontacts, getApiAuthGetreplycontacts, postApiAuthReplym
 import { Avatar, Button, Col, Drawer, Empty, Form, Input, message, Row, Segmented, Spin, Tag } from "antd";
 import dayjs from "dayjs";
 import * as signalR from "@microsoft/signalr";
-import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
+
  
 const CustomerMessages: React.FC = () => {
    
@@ -28,13 +28,57 @@ const CustomerMessages: React.FC = () => {
             return res.data;
         },
     })
+    const[repliedmessageSearch , setrepliedmessageSearch]= useState("")
+    const filterRepliedContacts = repliedContacts.filter((contact :any)=>{
+        const search = repliedmessageSearch.trim().toLowerCase();
+
+        if (!search) return true;
+        return(
+            contact.customerName?.toLowerCase().includes(repliedmessageSearch.toLowerCase()) ||
+            contact.customerEmail?.toLowerCase().includes(repliedmessageSearch.toLowerCase()) ||
+             contact.messageId?.toLowerCase().includes(repliedmessageSearch.toLowerCase()) ||
+             contact.customerSubject?.toLowerCase().includes(repliedmessageSearch.toLowerCase())  ||
+             contact.customerMessage?.toLowerCase().includes(repliedmessageSearch.toLowerCase()) ||
+             contact.replyMessage?.toLowerCase().includes(repliedmessageSearch.toLowerCase()) ||
+             contact.replySubject?.toLowerCase().includes(repliedmessageSearch.toLowerCase())
+
+        )
+    })
 const [open, setOpen] = useState(false);
 const [selectedContact, setSelectedContact] = useState<any>(null);
 
 const [form] = Form.useForm();
   const [tab, settab] = useState<"pending" | "seen" | "replied">("pending")
   const pendingContacts = allContacts.filter((contact: any) => contact.status === "Delivered");
+  const [pendindmessageSearch, setpendindmessageSearch]=useState("")
+  const filterPendingMessage = pendingContacts.filter((contact:any)=>{
+    const search = pendindmessageSearch.trim().toLowerCase();
+
+        if (!search) return true;
+        return(
+            contact.name?.toLowerCase().includes(pendindmessageSearch.toLowerCase()) ||
+            contact.email?.toLowerCase().includes(pendindmessageSearch.toLowerCase()) ||
+             contact.id?.toLowerCase().includes(pendindmessageSearch.toLowerCase()) ||
+             contact.subject?.toLowerCase().includes(pendindmessageSearch.toLowerCase())  ||
+             contact.message?.toLowerCase().includes(pendindmessageSearch.toLowerCase()) 
+
+        )
+  }) 
   const seenContacts = allContacts.filter((contact: any) => contact.status === "Seen");
+  const[seenmessageSearch , setseenmessageSearch]= useState("")
+  const filterSeenMessage = seenContacts.filter((contact:any)=>{
+const search = seenmessageSearch.trim().toLowerCase();
+
+        if (!search) return true;
+        return(
+            contact.name?.toLowerCase().includes(seenmessageSearch.toLowerCase()) ||
+            contact.email?.toLowerCase().includes(seenmessageSearch.toLowerCase()) ||
+             contact.id?.toLowerCase().includes(seenmessageSearch.toLowerCase()) ||
+             contact.subject?.toLowerCase().includes(seenmessageSearch.toLowerCase())  ||
+             contact.message?.toLowerCase().includes(seenmessageSearch.toLowerCase()) 
+
+        )
+  })
 //   const repliedContacts = allContacts.filter((contact: any) => contact.status === "Replied");
 const onClose = () => {
     setOpen(false);
@@ -122,9 +166,8 @@ const handleSendMessage = (values: any) => {
                 setOpen(false);
                 form.resetFields();
                 queryClient.invalidateQueries({
-                    queryKey: [            "contacts"
-                       
-                    ],
+                    queryKey: ["contacts"],             
+                  
                 });
             },
 
@@ -264,12 +307,16 @@ console.log(error?.response?.data ?.message );
                             value: 'replied',
                         },
                     ]}
-                    className="rounded-lg bg-gray-100 max-w-[100%] font-[Outfit]  p-1 m-6 "
+                    className="rounded-lg bg-gray-100 max-w-[100%] font-[Outfit]  p-1 m-6 mb-0 "
                 />
             </div>
-
+ 
 {tab === "pending" && (
     <div className="flex flex-col gap-3 m-3">
+        <div className='m-3 mb-0
+         '>
+                                   <Input placeholder="Search Messages...." className='  font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100   '  onChange={(e) => setpendindmessageSearch(e.target.value)}  />
+                                        </div>
                 {isLoading ? (
                     <div className="flex justify-center py-20">
                         <Spin size="large" />
@@ -278,7 +325,7 @@ console.log(error?.response?.data ?.message );
                     <div className="flex flex-col items-center justify-center py-10">
                         <Empty description={<span className="font-[outfit]">Failed to load customer messages</span>} />
                     </div>
-                ) : pendingContacts.length === 0 ? (
+                ) : filterPendingMessage.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10">
                         <Empty
                             description={
@@ -289,7 +336,7 @@ console.log(error?.response?.data ?.message );
                         />
                     </div>
                 ) : (
-                    pendingContacts.map((contact: any) => (
+                    filterPendingMessage.map((contact: any) => (
                         <div
                             key={contact.id}
                             className="border border-gray-200 rounded-xl p-4 bg-white"
@@ -310,11 +357,14 @@ console.log(error?.response?.data ?.message );
                                         {( contact.name  ).charAt(0).toUpperCase()}
                                     </Avatar>
 
-                                    <div className="min-w-0">
+                                    <div className="min-w-0 ">
+                                       <div className="flex gap-2">
                                         <p className="font-medium m-0 break-words text-gray-900">
-                                            {contact.name ||
-                                                contact.customerName }
-                                        </p>
+                                            {contact.name}
+                                        </p>  
+                                  <Tag color="purple">
+                                      #{contact.id?.slice(-6).toUpperCase()}
+                                </Tag></div>
 
                                         <p className="text-xs text-gray-500 m-0 break-words">
                                             Email:{" "}
@@ -349,7 +399,7 @@ console.log(error?.response?.data ?.message );
                                     className="cursor-pointer"
                                     onClick={() => {
                                         setSelectedContact(contact);
-                                        form.setFieldsValue({subject: `Ref: [${contact.id}] ${contact.subject}`,});
+                                        form.setFieldsValue({subject: `Ref: [${contact.id?.slice(-6).toUpperCase()}] ${contact.subject}`,});
                                         setOpen(true);
                                     }}
                                 >
@@ -366,6 +416,10 @@ console.log(error?.response?.data ?.message );
 )}
 {tab === "seen" && (
     <div className="flex flex-col gap-3 m-3">
+         <div className='m-3 mb-0
+         '>
+                                   <Input placeholder="Search Messages...." className='  font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100   ' onChange={(e) => setseenmessageSearch(e.target.value)} />
+                                        </div>
                 {isLoading ? (
                     <div className="flex justify-center py-20">
                         <Spin size="large" />
@@ -374,7 +428,7 @@ console.log(error?.response?.data ?.message );
                     <div className="flex flex-col items-center justify-center py-10">
                         <Empty description={<span className="font-[outfit]">Failed to load customer messages</span>} />
                     </div>
-                ) : seenContacts.length === 0 ? (
+                ) : filterSeenMessage.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10">
                         <Empty
                             description={
@@ -385,7 +439,7 @@ console.log(error?.response?.data ?.message );
                         />
                     </div>
                 ) : (
-                    seenContacts.map((contact: any) => (
+                    filterSeenMessage.map((contact: any) => (
                         <div
                             key={contact.id}
                             className="border border-gray-200 rounded-xl p-4 bg-white"
@@ -408,9 +462,9 @@ console.log(error?.response?.data ?.message );
                                             contact.customerName ||
                                             "?"
                                         )
-                                            .charAt(0)
+                                            .charAt(0)                           
                                             .toUpperCase()}
-                                    </Avatar>
+                                    </Avatar> 
 
                                     <div className="min-w-0">
                                         <p className="font-medium m-0 break-words text-gray-900">
@@ -457,6 +511,10 @@ console.log(error?.response?.data ?.message );
 )}
 {tab === "replied" && (
     <div className="flex flex-col gap-3 m-3">
+        <div className='m-3 mb-0
+         '>
+                                   <Input placeholder="Search Messages...." className='  font-[Outfit] focus:outline-none focus:ring-1 focus:ring-blue-100   ' onChange={(e) => setrepliedmessageSearch(e.target.value)} />
+                                        </div>
                 {isLoading ? (
                     <div className="flex justify-center py-20">
                         <Spin size="large" />
@@ -465,7 +523,7 @@ console.log(error?.response?.data ?.message );
                     <div className="flex flex-col items-center justify-center py-10">
                         <Empty description={<span className="font-[outfit]">Failed to load replied messages</span>} />
                     </div>
-                ) : repliedContacts.length === 0 ? (
+                ) : filterRepliedContacts.length === 0 ? (
                     <div className="flex flex-col items-center justify-center py-10">
                         <Empty
                             description={
@@ -476,10 +534,13 @@ console.log(error?.response?.data ?.message );
                         />
                     </div>
                 ) : (
-                    repliedContacts.map((contact: any) => (
+                    <>
+                     
+                    {filterRepliedContacts.map((contact: any) => (
                         
                          
-                            <div className="m-3">
+                    <div className="m-3 mb-0">
+                          
             <div key={contact.id} className="border border-gray-200 rounded-xl bg-white overflow-hidden shadow-sm">
 
                
@@ -516,10 +577,14 @@ console.log(error?.response?.data ?.message );
                                 <p className="font-semibold text-gray-900 m-0 break-words">
                                     {contact.customerName}
                                 </p>
-
+                                <div className="flex flex-row gap-5 ">
                                 <Tag color="blue" className="w-fit m-0">
                                     Customer
                                 </Tag>
+                                <Tag color="purple">
+                                      #{contact.messageId?.slice(-6).toUpperCase()}
+                                </Tag>
+                                </div>
                             </div>
 
                             <p className="text-xs text-gray-500 m-0 mt-1 break-all">
@@ -595,7 +660,9 @@ console.log(error?.response?.data ?.message );
             </div>
         </div>
                         
-                    ))
+                    ))}
+                    </>
+                    
                 )}
             </div>
 )}

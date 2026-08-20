@@ -1,4 +1,4 @@
-import { CalendarOutlined, ClockCircleOutlined, MoreOutlined } from "@ant-design/icons";
+import { CalendarOutlined, ClockCircleOutlined, DownOutlined, MoreOutlined } from "@ant-design/icons";
 import { Avatar, Button, Card, Dropdown, Empty, Spin, Tag } from "antd";
 import Title from "antd/es/typography/Title";
 import Text from "antd/es/typography/Text";
@@ -6,7 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import * as signalR from "@microsoft/signalr";
 import { getApiAuthGetreplybyidId } from "../api/generated/loginsignuphome";
 import dayjs from "dayjs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 const Inbox = () => {
     const currentPath = window.location.pathname;
         const authData =JSON.parse(localStorage.getItem("persist:auth")!);
@@ -48,6 +48,7 @@ useEffect(() => {
                 connection.stop();
             };
         }, [queryClient]);
+        const [openMessage, setOpenMessage]= useState<string | null>(null)
     return (
         <div>
              <div className="flex items-center justify-between px-3 py-[23px]   ">
@@ -117,8 +118,33 @@ useEffect(() => {
                                             <div className="m-3">
                                        <div key={contact.id} className="border border-gray-200 rounded-xl bg-white overflow-hidden shadow-sm">
                            
-                                          
-                                           <div className="p-4 sm:p-5">
+                                          <div  onClick={() =>setOpenMessage(
+                                                        openMessage === contact.messageId
+                                                            ? null
+                                                            : contact.messageId
+                                                    )
+                                                } className="flex justify-between cursor-pointer border-t border-gray-100 bg-gray-50 px-4 sm:px-5 py-2">
+                                               <div>
+
+                                               
+                                               <span className="text-xs font-semibold text-gray-500 uppercase">
+                                                    Your Message 
+                                               </span>
+                                               </div>
+                                               <div>
+                                                 <span className="text-xs font-semibold text-gray-500 uppercase">
+                                                 <DownOutlined
+                                                    className={`transition-transform duration-200 ${
+                                                        openMessage === contact.messageId
+                                                            ? "rotate-180"
+                                                            : ""
+                                                    }`}
+                                                />
+                                               </span>
+                                               </div>
+                                           </div>
+                                           {openMessage === contact.messageId &&(
+<div className="p-4 sm:p-5">
                            
                                               
                                                <div className="flex flex-col sm:flex-row sm:items-start gap-3">
@@ -152,9 +178,14 @@ useEffect(() => {
                                                                {contact.customerName}
                                                            </p>
                            
-                                                           <Tag color="blue" className="w-fit m-0">
-                                                               You
-                                                           </Tag>
+                                                            <div className="flex flex-row gap-5 ">
+                                                            <Tag color="blue" className="w-fit m-0">
+                                                                You
+                                                            </Tag>
+                                                            <Tag color="purple">
+                                                                #{contact.messageId?.slice(-6).toUpperCase()}
+                                                            </Tag>
+                                                            </div>
                                                        </div>
                            
                                                        <p className="text-xs text-gray-500 m-0 mt-1 break-all">
@@ -171,6 +202,8 @@ useEffect(() => {
                                                    </div>
                                                </div>
                                            </div>
+                                           )}
+                                           
                            
                                            
                                            <div className="border-t border-gray-100 bg-gray-50 px-4 sm:px-5 py-2">
@@ -233,7 +266,7 @@ useEffect(() => {
                 )
             )
             }
-            </div>
+            </div> 
 
             
            

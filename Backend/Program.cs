@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.SignalR;
 using System.Text;
+using DotNetEnv;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
@@ -45,6 +47,7 @@ builder.Services.AddCors(options =>
         });
 });
 builder.Services.AddSignalR();
+Env.Load();
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
