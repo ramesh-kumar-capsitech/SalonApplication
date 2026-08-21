@@ -26,6 +26,8 @@ public class Replycontact
     public string? CustomerId { get; set; }
     public string? MessageId { get; set; }
     public string? SuperAdminId { get; set; }
+    public string? SuperAdminEmail { get; set; }
+
     public string? CustomerName { get; set; }
     public string? CustomerEmail { get; set; }
     public string? CustomerSubject { get; set; }

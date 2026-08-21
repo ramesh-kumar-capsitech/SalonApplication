@@ -79,8 +79,7 @@ const StaffSalon = () => {
     const user =
         JSON.parse(authData.user);
 
-    const salonId =
-        user.salonId;
+    const salonId = user.id;
 
 
     const { data: approvereq = [], isLoading, } = useQuery({

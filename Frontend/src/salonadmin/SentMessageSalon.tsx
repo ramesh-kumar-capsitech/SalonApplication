@@ -9,9 +9,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getApiAuthGetcontactbyidId } from "../api/generated/loginsignuphome";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-const SentMessage = () => {
-    const navigate = useNavigate();
+const SentMessageSalon = () => {
         const currentPath = window.location.pathname;
         const authData =JSON.parse(localStorage.getItem("persist:auth")!);
 
@@ -77,52 +75,50 @@ useEffect(() => {
                     <p>All sent messages will appear here </p>
                 </div>
                 <div>
-                       <Dropdown
-    menu={{
-        items: [
-            {
-                key: "contact",
-                label: "Contact",
-                disabled: currentPath === "/customer/contact",
-            },
-            {
-                key: "newmessage",
-                label: "New Message",
-                disabled: currentPath === "/customer/newmessagecustomer",
-            },
-            {
-                key: "inbox",
-                label: "Inbox",
-                disabled: currentPath === "/customer/inbox",
-            },
-            {
-                key: "sent",
-                label: "Sent",
-                disabled: currentPath === "/customer/sent",
-            },
-        ],
-
-        onClick: ({ key }) => {
-            if (key === "inbox") {
-                navigate("/customer/inbox");
-            } 
-            else if (key === "sent") {
-                navigate("/customer/sent");
-            } 
-            else if (key === "contact") {
-                navigate("/customer/contact");
-            } 
-            else if (key === "newmessage") {
-                navigate("/customer/newmessagecustomer");
-            }
-        },
-    }}
->
-    <Button
-        shape="circle"
-        icon={<MoreOutlined />}
-    />
-</Dropdown>
+                     
+                                            <Dropdown
+                                                     menu={{
+                                                         items: [
+                     
+                                                            {
+                                                                 key: "contact",
+                                                                 label: "Contact",
+                                                                 disabled: currentPath === "/salonadmin/contactsalon",
+                                                             },
+                                                             {
+                                                                 key: "newmessage",
+                                                                 label: "New Message",
+                                                                 disabled: currentPath === "/salonadmin/newmessage",
+                                                             },
+                                                             {
+                                                                 key: "inbox",
+                                                                 label: "Inbox",
+                                                                 disabled: currentPath === "/salonadmin/inboxsalon",
+                                                             },
+                                                             {
+                                                                 key: "sent",
+                                                                 label: "Sent",
+                                                                 disabled: currentPath === "/salonadmin/sentmessagesalon",
+                                                             },
+                                                         ],
+                                                         onClick: ({ key }) => {
+                                                             if (key === "inbox") {
+                                                                 window.location.href = "/salonadmin/inboxsalon";
+                                                             } else if (key === "sent") {
+                                                                 window.location.href = "/salonadmin/sentmessagesalon";
+                                                             }
+                                                             else if (key === "contact") {
+                                                                 window.location.href = "/salonadmin/contactsalon";
+                                                             }
+                                                             else if (key === "newmessage") {
+                                                                 window.location.href = "/salonadmin/newmessage";
+                                                             }
+                                                         }
+                                                         
+                                                     }}
+                                                 >
+                                                     <Button shape="circle" icon={<MoreOutlined />} />
+                                                 </Dropdown>
                 </div>
 
             </div>
@@ -258,4 +254,4 @@ useEffect(() => {
     );
 };
 
-export default SentMessage;
+export default SentMessageSalon;

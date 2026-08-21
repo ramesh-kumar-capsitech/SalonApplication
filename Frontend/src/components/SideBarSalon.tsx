@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import logo from '../assets/images/logo1.png'
-import { HomeOutlined, OrderedListOutlined, PictureOutlined, ScheduleOutlined, TeamOutlined, UnorderedListOutlined } from '@ant-design/icons';
+import { HomeOutlined, OrderedListOutlined, PhoneOutlined, PictureOutlined, ScheduleOutlined, TeamOutlined, UnorderedListOutlined } from '@ant-design/icons';
 import { Badge, message } from 'antd';
 import { SettingOutlined } from '@ant-design/icons';
 import { LogoutOutlined } from '@ant-design/icons';
@@ -132,6 +132,13 @@ const Sidebar: React.FC = () => {
                             <PictureOutlined className="text-white " />
                             <p className="hidden md:block  font-semibold m-0 "> Gallery</p>
                         </li>
+                        </NavLink>
+                        <NavLink to='/salonadmin/contactsalon'>
+                            <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20">
+                                <PhoneOutlined />
+
+                                <p className="hidden md:block font-semibold m-0 ">Contact</p>
+                            </li>
                         </NavLink>
                         <NavLink to='/salonadmin/settingsalon'>
                             <li className="flex items-center justify-center md:justify-start gap-2  px-2 md:px-3  py-2 rounded-lg hover:bg-white/20">

@@ -19,9 +19,7 @@ interface SalonFormDrawerProps {
     initialValues?: any;
 }
 
-const SalonFormDrawer: React.FC<
-    SalonFormDrawerProps
-> = ({
+const SalonFormDrawer: React.FC<SalonFormDrawerProps> = ({
     open,
     onClose,
     onSubmit,

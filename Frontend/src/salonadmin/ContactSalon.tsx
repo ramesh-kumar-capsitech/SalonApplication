@@ -11,8 +11,7 @@ import {
 
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { getApiAuthGetcustomerprofileId, postApiAuthContact } from "../api/generated/loginsignuphome";
-import { useNavigate } from "react-router-dom";
+import { getApiAuthGetcustomerprofileId, getApiAuthGetsalonprofileId, postApiAuthContact } from "../api/generated/loginsignuphome";
 interface InfoCardProps {
     icon: React.ReactNode;
     title: string;
@@ -48,9 +47,8 @@ const InfoCard: React.FC<InfoCardProps> = ({
     );
 };
 
-const Contact = () => {
+const ContactSalon = () => {
      const [form] = Form.useForm();
-     const navigate = useNavigate()
     const [profileForm] = Form.useForm();
      const authData = JSON.parse(
         localStorage.getItem("persist:auth")!
@@ -64,8 +62,8 @@ const Contact = () => {
         queryKey: ["adminProfile", userId],
 
         queryFn: async () => {
-            const res = await getApiAuthGetcustomerprofileId(userId)
-
+            const res = await getApiAuthGetsalonprofileId(userId)
+console.log(res.data)
             return res.data.data;
 
 
@@ -78,7 +76,7 @@ const Contact = () => {
     useEffect(() => {
         if (profileData) {
             profileForm.setFieldsValue({
-                fullName: profileData.name,
+                fullName: profileData.ownerName,
                 email: profileData.email,
                 phone: profileData.mobileNumber,
             });
@@ -157,52 +155,49 @@ const Contact = () => {
 
                 </div>
                 <div>
-                                    <Dropdown
-    menu={{
-        items: [
-            {
-                key: "contact",
-                label: "Contact",
-                disabled: currentPath === "/customer/contact",
-            },
-            {
-                key: "newmessage",
-                label: "New Message",
-                disabled: currentPath === "/customer/newmessagecustomer",
-            },
-            {
-                key: "inbox",
-                label: "Inbox",
-                disabled: currentPath === "/customer/inbox",
-            },
-            {
-                key: "sent",
-                label: "Sent",
-                disabled: currentPath === "/customer/sent",
-            },
-        ],
+                       <Dropdown
+                                menu={{
+                                    items: [
 
-        onClick: ({ key }) => {
-            if (key === "inbox") {
-                navigate("/customer/inbox");
-            } 
-            else if (key === "sent") {
-                navigate("/customer/sent");
-            } 
-            else if (key === "contact") {
-                navigate("/customer/contact");
-            } 
-            else if (key === "newmessage") {
-                navigate("/customer/newmessagecustomer");
-            }
-        },
-    }}
->
-    <Button
-        shape="circle"
-        icon={<MoreOutlined />}
-    />
-</Dropdown>
+                                       {
+                                            key: "contact",
+                                            label: "Contact",
+                                            disabled: currentPath === "/salonadmin/contactsalon",
+                                        },
+                                        {
+                                            key: "newmessage",
+                                            label: "New Message",
+                                            disabled: currentPath === "/salonadmin/newmessage",
+                                        },
+                                        {
+                                            key: "inbox",
+                                            label: "Inbox",
+                                            disabled: currentPath === "/salonadmin/inboxsalon",
+                                        },
+                                        {
+                                            key: "sent",
+                                            label: "Sent",
+                                            disabled: currentPath === "/salonadmin/sentmessagesalon",
+                                        },
+                                    ],
+                                    onClick: ({ key }) => {
+                                        if (key === "inbox") {
+                                            window.location.href = "/salonadmin/inboxsalon";
+                                        } else if (key === "sent") {
+                                            window.location.href = "/salonadmin/sentmessagesalon";
+                                        }
+                                        else if (key === "contact") {
+                                            window.location.href = "/salonadmin/contactsalon";
+                                        }
+                                        else if (key === "newmessage") {
+                                            window.location.href = "/salonadmin/newmessage";
+                                        }
+                                    }
+                                    
+                                }}
+                            >
+                                <Button shape="circle" icon={<MoreOutlined />} />
+                            </Dropdown>
                 </div>
 
             </div>
@@ -335,4 +330,4 @@ const Contact = () => {
     )
 }
 
-export default Contact
+export default ContactSalon

@@ -42,6 +42,11 @@ import LiveQueue from './components/LiveQueue'
 import CustomerMessages from './superadmin/CustomerMessages'
 import SentMessage from './customer/SentMessage'
 import Inbox from './customer/Inbox'
+import ContactSalon from './salonadmin/ContactSalon'
+import SentMessageSalon from './salonadmin/SentMessageSalon'
+import InboxSalon from './salonadmin/InboxSalon'
+import NewMessage from './salonadmin/NewMessage'
+import NewMessageCustomer from './customer/NewMessageCustomer'
 
 function App() {
   return (
@@ -85,6 +90,12 @@ function App() {
         <Route path='staffsalon' element={<StaffSalon />} />
         <Route path='gallery' element={<Gallery />} />
         <Route path='emp-schedule/:id' element={<Schedule />} />
+        <Route path='contactsalon' element={<ContactSalon/>} />
+        <Route path='sentmessagesalon' element={<SentMessageSalon/>} />
+        <Route path='inboxsalon' element={<InboxSalon/>} />
+        <Route path='newmessage' element={<NewMessage/>} />
+
+
       </Route>
       <Route path='/employee' element={
         <ProtectedRoutes>
@@ -115,6 +126,8 @@ function App() {
         <Route path='settingcustomer' element={<Settingcustomer />} />
         <Route path='inbox' element={<Inbox />} />
         <Route path='sent' element={<SentMessage />} />
+        <Route path='newmessagecustomer' element={<NewMessageCustomer/>} />
+
       </Route>
     </Routes >
   )

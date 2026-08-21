@@ -316,8 +316,7 @@ const AddEmployeeDrawer = ({
                     rules={[
                         {
                             required: true,
-                            message:
-                                "Please select skills"
+                            message:"Please select skills"
                         }
                     ]}
                 >

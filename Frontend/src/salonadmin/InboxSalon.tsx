@@ -7,10 +7,8 @@ import * as signalR from "@microsoft/signalr";
 import { getApiAuthGetreplybyidId } from "../api/generated/loginsignuphome";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-const Inbox = () => {
+const InboxSalon = () => {
     const currentPath = window.location.pathname;
-      const navigate = useNavigate();
         const authData =JSON.parse(localStorage.getItem("persist:auth")!);
 
         const user =JSON.parse(authData.user);
@@ -23,7 +21,7 @@ const Inbox = () => {
             },
         });
         const[inboxserach , setinboxsearch] = useState("")
-        const filterInboxMessages = inbox.filter((contact:any)=>{
+        const filterInboxMessages = inbox.filter((contact:any)=>contact.status==="Replied").filter((contact:any)=>{
             const search = inboxserach.trim().toLowerCase()
             if(!search) return true
             return(
@@ -37,33 +35,33 @@ const Inbox = () => {
             )
         })  
  const queryClient = useQueryClient();
- useEffect(() => {
-             const connection = new signalR.HubConnectionBuilder()
-                 .withUrl("https://localhost:7074/contactmessagereply")
-                 .withAutomaticReconnect()
-                 .build();
-     
-             connection
-                 .start()
-                 .then(() => {
-                     console.log(" SignalR Connected");
-                 })
-                 .catch((err) => {
-                     console.error(" SignalR Connection Error:", err);
-                 });
-     
-             connection.on("MessageUpdated", () => {
-                 console.log(" Message Received");
-     
-                 queryClient.invalidateQueries({
-                     queryKey: ["contacts"],
-                 });
-             });
-     
-             return () => {
-                 connection.stop();
-             };
-         }, [queryClient]);
+useEffect(() => {
+            const connection = new signalR.HubConnectionBuilder()
+                .withUrl("https://localhost:7074/contactmessagereply")
+                .withAutomaticReconnect()
+                .build();
+    
+            connection
+                .start()
+                .then(() => {
+                    console.log(" SignalR Connected");
+                })
+                .catch((err) => {
+                    console.error(" SignalR Connection Error:", err);
+                });
+    
+            connection.on("MessageUpdated", () => {
+                console.log(" Message Received");
+    
+                queryClient.invalidateQueries({
+                    queryKey: ["contacts"],
+                });
+            });
+    
+            return () => {
+                connection.stop();
+            };
+        }, [queryClient]);
         const [openMessage, setOpenMessage]= useState<string | null>(null)
     return (
         <div>
@@ -75,52 +73,50 @@ const Inbox = () => {
 
                 </div>
                 <div>
-                            <Dropdown
-    menu={{
-        items: [
-            {
-                key: "contact",
-                label: "Contact",
-                disabled: currentPath === "/customer/contact",
-            },
-            {
-                key: "newmessage",
-                label: "New Message",
-                disabled: currentPath === "/customer/newmessagecustomer",
-            },
-            {
-                key: "inbox",
-                label: "Inbox",
-                disabled: currentPath === "/customer/inbox",
-            },
-            {
-                key: "sent",
-                label: "Sent",
-                disabled: currentPath === "/customer/sent",
-            },
-        ],
-
-        onClick: ({ key }) => {
-            if (key === "inbox") {
-                navigate("/customer/inbox");
-            } 
-            else if (key === "sent") {
-                navigate("/customer/sent");
-            } 
-            else if (key === "contact") {
-                navigate("/customer/contact");
-            } 
-            else if (key === "newmessage") {
-                navigate("/customer/newmessagecustomer");
-            }
-        },
-    }}
->
-    <Button
-        shape="circle"
-        icon={<MoreOutlined />}
-    />
-</Dropdown>
+                   
+                                          <Dropdown
+                                                   menu={{
+                                                       items: [
+                   
+                                                          {
+                                                               key: "contact",
+                                                               label: "Contact",
+                                                               disabled: currentPath === "/salonadmin/contactsalon",
+                                                           },
+                                                           {
+                                                               key: "newmessage",
+                                                               label: "New Message",
+                                                               disabled: currentPath === "/salonadmin/newmessage",
+                                                           },
+                                                           {
+                                                               key: "inbox",
+                                                               label: "Inbox",
+                                                               disabled: currentPath === "/salonadmin/inboxsalon",
+                                                           },
+                                                           {
+                                                               key: "sent",
+                                                               label: "Sent",
+                                                               disabled: currentPath === "/salonadmin/sentmessagesalon",
+                                                           },
+                                                       ],
+                                                       onClick: ({ key }) => {
+                                                           if (key === "inbox") {
+                                                               window.location.href = "/salonadmin/inboxsalon";
+                                                           } else if (key === "sent") {
+                                                               window.location.href = "/salonadmin/sentmessagesalon";
+                                                           }
+                                                           else if (key === "contact") {
+                                                               window.location.href = "/salonadmin/contactsalon";
+                                                           }
+                                                           else if (key === "newmessage") {
+                                                               window.location.href = "/salonadmin/newmessage";
+                                                           }
+                                                       }
+                                                       
+                                                   }}
+                                               >
+                                                   <Button shape="circle" icon={<MoreOutlined />} />
+                                               </Dropdown>
                 </div>
 
             </div>
@@ -197,9 +193,9 @@ const Inbox = () => {
                                                        className="bg-blue-100 text-blue-600 flex-shrink-0"
                                                        size={38}
                                                    >
-                                                       {/* {contact.customerName
+                                                       {contact.customerName
                                                            .charAt(0)
-                                                           .toUpperCase()} */}
+                                                           .toUpperCase()}
                                                    </Avatar>
                            
                                                   
@@ -306,4 +302,4 @@ const Inbox = () => {
     );
 };
 
-export default Inbox;
+export default InboxSalon;
